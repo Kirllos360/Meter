@@ -60,7 +60,7 @@ A frontend task is not "started" until its `graphify query` has been run and its
   - **Validation**: `cd backend && npm run build && npm run start:dev` then `curl -s localhost:3000/health`
   - **Risk**: Node/Nest version drift from frontend's Node 20+; pin engines in package.json.
 
-- [ ] T002 Add config + PostgreSQL connection module in `backend/src/common/config/`
+- [X] T002 Add config + PostgreSQL connection module in `backend/src/common/config/`
   - **Dependencies**: T001
   - **Area/Files**: `backend/src/common/config/config.module.ts`, `backend/.env.example`, `backend/src/common/database/database.module.ts`
   - **Acceptance**: `@nestjs/config` loads env; DB target is `meter_pulse` DB / `sim_system` schema; connection validated on boot
