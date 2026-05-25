@@ -53,7 +53,7 @@ A frontend task is not "started" until its `graphify query` has been run and its
 
 **Purpose**: Stand up the new NestJS backend project skeleton. Frontend already exists and is preserved.
 
-- [ ] T001 Create NestJS backend project scaffold in `backend/`
+- [X] T001 Create NestJS backend project scaffold in `backend/`
   - **Dependencies**: none
   - **Area/Files**: `backend/package.json`, `backend/nest-cli.json`, `backend/tsconfig.json`, `backend/src/main.ts`, `backend/src/app.module.ts`
   - **Acceptance**: `nest start` boots; `GET /health` returns `200`; bounded-context module folders exist empty (`auth/ projects/ customers/ meters/ sim-cards/ readings/ billing/ payments/ reports/ audit/ common/`)
