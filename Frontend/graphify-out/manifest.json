@@ -1,572 +1,612 @@
 {
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/tsconfig.json": {
+  "/home/abady/Downloads/09/Frontend/tsconfig.json": {
     "mtime": 1779702698.0,
     "ast_hash": "f22272b2d73081c86e26ecb388faff25",
-    "semantic_hash": "f22272b2d73081c86e26ecb388faff25"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/eslint.config.mjs": {
+  "/home/abady/Downloads/09/Frontend/eslint.config.mjs": {
     "mtime": 1778580365.0,
     "ast_hash": "ac19e4b067f4dbcde9ae67db96106680",
-    "semantic_hash": "ac19e4b067f4dbcde9ae67db96106680"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/postcss.config.mjs": {
+  "/home/abady/Downloads/09/Frontend/postcss.config.mjs": {
     "mtime": 1778580365.0,
     "ast_hash": "675899342e765a4d16acd75a53389101",
-    "semantic_hash": "675899342e765a4d16acd75a53389101"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/package.json": {
+  "/home/abady/Downloads/09/Frontend/package.json": {
     "mtime": 1779708170.9361072,
     "ast_hash": "60bed4579d57e2b5f91d1a02c791bfbb",
-    "semantic_hash": "60bed4579d57e2b5f91d1a02c791bfbb"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/next.config.ts": {
+  "/home/abady/Downloads/09/Frontend/next.config.ts": {
     "mtime": 1778580365.0,
     "ast_hash": "a0f6d5f34e18c65b3b5ea4280a73286e",
-    "semantic_hash": "a0f6d5f34e18c65b3b5ea4280a73286e"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/tailwind.config.ts": {
+  "/home/abady/Downloads/09/Frontend/tailwind.config.ts": {
     "mtime": 1778580366.0,
     "ast_hash": "d8540179b01d61e5116ad3e288a21207",
-    "semantic_hash": "d8540179b01d61e5116ad3e288a21207"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/components.json": {
+  "/home/abady/Downloads/09/Frontend/components.json": {
     "mtime": 1778580365.0,
     "ast_hash": "44a51b28bb75baa05a3557e6a612c0ed",
-    "semantic_hash": "44a51b28bb75baa05a3557e6a612c0ed"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/.zscripts/mini-services-install.sh": {
+  "/home/abady/Downloads/09/Frontend/.zscripts/mini-services-install.sh": {
     "mtime": 1778580364.0,
     "ast_hash": "0c1796293ee7a35615930db861987c91",
-    "semantic_hash": "0c1796293ee7a35615930db861987c91"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/.zscripts/start.sh": {
+  "/home/abady/Downloads/09/Frontend/.zscripts/start.sh": {
     "mtime": 1778580365.0,
     "ast_hash": "d729606f02f26d32949c445b54b23f57",
-    "semantic_hash": "d729606f02f26d32949c445b54b23f57"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/.zscripts/build.sh": {
+  "/home/abady/Downloads/09/Frontend/.zscripts/build.sh": {
     "mtime": 1778580364.0,
     "ast_hash": "020c91b48659ec19832ebf9b46195285",
-    "semantic_hash": "020c91b48659ec19832ebf9b46195285"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/.zscripts/mini-services-start.sh": {
+  "/home/abady/Downloads/09/Frontend/.zscripts/mini-services-start.sh": {
     "mtime": 1778580365.0,
     "ast_hash": "41884a489d1c760ab740528862e32753",
-    "semantic_hash": "41884a489d1c760ab740528862e32753"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/.zscripts/mini-services-build.sh": {
+  "/home/abady/Downloads/09/Frontend/.zscripts/mini-services-build.sh": {
     "mtime": 1778580364.0,
     "ast_hash": "09b913012e021bd85af4effa673afdb1",
-    "semantic_hash": "09b913012e021bd85af4effa673afdb1"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/.zscripts/dev.sh": {
+  "/home/abady/Downloads/09/Frontend/.zscripts/dev.sh": {
     "mtime": 1778580364.0,
     "ast_hash": "df4ff7f2700c6c362271d3b0f1c489b4",
-    "semantic_hash": "df4ff7f2700c6c362271d3b0f1c489b4"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/.opencode/opencode.json": {
+  "/home/abady/Downloads/09/Frontend/.opencode/opencode.json": {
     "mtime": 1779708971.3806968,
     "ast_hash": "abcc8b9dcd80bca5f9dde6d9f0c3ae79",
-    "semantic_hash": "abcc8b9dcd80bca5f9dde6d9f0c3ae79"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/.opencode/plugins/graphify.js": {
+  "/home/abady/Downloads/09/Frontend/.opencode/plugins/graphify.js": {
     "mtime": 1779708971.3804336,
     "ast_hash": "64ccd3c03dbfe0980b6095766f5c4e52",
-    "semantic_hash": "64ccd3c03dbfe0980b6095766f5c4e52"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/examples/websocket/server.ts": {
+  "/home/abady/Downloads/09/Frontend/examples/websocket/server.ts": {
     "mtime": 1778580365.0,
     "ast_hash": "3ba2a5fee765ca07de02ad0c3be5a437",
-    "semantic_hash": "3ba2a5fee765ca07de02ad0c3be5a437"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/examples/websocket/frontend.tsx": {
+  "/home/abady/Downloads/09/Frontend/examples/websocket/frontend.tsx": {
     "mtime": 1778580365.0,
     "ast_hash": "fc591eee23eeb8fa123d22cc5083466d",
-    "semantic_hash": "fc591eee23eeb8fa123d22cc5083466d"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/scripts/smoke-all-pages.mjs": {
+  "/home/abady/Downloads/09/Frontend/scripts/smoke-all-pages.mjs": {
     "mtime": 1779708179.9417515,
     "ast_hash": "bc8b4b591672a1db320fcdeb6e03ab50",
-    "semantic_hash": "bc8b4b591672a1db320fcdeb6e03ab50"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/src/hooks/use-toast.ts": {
+  "/home/abady/Downloads/09/Frontend/src/hooks/use-toast.ts": {
     "mtime": 1778580366.0,
     "ast_hash": "9ba64fc4134b167b51e5e1070a510a00",
-    "semantic_hash": "9ba64fc4134b167b51e5e1070a510a00"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/src/hooks/use-mobile.ts": {
+  "/home/abady/Downloads/09/Frontend/src/hooks/use-mobile.ts": {
     "mtime": 1778580366.0,
     "ast_hash": "209b5193af16624cdd89d3591480dd48",
-    "semantic_hash": "209b5193af16624cdd89d3591480dd48"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/src/lib/utils.ts": {
+  "/home/abady/Downloads/09/Frontend/src/lib/utils.ts": {
     "mtime": 1778580366.0,
     "ast_hash": "5a6fd53fdcf2be529e9cc0b718fde352",
-    "semantic_hash": "5a6fd53fdcf2be529e9cc0b718fde352"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/src/lib/router-store.ts": {
+  "/home/abady/Downloads/09/Frontend/src/lib/router-store.ts": {
     "mtime": 1779705155.0,
     "ast_hash": "ec9ae03cff57ec9fe2477f7cbeae3bb8",
-    "semantic_hash": "ec9ae03cff57ec9fe2477f7cbeae3bb8"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/src/lib/types.ts": {
+  "/home/abady/Downloads/09/Frontend/src/lib/types.ts": {
     "mtime": 1779702839.0,
     "ast_hash": "717998f66e75145f237de761b9fb970c",
-    "semantic_hash": "717998f66e75145f237de761b9fb970c"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/src/lib/mock-data.ts": {
+  "/home/abady/Downloads/09/Frontend/src/lib/mock-data.ts": {
     "mtime": 1779705102.0,
     "ast_hash": "1fa94969615eff564ae006a3feb5529b",
-    "semantic_hash": "1fa94969615eff564ae006a3feb5529b"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/src/lib/mock-auth.ts": {
+  "/home/abady/Downloads/09/Frontend/src/lib/mock-auth.ts": {
     "mtime": 1779703310.0,
     "ast_hash": "c8642435247ae730da9abd8e455cd079",
-    "semantic_hash": "c8642435247ae730da9abd8e455cd079"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/src/lib/navigation.ts": {
+  "/home/abady/Downloads/09/Frontend/src/lib/navigation.ts": {
     "mtime": 1779703405.0,
     "ast_hash": "efad1c639ed58c74f1eab6aa97aea352",
-    "semantic_hash": "efad1c639ed58c74f1eab6aa97aea352"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/src/lib/db.ts": {
+  "/home/abady/Downloads/09/Frontend/src/lib/db.ts": {
     "mtime": 1778580366.0,
     "ast_hash": "91eb0a5e8e2f120bf0913d91d1a82ecd",
-    "semantic_hash": "91eb0a5e8e2f120bf0913d91d1a82ecd"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/src/components/projects/ProjectDetailPage.tsx": {
+  "/home/abady/Downloads/09/Frontend/src/components/projects/ProjectDetailPage.tsx": {
     "mtime": 1779705701.0,
     "ast_hash": "943bd40f4583af34679ba6f1c15d47ac",
-    "semantic_hash": "943bd40f4583af34679ba6f1c15d47ac"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/src/components/projects/LocationsPage.tsx": {
+  "/home/abady/Downloads/09/Frontend/src/components/projects/LocationsPage.tsx": {
     "mtime": 1779705740.0,
     "ast_hash": "221c49abf225e61aaad1392bb2ed3cc7",
-    "semantic_hash": "221c49abf225e61aaad1392bb2ed3cc7"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/src/components/projects/ProjectsPage.tsx": {
+  "/home/abady/Downloads/09/Frontend/src/components/projects/ProjectsPage.tsx": {
     "mtime": 1779705617.0,
     "ast_hash": "a9f8b4f53677133e5cb9d489110da5c4",
-    "semantic_hash": "a9f8b4f53677133e5cb9d489110da5c4"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/src/components/layout/AppSidebar.tsx": {
+  "/home/abady/Downloads/09/Frontend/src/components/layout/AppSidebar.tsx": {
     "mtime": 1779707487.8655326,
     "ast_hash": "b395d76b546fbf81726bfa08dfeba733",
-    "semantic_hash": "b395d76b546fbf81726bfa08dfeba733"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/src/components/layout/PagePlaceholder.tsx": {
+  "/home/abady/Downloads/09/Frontend/src/components/layout/PagePlaceholder.tsx": {
     "mtime": 1779705459.0,
     "ast_hash": "71e99f19fc9ebd3618510f4b6e73f31d",
-    "semantic_hash": "71e99f19fc9ebd3618510f4b6e73f31d"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/src/components/layout/RoleSwitcher.tsx": {
+  "/home/abady/Downloads/09/Frontend/src/components/layout/RoleSwitcher.tsx": {
     "mtime": 1779705479.0,
     "ast_hash": "9e74984e0626f5b231f2023ff5d0a8a7",
-    "semantic_hash": "9e74984e0626f5b231f2023ff5d0a8a7"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/src/components/layout/ThemeProvider.tsx": {
+  "/home/abady/Downloads/09/Frontend/src/components/layout/ThemeProvider.tsx": {
     "mtime": 1779705182.0,
     "ast_hash": "1cbd6d46962821685404cfcdc8c4e802",
-    "semantic_hash": "1cbd6d46962821685404cfcdc8c4e802"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/src/components/layout/TopNav.tsx": {
+  "/home/abady/Downloads/09/Frontend/src/components/layout/TopNav.tsx": {
     "mtime": 1779705538.0,
     "ast_hash": "543cedc27c61fd16e0539e3dfb26c640",
-    "semantic_hash": "543cedc27c61fd16e0539e3dfb26c640"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/src/components/layout/AppShell.tsx": {
+  "/home/abady/Downloads/09/Frontend/src/components/layout/AppShell.tsx": {
     "mtime": 1779706885.0,
     "ast_hash": "b2634606554e0cca87a8979238ad4c89",
-    "semantic_hash": "b2634606554e0cca87a8979238ad4c89"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/src/components/layout/PageHeader.tsx": {
+  "/home/abady/Downloads/09/Frontend/src/components/layout/PageHeader.tsx": {
     "mtime": 1779705437.0,
     "ast_hash": "15e6d5e4b14051e40e6907a59376d1a8",
-    "semantic_hash": "15e6d5e4b14051e40e6907a59376d1a8"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/src/components/layout/LoginPage.tsx": {
+  "/home/abady/Downloads/09/Frontend/src/components/layout/LoginPage.tsx": {
     "mtime": 1779707764.235445,
     "ast_hash": "5f8efa3f2be1828d69b256f7143bad13",
-    "semantic_hash": "5f8efa3f2be1828d69b256f7143bad13"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/src/components/meters/MeterTerminatePage.tsx": {
+  "/home/abady/Downloads/09/Frontend/src/components/meters/MeterTerminatePage.tsx": {
     "mtime": 1779706118.0,
     "ast_hash": "34df0a44b5cc69397a5c2c13029392a8",
-    "semantic_hash": "34df0a44b5cc69397a5c2c13029392a8"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/src/components/meters/MeterAssignPage.tsx": {
+  "/home/abady/Downloads/09/Frontend/src/components/meters/MeterAssignPage.tsx": {
     "mtime": 1779706764.0,
     "ast_hash": "84a8d12af6423fae1e1b20dff5d84e91",
-    "semantic_hash": "84a8d12af6423fae1e1b20dff5d84e91"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/src/components/meters/MeterDetailPage.tsx": {
+  "/home/abady/Downloads/09/Frontend/src/components/meters/MeterDetailPage.tsx": {
     "mtime": 1779705915.0,
     "ast_hash": "25318cb047aefcf978d108c1010c251a",
-    "semantic_hash": "25318cb047aefcf978d108c1010c251a"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/src/components/meters/MetersPage.tsx": {
+  "/home/abady/Downloads/09/Frontend/src/components/meters/MetersPage.tsx": {
     "mtime": 1779705864.0,
     "ast_hash": "9a242aa2aa3d6bd74ee652de43ff571a",
-    "semantic_hash": "9a242aa2aa3d6bd74ee652de43ff571a"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/src/components/meters/MeterReplacePage.tsx": {
+  "/home/abady/Downloads/09/Frontend/src/components/meters/MeterReplacePage.tsx": {
     "mtime": 1779706067.0,
     "ast_hash": "0930b8947cf76878d2bff8fec00f21d5",
-    "semantic_hash": "0930b8947cf76878d2bff8fec00f21d5"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/src/components/alerts/AlertsPage.tsx": {
+  "/home/abady/Downloads/09/Frontend/src/components/alerts/AlertsPage.tsx": {
     "mtime": 1779706513.0,
     "ast_hash": "38670d6ac06cc56c77c6f787a08e218f",
-    "semantic_hash": "38670d6ac06cc56c77c6f787a08e218f"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/src/components/ui/alert-dialog.tsx": {
+  "/home/abady/Downloads/09/Frontend/src/components/ui/alert-dialog.tsx": {
     "mtime": 1778580365.0,
     "ast_hash": "0a52d56b575340a3297c172f22d797ae",
-    "semantic_hash": "0a52d56b575340a3297c172f22d797ae"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/src/components/ui/collapsible.tsx": {
+  "/home/abady/Downloads/09/Frontend/src/components/ui/collapsible.tsx": {
     "mtime": 1778580365.0,
     "ast_hash": "3280feca735918afc1e61fa59ba6e3f3",
-    "semantic_hash": "3280feca735918afc1e61fa59ba6e3f3"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/src/components/ui/dialog.tsx": {
+  "/home/abady/Downloads/09/Frontend/src/components/ui/dialog.tsx": {
     "mtime": 1778580365.0,
     "ast_hash": "48a74bc4e6b2a9609c91582cae95730f",
-    "semantic_hash": "48a74bc4e6b2a9609c91582cae95730f"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/src/components/ui/sidebar.tsx": {
+  "/home/abady/Downloads/09/Frontend/src/components/ui/sidebar.tsx": {
     "mtime": 1778580365.0,
     "ast_hash": "9e981c1011ccf51eca1f6cb20fa599fd",
-    "semantic_hash": "9e981c1011ccf51eca1f6cb20fa599fd"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/src/components/ui/button.tsx": {
+  "/home/abady/Downloads/09/Frontend/src/components/ui/button.tsx": {
     "mtime": 1778580365.0,
     "ast_hash": "7cf5063b66e3ea629115772120bc57e7",
-    "semantic_hash": "7cf5063b66e3ea629115772120bc57e7"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/src/components/ui/chart.tsx": {
+  "/home/abady/Downloads/09/Frontend/src/components/ui/chart.tsx": {
     "mtime": 1778580365.0,
     "ast_hash": "79030ea8a0db990faf5a06180d40b274",
-    "semantic_hash": "79030ea8a0db990faf5a06180d40b274"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/src/components/ui/progress.tsx": {
+  "/home/abady/Downloads/09/Frontend/src/components/ui/progress.tsx": {
     "mtime": 1778580365.0,
     "ast_hash": "d0578ee4fb52d86376172c83fb67a9ba",
-    "semantic_hash": "d0578ee4fb52d86376172c83fb67a9ba"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/src/components/ui/sonner.tsx": {
+  "/home/abady/Downloads/09/Frontend/src/components/ui/sonner.tsx": {
     "mtime": 1778580366.0,
     "ast_hash": "6ea1f5a74a5c8a3463d405fcd3099771",
-    "semantic_hash": "6ea1f5a74a5c8a3463d405fcd3099771"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/src/components/ui/aspect-ratio.tsx": {
+  "/home/abady/Downloads/09/Frontend/src/components/ui/aspect-ratio.tsx": {
     "mtime": 1778580365.0,
     "ast_hash": "be7a9b030095db724fb3d9ca4e62293c",
-    "semantic_hash": "be7a9b030095db724fb3d9ca4e62293c"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/src/components/ui/pagination.tsx": {
+  "/home/abady/Downloads/09/Frontend/src/components/ui/pagination.tsx": {
     "mtime": 1778580365.0,
     "ast_hash": "c00a637aa821284c8d400e2b84003e31",
-    "semantic_hash": "c00a637aa821284c8d400e2b84003e31"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/src/components/ui/hover-card.tsx": {
+  "/home/abady/Downloads/09/Frontend/src/components/ui/hover-card.tsx": {
     "mtime": 1778580365.0,
     "ast_hash": "a1010352934f4cdf860caa32491a3706",
-    "semantic_hash": "a1010352934f4cdf860caa32491a3706"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/src/components/ui/tooltip.tsx": {
+  "/home/abady/Downloads/09/Frontend/src/components/ui/tooltip.tsx": {
     "mtime": 1778580366.0,
     "ast_hash": "9f753bf8201bd05dae554f6808586391",
-    "semantic_hash": "9f753bf8201bd05dae554f6808586391"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/src/components/ui/label.tsx": {
+  "/home/abady/Downloads/09/Frontend/src/components/ui/label.tsx": {
     "mtime": 1778580365.0,
     "ast_hash": "14f124762142b39a666ce10d3b42d28c",
-    "semantic_hash": "14f124762142b39a666ce10d3b42d28c"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/src/components/ui/separator.tsx": {
+  "/home/abady/Downloads/09/Frontend/src/components/ui/separator.tsx": {
     "mtime": 1778580365.0,
     "ast_hash": "07b35dc35f811b26a1ee3982582ba9fb",
-    "semantic_hash": "07b35dc35f811b26a1ee3982582ba9fb"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/src/components/ui/badge.tsx": {
+  "/home/abady/Downloads/09/Frontend/src/components/ui/badge.tsx": {
     "mtime": 1778580365.0,
     "ast_hash": "8162fc70aeb50791309f57f8f845d533",
-    "semantic_hash": "8162fc70aeb50791309f57f8f845d533"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/src/components/ui/tabs.tsx": {
+  "/home/abady/Downloads/09/Frontend/src/components/ui/tabs.tsx": {
     "mtime": 1778580366.0,
     "ast_hash": "65854b541abbc3c9f39cb075d4cb43ca",
-    "semantic_hash": "65854b541abbc3c9f39cb075d4cb43ca"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/src/components/ui/switch.tsx": {
+  "/home/abady/Downloads/09/Frontend/src/components/ui/switch.tsx": {
     "mtime": 1778580366.0,
     "ast_hash": "f93349e0eb061fc4e6c055ded4cff087",
-    "semantic_hash": "f93349e0eb061fc4e6c055ded4cff087"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/src/components/ui/card.tsx": {
+  "/home/abady/Downloads/09/Frontend/src/components/ui/card.tsx": {
     "mtime": 1778580365.0,
     "ast_hash": "a1468e2e35dfde14b63b4308cd20d2c2",
-    "semantic_hash": "a1468e2e35dfde14b63b4308cd20d2c2"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/src/components/ui/toggle.tsx": {
+  "/home/abady/Downloads/09/Frontend/src/components/ui/toggle.tsx": {
     "mtime": 1778580366.0,
     "ast_hash": "df65c0dfce4225ad57a1901b01580f54",
-    "semantic_hash": "df65c0dfce4225ad57a1901b01580f54"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/src/components/ui/avatar.tsx": {
+  "/home/abady/Downloads/09/Frontend/src/components/ui/avatar.tsx": {
     "mtime": 1778580365.0,
     "ast_hash": "19bc4411b724fb504c65550b61a453b1",
-    "semantic_hash": "19bc4411b724fb504c65550b61a453b1"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/src/components/ui/skeleton.tsx": {
+  "/home/abady/Downloads/09/Frontend/src/components/ui/skeleton.tsx": {
     "mtime": 1778580365.0,
     "ast_hash": "ee5017bac14efeda715feaceb488382a",
-    "semantic_hash": "ee5017bac14efeda715feaceb488382a"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/src/components/ui/toggle-group.tsx": {
+  "/home/abady/Downloads/09/Frontend/src/components/ui/toggle-group.tsx": {
     "mtime": 1778580366.0,
     "ast_hash": "a68b5be2c6b0ce6526a95d195b448810",
-    "semantic_hash": "a68b5be2c6b0ce6526a95d195b448810"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/src/components/ui/radio-group.tsx": {
+  "/home/abady/Downloads/09/Frontend/src/components/ui/radio-group.tsx": {
     "mtime": 1778580365.0,
     "ast_hash": "42634c5e24aebafa3f4ce9c91960dbfe",
-    "semantic_hash": "42634c5e24aebafa3f4ce9c91960dbfe"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/src/components/ui/calendar.tsx": {
+  "/home/abady/Downloads/09/Frontend/src/components/ui/calendar.tsx": {
     "mtime": 1778580365.0,
     "ast_hash": "92c5e0827022c5fc482a151e58467cee",
-    "semantic_hash": "92c5e0827022c5fc482a151e58467cee"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/src/components/ui/toast.tsx": {
+  "/home/abady/Downloads/09/Frontend/src/components/ui/toast.tsx": {
     "mtime": 1778580366.0,
     "ast_hash": "5bd1197d5cb25b2a6ca592850f0d8062",
-    "semantic_hash": "5bd1197d5cb25b2a6ca592850f0d8062"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/src/components/ui/input-otp.tsx": {
+  "/home/abady/Downloads/09/Frontend/src/components/ui/input-otp.tsx": {
     "mtime": 1778580365.0,
     "ast_hash": "2598c4a03345f4d67397f90c3fbbaddb",
-    "semantic_hash": "2598c4a03345f4d67397f90c3fbbaddb"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/src/components/ui/menubar.tsx": {
+  "/home/abady/Downloads/09/Frontend/src/components/ui/menubar.tsx": {
     "mtime": 1778580365.0,
     "ast_hash": "f3836779da2e4f6a90dd7f2755f4c61e",
-    "semantic_hash": "f3836779da2e4f6a90dd7f2755f4c61e"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/src/components/ui/sheet.tsx": {
+  "/home/abady/Downloads/09/Frontend/src/components/ui/sheet.tsx": {
     "mtime": 1778580365.0,
     "ast_hash": "638d6ec8d932fb7adbcd6f58ad1d8475",
-    "semantic_hash": "638d6ec8d932fb7adbcd6f58ad1d8475"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/src/components/ui/resizable.tsx": {
+  "/home/abady/Downloads/09/Frontend/src/components/ui/resizable.tsx": {
     "mtime": 1778580365.0,
     "ast_hash": "e6bc37b4f3397d034e51f987d66ebd48",
-    "semantic_hash": "e6bc37b4f3397d034e51f987d66ebd48"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/src/components/ui/table.tsx": {
+  "/home/abady/Downloads/09/Frontend/src/components/ui/table.tsx": {
     "mtime": 1778580366.0,
     "ast_hash": "531bf830b5f3b399abe3fd453157cdb7",
-    "semantic_hash": "531bf830b5f3b399abe3fd453157cdb7"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/src/components/ui/dropdown-menu.tsx": {
+  "/home/abady/Downloads/09/Frontend/src/components/ui/dropdown-menu.tsx": {
     "mtime": 1778580365.0,
     "ast_hash": "61ed555c8e1fdeb8556a276a1721c8d4",
-    "semantic_hash": "61ed555c8e1fdeb8556a276a1721c8d4"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/src/components/ui/form.tsx": {
+  "/home/abady/Downloads/09/Frontend/src/components/ui/form.tsx": {
     "mtime": 1778580365.0,
     "ast_hash": "06437ddc30eab3a60f7a561dbc2970ba",
-    "semantic_hash": "06437ddc30eab3a60f7a561dbc2970ba"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/src/components/ui/select.tsx": {
+  "/home/abady/Downloads/09/Frontend/src/components/ui/select.tsx": {
     "mtime": 1778580365.0,
     "ast_hash": "bc5bd729efe33ebe26ea6aceeb18dded",
-    "semantic_hash": "bc5bd729efe33ebe26ea6aceeb18dded"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/src/components/ui/toaster.tsx": {
+  "/home/abady/Downloads/09/Frontend/src/components/ui/toaster.tsx": {
     "mtime": 1778580366.0,
     "ast_hash": "b36ad9f6793e952195dbec2c7dd4c0ee",
-    "semantic_hash": "b36ad9f6793e952195dbec2c7dd4c0ee"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/src/components/ui/context-menu.tsx": {
+  "/home/abady/Downloads/09/Frontend/src/components/ui/context-menu.tsx": {
     "mtime": 1778580365.0,
     "ast_hash": "ae9a7bdee410df0b5d0380784c3a2d16",
-    "semantic_hash": "ae9a7bdee410df0b5d0380784c3a2d16"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/src/components/ui/slider.tsx": {
+  "/home/abady/Downloads/09/Frontend/src/components/ui/slider.tsx": {
     "mtime": 1778580366.0,
     "ast_hash": "d72c2e0760fae2d1d586db1f8e2c50f9",
-    "semantic_hash": "d72c2e0760fae2d1d586db1f8e2c50f9"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/src/components/ui/breadcrumb.tsx": {
+  "/home/abady/Downloads/09/Frontend/src/components/ui/breadcrumb.tsx": {
     "mtime": 1778580365.0,
     "ast_hash": "14763038175abd2410d97d8166c89480",
-    "semantic_hash": "14763038175abd2410d97d8166c89480"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/src/components/ui/scroll-area.tsx": {
+  "/home/abady/Downloads/09/Frontend/src/components/ui/scroll-area.tsx": {
     "mtime": 1778580365.0,
     "ast_hash": "360243727fcdcb4d509af4516aaa9d0d",
-    "semantic_hash": "360243727fcdcb4d509af4516aaa9d0d"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/src/components/ui/accordion.tsx": {
+  "/home/abady/Downloads/09/Frontend/src/components/ui/accordion.tsx": {
     "mtime": 1778580365.0,
     "ast_hash": "6f5ac2a39c951069d52ef56e1375d70a",
-    "semantic_hash": "6f5ac2a39c951069d52ef56e1375d70a"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/src/components/ui/command.tsx": {
+  "/home/abady/Downloads/09/Frontend/src/components/ui/command.tsx": {
     "mtime": 1778580365.0,
     "ast_hash": "5632786c44eaa58e5110088afcfb48a6",
-    "semantic_hash": "5632786c44eaa58e5110088afcfb48a6"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/src/components/ui/carousel.tsx": {
+  "/home/abady/Downloads/09/Frontend/src/components/ui/carousel.tsx": {
     "mtime": 1778580365.0,
     "ast_hash": "b28bf29b5dccd43ddfa5fd7d38e8517f",
-    "semantic_hash": "b28bf29b5dccd43ddfa5fd7d38e8517f"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/src/components/ui/checkbox.tsx": {
+  "/home/abady/Downloads/09/Frontend/src/components/ui/checkbox.tsx": {
     "mtime": 1778580365.0,
     "ast_hash": "9de07e415989a8ae7695361a9e5bd5b0",
-    "semantic_hash": "9de07e415989a8ae7695361a9e5bd5b0"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/src/components/ui/input.tsx": {
+  "/home/abady/Downloads/09/Frontend/src/components/ui/input.tsx": {
     "mtime": 1778580365.0,
     "ast_hash": "a516f41f19d79cbedfb354e893706d87",
-    "semantic_hash": "a516f41f19d79cbedfb354e893706d87"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/src/components/ui/navigation-menu.tsx": {
+  "/home/abady/Downloads/09/Frontend/src/components/ui/navigation-menu.tsx": {
     "mtime": 1778580365.0,
     "ast_hash": "bea6b8a7ef7d7e7d5dc09afe7631fb59",
-    "semantic_hash": "bea6b8a7ef7d7e7d5dc09afe7631fb59"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/src/components/ui/alert.tsx": {
+  "/home/abady/Downloads/09/Frontend/src/components/ui/alert.tsx": {
     "mtime": 1778580365.0,
     "ast_hash": "8e59179ed2f0f6e33320d0081b9782fa",
-    "semantic_hash": "8e59179ed2f0f6e33320d0081b9782fa"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/src/components/ui/drawer.tsx": {
+  "/home/abady/Downloads/09/Frontend/src/components/ui/drawer.tsx": {
     "mtime": 1778580365.0,
     "ast_hash": "d2f77e51ad7cefcf112c855235a172dc",
-    "semantic_hash": "d2f77e51ad7cefcf112c855235a172dc"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/src/components/ui/popover.tsx": {
+  "/home/abady/Downloads/09/Frontend/src/components/ui/popover.tsx": {
     "mtime": 1778580365.0,
     "ast_hash": "d7255316c532c766cee7792d775e4d0f",
-    "semantic_hash": "d7255316c532c766cee7792d775e4d0f"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/src/components/ui/textarea.tsx": {
+  "/home/abady/Downloads/09/Frontend/src/components/ui/textarea.tsx": {
     "mtime": 1778580366.0,
     "ast_hash": "04f9af2a78672f7018b16db2bcec5036",
-    "semantic_hash": "04f9af2a78672f7018b16db2bcec5036"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/src/components/sim-cards/SimCardsPage.tsx": {
+  "/home/abady/Downloads/09/Frontend/src/components/sim-cards/SimCardsPage.tsx": {
     "mtime": 1779706150.0,
     "ast_hash": "8386e6a82a09010b53336939966c09e6",
-    "semantic_hash": "8386e6a82a09010b53336939966c09e6"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/src/components/smart-table/SmartTable.tsx": {
+  "/home/abady/Downloads/09/Frontend/src/components/smart-table/SmartTable.tsx": {
     "mtime": 1779705507.0,
     "ast_hash": "86438ae3199c6268857e907396e768cf",
-    "semantic_hash": "86438ae3199c6268857e907396e768cf"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/src/components/reports/ReportsPage.tsx": {
+  "/home/abady/Downloads/09/Frontend/src/components/reports/ReportsPage.tsx": {
     "mtime": 1779707175.570797,
     "ast_hash": "e291302894176ac649cf56f4743f8e54",
-    "semantic_hash": "e291302894176ac649cf56f4743f8e54"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/src/components/reports/SettingsPage.tsx": {
+  "/home/abady/Downloads/09/Frontend/src/components/reports/SettingsPage.tsx": {
     "mtime": 1779706701.0,
     "ast_hash": "d3c60ffdfe1bcb8a37838325b2b775a1",
-    "semantic_hash": "d3c60ffdfe1bcb8a37838325b2b775a1"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/src/components/tickets/TicketsPage.tsx": {
+  "/home/abady/Downloads/09/Frontend/src/components/tickets/TicketsPage.tsx": {
     "mtime": 1779706555.0,
     "ast_hash": "117cef1e24effc8fc3ca18ab896855d2",
-    "semantic_hash": "117cef1e24effc8fc3ca18ab896855d2"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/src/components/tickets/SupportPage.tsx": {
+  "/home/abady/Downloads/09/Frontend/src/components/tickets/SupportPage.tsx": {
     "mtime": 1779706590.0,
     "ast_hash": "56ad6f3211f17378334d02268e44b24e",
-    "semantic_hash": "56ad6f3211f17378334d02268e44b24e"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/src/components/dashboard/DashboardPage.tsx": {
+  "/home/abady/Downloads/09/Frontend/src/components/dashboard/DashboardPage.tsx": {
     "mtime": 1779705745.0,
     "ast_hash": "08c9d2943b56179bc69fb521b3713dee",
-    "semantic_hash": "08c9d2943b56179bc69fb521b3713dee"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/src/components/billing/InvoiceDetailPage.tsx": {
+  "/home/abady/Downloads/09/Frontend/src/components/billing/InvoiceDetailPage.tsx": {
     "mtime": 1779706399.0,
     "ast_hash": "1f2d2e8742a36de5ad7e613c506b2db0",
-    "semantic_hash": "1f2d2e8742a36de5ad7e613c506b2db0"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/src/components/billing/WaterBalancePage.tsx": {
+  "/home/abady/Downloads/09/Frontend/src/components/billing/WaterBalancePage.tsx": {
     "mtime": 1779706320.0,
     "ast_hash": "ea42c6b054a578ebc509a17e88e7421d",
-    "semantic_hash": "ea42c6b054a578ebc509a17e88e7421d"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/src/components/billing/PaymentsPage.tsx": {
+  "/home/abady/Downloads/09/Frontend/src/components/billing/PaymentsPage.tsx": {
     "mtime": 1779706441.0,
     "ast_hash": "c7a492cd952decd2c4c9962a084cd61d",
-    "semantic_hash": "c7a492cd952decd2c4c9962a084cd61d"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/src/components/billing/InvoicesPage.tsx": {
+  "/home/abady/Downloads/09/Frontend/src/components/billing/InvoicesPage.tsx": {
     "mtime": 1779706360.0,
     "ast_hash": "695aed59542e47b00cec46e71d65dbcc",
-    "semantic_hash": "695aed59542e47b00cec46e71d65dbcc"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/src/components/billing/ConsumptionPage.tsx": {
+  "/home/abady/Downloads/09/Frontend/src/components/billing/ConsumptionPage.tsx": {
     "mtime": 1779706283.0,
     "ast_hash": "a1da5624a591fd602fe950bbfbc48f0d",
-    "semantic_hash": "a1da5624a591fd602fe950bbfbc48f0d"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/src/components/billing/BalancesPage.tsx": {
+  "/home/abady/Downloads/09/Frontend/src/components/billing/BalancesPage.tsx": {
     "mtime": 1779706474.0,
     "ast_hash": "415ee9183c31e9be12e2a756461d4ae1",
-    "semantic_hash": "415ee9183c31e9be12e2a756461d4ae1"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/src/components/shared/StatusBadge.tsx": {
+  "/home/abady/Downloads/09/Frontend/src/components/shared/StatusBadge.tsx": {
     "mtime": 1779705574.0,
     "ast_hash": "734da9922798ddc6f188dce930736ec1",
-    "semantic_hash": "734da9922798ddc6f188dce930736ec1"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/src/components/shared/PageHelpers.tsx": {
+  "/home/abady/Downloads/09/Frontend/src/components/shared/PageHelpers.tsx": {
     "mtime": 1779705591.0,
     "ast_hash": "25addf213ba81041e03f6a1e40c183d7",
-    "semantic_hash": "25addf213ba81041e03f6a1e40c183d7"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/src/components/readings/ReadingsPage.tsx": {
+  "/home/abady/Downloads/09/Frontend/src/components/readings/ReadingsPage.tsx": {
     "mtime": 1779706186.0,
     "ast_hash": "01efbbcbb48ffdb3a3b9e80065cc1c7f",
-    "semantic_hash": "01efbbcbb48ffdb3a3b9e80065cc1c7f"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/src/components/readings/ReadingNewPage.tsx": {
+  "/home/abady/Downloads/09/Frontend/src/components/readings/ReadingNewPage.tsx": {
     "mtime": 1779706747.0,
     "ast_hash": "f8d7b1073b27cfcb6ce1c5742361537b",
-    "semantic_hash": "f8d7b1073b27cfcb6ce1c5742361537b"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/src/components/customers/CustomerDetailPage.tsx": {
+  "/home/abady/Downloads/09/Frontend/src/components/customers/CustomerDetailPage.tsx": {
     "mtime": 1779705814.0,
     "ast_hash": "3f54c23a737098aa6de3cc6a9d34bdb2",
-    "semantic_hash": "3f54c23a737098aa6de3cc6a9d34bdb2"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/src/components/customers/CustomersPage.tsx": {
+  "/home/abady/Downloads/09/Frontend/src/components/customers/CustomersPage.tsx": {
     "mtime": 1779705766.0,
     "ast_hash": "c989cc533b290dce2c66777407eb916c",
-    "semantic_hash": "c989cc533b290dce2c66777407eb916c"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/src/app/page.tsx": {
+  "/home/abady/Downloads/09/Frontend/src/app/page.tsx": {
     "mtime": 1779705829.0,
     "ast_hash": "1559d6fd900e3dc9b9b6ac89788a694b",
-    "semantic_hash": "1559d6fd900e3dc9b9b6ac89788a694b"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/src/app/layout.tsx": {
+  "/home/abady/Downloads/09/Frontend/src/app/layout.tsx": {
     "mtime": 1779705164.0,
     "ast_hash": "33bb4c8dc01c0fb0ed4f65e81f460365",
-    "semantic_hash": "33bb4c8dc01c0fb0ed4f65e81f460365"
+    "semantic_hash": ""
   },
-  "/home/abady/Downloads/09/workspace-12a9edc7-18ef-424c-a245-17e0c2b89877/src/app/api/route.ts": {
+  "/home/abady/Downloads/09/Frontend/src/app/api/route.ts": {
     "mtime": 1778580365.0,
     "ast_hash": "bea7bb6c5e8f4a6fad2e9ccc6324ae8a",
-    "semantic_hash": "bea7bb6c5e8f4a6fad2e9ccc6324ae8a"
+    "semantic_hash": ""
+  },
+  "/home/abady/Downloads/09/Frontend/worklog.md": {
+    "mtime": 1779706995.0,
+    "ast_hash": "59dfd11359c61284511c9e71733aef5c",
+    "semantic_hash": ""
+  },
+  "/home/abady/Downloads/09/Frontend/AGENTS.md": {
+    "mtime": 1779708971.3801131,
+    "ast_hash": "62c05a2bf20bf036a0b2633478663e64",
+    "semantic_hash": ""
+  },
+  "/home/abady/Downloads/09/Frontend/FRONTEND_BUILD.md": {
+    "mtime": 1779708806.8756528,
+    "ast_hash": "209322468dc8a01517b78358cac6cb17",
+    "semantic_hash": ""
+  },
+  "/home/abady/Downloads/09/Frontend/FRONTEND_SPRINT_BACKLOG.md": {
+    "mtime": 1779709152.6477692,
+    "ast_hash": "6df5c5d41c9a1948ba2f7465c3146913",
+    "semantic_hash": ""
+  },
+  "/home/abady/Downloads/09/Frontend/public/robots.txt": {
+    "mtime": 1778580365.0,
+    "ast_hash": "f9dff89adf98833e676de2205921996a",
+    "semantic_hash": ""
+  },
+  "/home/abady/Downloads/09/Frontend/agent-ctx/4-layout-builder.md": {
+    "mtime": 1779706047.0,
+    "ast_hash": "cb2713d6e50e080f89d432aca0b68ef0",
+    "semantic_hash": ""
+  },
+  "/home/abady/Downloads/09/Frontend/download/README.md": {
+    "mtime": 1779701287.0,
+    "ast_hash": "45bbc1947dca1b9f21f04716bbf27562",
+    "semantic_hash": ""
+  },
+  "/home/abady/Downloads/09/Frontend/public/logo.svg": {
+    "mtime": 1778580365.0,
+    "ast_hash": "42f46ee1967225126315578016f0f9b6",
+    "semantic_hash": ""
   }
 }
