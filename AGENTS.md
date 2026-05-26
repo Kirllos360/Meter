@@ -156,3 +156,41 @@ Every time the user sends a message, run `git status --short` to detect any chan
 
 ### Next Task
 - T011
+
+---
+
+## T011 Memory Log
+
+**Task**: T011 — Wire API versioning `/api/v1`, base routing, and OpenAPI serving
+**Story**: Foundational — Phase 2
+**Status**: Complete
+**Date**: 2026-05-26
+**Branch**: feature/t011-api-versioning
+**Commit**: (pending)
+
+### What Changed
+- Created `src/common/openapi/openapi.setup.ts` — reusable Swagger/OpenAPI helper
+- Updated `src/main.ts` — added `app.setGlobalPrefix('api/v1')` and `setupOpenApi(app)`
+- Installed `@nestjs/swagger@7.4.2` + `swagger-ui-express@5.0.1`
+
+### Endpoints
+- `/api/v1/health` — health check (moved under global prefix)
+- `/api/v1/docs` — Swagger UI (returns 200)
+- `/api/v1/docs-json` — OpenAPI JSON spec
+
+### OpenAPI Configuration
+- Title: Meter Pulse API
+- Version: 1.0
+- Server: /api/v1
+- JWT bearer auth scheme pre-configured
+
+### Validation
+- `npm test` — 69/69 passing
+- `npm run build` — clean
+- Server startup — successful
+- `curl /api/v1/health` — `{"status":"ok"}`
+- `curl /api/v1/docs-json` — valid OpenAPI 3.0 JSON
+- `curl /api/v1/docs` — HTTP 200
+
+### Next Task
+- T012
