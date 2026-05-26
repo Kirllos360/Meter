@@ -20,7 +20,7 @@
 | 2026-05-26 | `8c03a81` | build(backend): implement jwt auth and rbac for T009 | 33 | +1160 | -163 |
 | 2026-05-26 | `3905f3a` | build(backend): implement global error envelope for T006 | 9 | +204 | -3 |
 | 2026-05-26 | `4f12da5` | build(backend): add correlation middleware for T007 | 7 | +125 | -13 |
-| 2026-05-26 | `d0d72b4` | build(backend): implement append-only audit logging for T010 | 11 | +636 | -2 |
+| 2026-05-26 | `a18038f` | build(backend): wire api versioning and openapi for T011 | 11 | +373 | -4 |
 
 ---
 

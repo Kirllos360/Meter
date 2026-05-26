@@ -166,7 +166,7 @@ Every time the user sends a message, run `git status --short` to detect any chan
 **Status**: Complete
 **Date**: 2026-05-26
 **Branch**: feature/t011-api-versioning
-**Commit**: (pending)
+**Commit**: a18038f
 
 ### What Changed
 - Created `src/common/openapi/openapi.setup.ts` — reusable Swagger/OpenAPI helper
