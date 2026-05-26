@@ -114,3 +114,45 @@ Every time the user sends a message, run `git status --short` to detect any chan
 
 ### Next Task
 - T010
+
+---
+
+## T010 Memory Log
+
+**Task**: T010 — Implement append-only audit log service + interceptor
+**Story**: Foundational — Phase 2
+**Status**: Complete
+**Date**: 2026-05-26
+**Branch**: feature/t009-auth-rbac
+**Commit**: d0d72b4
+
+### What Changed
+- Cherry-picked T006 (error envelope) and T007 (correlation middleware) from their branches
+- Added `AuditLog` model to `prisma/schema.prisma` — 11 fields, append-only design
+- Created `src/audit/audit.decorator.ts` — `@Audit('resource', 'action')` method decorator
+- Created `src/audit/audit.service.ts` — injectable service with fail-safe Prisma writes
+- Created `src/audit/audit.interceptor.ts` — global interceptor for POST/PUT/PATCH/DELETE
+- Created `src/audit/audit.module.ts` — module exporting service + interceptor
+- Registered AuditInterceptor globally in `src/app.module.ts` via APP_INTERCEPTOR
+- Created 21 tests (service: 4, interceptor: 12, decorator: 4)
+- Installed @nestjs/testing dev dependency
+
+### Dependencies Satisfied
+- T004 (Prisma) — AuditLog model
+- T006 (ErrorEnvelope) — cherry-picked
+- T007 (CorrelationMiddleware) — cherry-picked, req.correlationId extracted
+- T009 (JWT Auth/RBAC) — req.user.userId, req.user.role extracted
+
+### Validation
+- `npm test` — 69/69 passing (8 suites)
+- `npm run build` — clean
+- `npm run lint` — clean
+- `npx prisma validate` — valid
+
+### Append-Only Guarantees
+- AuditService only exposes `create()` — no update/delete methods
+- Interceptor catches DB errors without blocking the response
+- Before/after snapshots captured from request body and response
+
+### Next Task
+- T011
