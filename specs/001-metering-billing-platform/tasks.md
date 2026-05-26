@@ -53,28 +53,28 @@ A frontend task is not "started" until its `graphify query` has been run and its
 
 **Purpose**: Stand up the new NestJS backend project skeleton. Frontend already exists and is preserved.
 
-- [ ] T001 Create NestJS backend project scaffold in `backend/`
+- [X] T001 Create NestJS backend project scaffold in `backend/`
   - **Dependencies**: none
   - **Area/Files**: `backend/package.json`, `backend/nest-cli.json`, `backend/tsconfig.json`, `backend/src/main.ts`, `backend/src/app.module.ts`
   - **Acceptance**: `nest start` boots; `GET /health` returns `200`; bounded-context module folders exist empty (`auth/ projects/ customers/ meters/ sim-cards/ readings/ billing/ payments/ reports/ audit/ common/`)
   - **Validation**: `cd backend && npm run build && npm run start:dev` then `curl -s localhost:3000/health`
   - **Risk**: Node/Nest version drift from frontend's Node 20+; pin engines in package.json.
 
-- [ ] T002 Add config + PostgreSQL connection module in `backend/src/common/config/`
+- [X] T002 Add config + PostgreSQL connection module in `backend/src/common/config/`
   - **Dependencies**: T001
   - **Area/Files**: `backend/src/common/config/config.module.ts`, `backend/.env.example`, `backend/src/common/database/database.module.ts`
   - **Acceptance**: `@nestjs/config` loads env; DB target is `meter_pulse` DB / `sim_system` schema; connection validated on boot
   - **Validation**: `cd backend && npm run start:dev` shows successful DB connection log
   - **Risk**: Secrets leakage — keep real `.env` out of git, only commit `.env.example`.
 
-- [ ] T003 [P] Configure backend lint/format/test tooling in `backend/`
+- [X] T003 [P] Configure backend lint/format/test tooling in `backend/`
   - **Dependencies**: T001
   - **Area/Files**: `backend/.eslintrc.cjs`, `backend/.prettierrc`, `backend/jest.config.ts`
   - **Acceptance**: `npm run lint` and `npm test` run (zero tests OK) with no config errors
   - **Validation**: `cd backend && npm run lint && npm test`
   - **Risk**: ESLint/TS version mismatch breaking CI; align with frontend toolchain versions.
 
-- [ ] T004 [P] Initialize Prisma ORM in `backend/prisma/`
+- [X] T004 [P] Initialize Prisma ORM in `backend/prisma/`
   - **Dependencies**: T002
   - **Area/Files**: `backend/prisma/schema.prisma` (datasource + generator only), `backend/src/common/database/prisma.service.ts`
   - **Acceptance**: `prisma generate` succeeds; `PrismaService` injectable; `multiSchema`/`sim_system` schema configured
@@ -98,14 +98,14 @@ A frontend task is not "started" until its `graphify query` has been run and its
 
 ### Backend cross-cutting infrastructure
 
-- [ ] T006 [P] Implement standard error envelope + global exception filter in `backend/src/common/http/`
+- [X] T006 [P] Implement standard error envelope + global exception filter in `backend/src/common/http/`
   - **Dependencies**: T001
   - **Area/Files**: `backend/src/common/http/error-envelope.ts`, `backend/src/common/http/all-exceptions.filter.ts`
   - **Acceptance**: All errors serialize to `{ code, message, details?, correlationId }` exactly matching `ErrorEnvelope` in the contract
   - **Validation**: `cd backend && npm test -- error-envelope`
   - **Risk**: Envelope drift from contract breaks frontend error parsing (FE-001); assert shape in a unit test.
 
-- [ ] T007 [P] Add correlation-ID middleware in `backend/src/common/http/correlation.middleware.ts`
+- [X] T007 [P] Add correlation-ID middleware in `backend/src/common/http/correlation.middleware.ts`
   - **Dependencies**: T001
   - **Area/Files**: `backend/src/common/http/correlation.middleware.ts`
   - **Acceptance**: Every request gets/propagates a `correlationId`, surfaced in responses and error envelope
