@@ -17,7 +17,7 @@
 | 2026-05-26 | `a52860c` | T003: backend tooling (ESLint, Prettier, Jest) | 6 | +2887 | -11 |
 | 2026-05-26 | `fb69e09` | T002: config + PostgreSQL | 9 | +171 | -19 |
 | 2026-05-26 | `e0fbcfa` | T001: NestJS backend scaffold | 20 | +18665 | -0 |
-| 2026-05-26 | `4290e18` | build(backend): implement jwt auth and rbac for T009 | 33 | +1160 | -163 |
+| 2026-05-26 | `8c03a81` | build(backend): implement jwt auth and rbac for T009 | 33 | +1160 | -163 |
 
 ---
 

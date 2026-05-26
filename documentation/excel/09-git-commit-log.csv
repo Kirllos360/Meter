@@ -7,4 +7,4 @@
 6,2026-05-25 17:44,81884a1,(baseline),"T002: config + PostgreSQL connection",Phase 1
 7,2026-05-25 17:59,fb979f6,(baseline),"T003: lint/format/test tooling",Phase 1
 8,2026-05-26 13:45,20e6796,Kirllos Hany,"T004: init Prisma ORM",Phase 1
-9,2026-05-26,4290e18,Kirllos Hany,"build(backend): implement jwt auth and rbac for T009",Phase 2
+9,2026-05-26,8c03a81,Kirllos Hany,"build(backend): implement jwt auth and rbac for T009",Phase 2
