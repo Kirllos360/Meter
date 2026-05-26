@@ -81,7 +81,7 @@ A frontend task is not "started" until its `graphify query` has been run and its
   - **Validation**: `cd backend && npx prisma validate && npx prisma generate`
   - **Risk**: ORM choice locked per research Decision 3 — switching later is costly; confirm Prisma before proceeding.
 
-- [ ] T005 [P] Add local PostgreSQL via docker-compose in `backend/`
+- [X] T005 [P] Add local PostgreSQL via docker-compose in `backend/`
   - **Dependencies**: none
   - **Area/Files**: `backend/docker-compose.yml`, `backend/README.md` (DB run instructions)
   - **Acceptance**: `docker compose up -d db` exposes a reachable `meter_pulse` Postgres

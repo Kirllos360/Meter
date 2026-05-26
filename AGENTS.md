@@ -58,6 +58,17 @@ bun run db:generate      # Prisma generate
 - **Pre-commit**: Always run `git status` first; only stage intended files; check for secrets
 - **Never commit**: `.env`, `*.db`, `.next/`, `node_modules/`, `graphify-out/cache/`, workspace archives, tokens
 
+## T005 Memory Log (2026-05-26)
+
+- **Task**: T005 — Add local PostgreSQL via docker-compose
+- **Status**: done
+- **Changed**: Updated `backend/docker-compose.yml` (env vars, healthcheck), created `backend/README.md`
+- **Validation**: docker compose up ✅, compose ps ✅ healthy, prisma validate ✅, prisma generate ✅, tsc ✅, eslint ✅
+- **Commit**: `e46c26a build(backend): add postgres docker compose for T005`
+- **Branch**: `feature/t005-postgres-docker`
+- **Next**: T006
+- **Risks**: None — port 5432 configurable via DB_PORT env var
+
 ## On-Message Git Check
 Every time the user sends a message, run `git status --short` to detect any changes since last session. If changes exist, log them to the audit log and commit log. Keep local files in sync.
 
