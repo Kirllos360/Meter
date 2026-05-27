@@ -15,8 +15,26 @@ tags:
   - name: Billing
   - name: Payments
   - name: Reports
+  - name: System
   - name: Statements
 paths:
+  /health:
+    get:
+      tags: [System]
+      summary: Health check
+      operationId: healthCheck
+      responses:
+        '200':
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [status]
+                properties:
+                  status:
+                    type: string
+                    example: ok
   /meters/{meterId}/assign:
     post:
       tags: [Meters]
