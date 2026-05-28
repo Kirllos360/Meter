@@ -4,6 +4,7 @@ import { create } from 'zustand';
 import type { User, UserRole } from '@/lib/types';
 import { mockUsers } from '@/lib/mock-data';
 import { rolePermissions } from '@/lib/navigation';
+import { setToken, clearToken } from '@/lib/api';
 
 // ---- ROLES constant ----
 
@@ -33,15 +34,18 @@ export const useAuthStore = create<AuthState>((set) => ({
 
   login: (role: UserRole) => {
     const user = mockUsers.find((u) => u.role === role) ?? mockUsers[0];
+    setToken(`mock-token-${user.id}`);
     set({ user, isAuthenticated: true });
   },
 
   logout: () => {
+    clearToken();
     set({ user: null, isAuthenticated: false });
   },
 
   switchRole: (role: UserRole) => {
     const user = mockUsers.find((u) => u.role === role) ?? mockUsers[0];
+    setToken(`mock-token-${user.id}`);
     set({ user, isAuthenticated: true });
   },
 }));
