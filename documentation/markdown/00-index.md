@@ -33,6 +33,7 @@ documentation/
 | 07 | **GitHub Packages (compact)** | — | — | `07-github-packages-needed.txt` | — | `07-github-packages-needed.pdf` |
 | 08 | **Required Apps** | — | — | `08-required-apps.txt` | — | `08-required-apps.pdf` |
 | **09** | **Git Commit Log** | `09-git-commit-log.md` | — | `09-git-commit-log.txt` | `09-git-commit-log.csv` | `09-git-commit-log.pdf` |
+| **14** | **MCP Server Setup** | `14-mcp-setup.md` | — | `14-mcp-setup.txt` | — | — |
 | **10** | **Progress & Health Report** | `10-progress-health-report.md` | — | `10-progress-health-report.txt` | — | `10-progress-health-report.pdf` |
 | **11** | **Email Report Log** | `11-email-report-log.md` | — | `11-email-report-log.txt` | `11-email-report-log.csv` | `11-email-report-log.pdf` |
 | **12** | **T002-T003 Verification** | `12-T002-T003-verification-report.md` | — | — | — | — |
@@ -73,6 +74,7 @@ documentation/
 | `13-T015-validation-report.md` | T015 validation: reading/tariff migration checks |
 | `13-T016-validation-report.md` | T016 validation: invoice migration checks |
 | `13-T017-validation-report.md` | T017 validation: payment/ledger migration checks |
+| `14-mcp-setup.md` | Notion + Odoo MCP server setup guide with activation instructions |
 
 ### `sql/` — Database Definition
 
@@ -199,6 +201,7 @@ documentation/
 ├── markdown/05-programming-languages.md  ← Tech stack
 ├── markdown/06-github-packages-needed.md ← GitHub tools
 ├── markdown/13-T00*-validation-report.md ← T001-T017 validation reports
+├── markdown/14-mcp-setup.md          ← MCP server setup guide
 ├── markdown/12-T002-T003-verification-report.md ← Pre-T004 verification
 │
 ├── sql/03-database-schema.sql     ← PostgreSQL DDL (20 tables)

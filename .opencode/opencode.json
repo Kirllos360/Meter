@@ -1,0 +1,30 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "mcp": {
+    "notion": {
+      "type": "local",
+      "command": ["npx", "-y", "@notionhq/notion-mcp-server"],
+      "enabled": true,
+      "env": {
+        "NOTION_TOKEN": "ntn_xxxxxxxxxxxxxxxxxxxxxx"
+      }
+    },
+    "odoo": {
+      "type": "local",
+      "command": ["npx", "-y", "@mweinheimer/odoo-mcp-server", "--stdio"],
+      "enabled": true,
+      "env": {
+        "ODOO_URL": "http://your-odoo-instance:8069",
+        "ODOO_DB": "your_database_name",
+        "ODOO_USERNAME": "your_username",
+        "ODOO_PASSWORD": "your_password"
+      }
+    }
+  },
+  "command": {
+    "git:save": {
+      "description": "Stage changes, commit with TXXX format, and push to origin",
+      "prompt": "Stage all changed files (excluding .env, *.db, .next/, node_modules/), commit with message format 'TXXX: short description' using the user's input, and push current branch to origin. Use author 'Kirllos Hany <kirllos.hany@epower.com.eg>'."
+    }
+  }
+}
