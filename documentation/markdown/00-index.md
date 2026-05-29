@@ -85,6 +85,17 @@ documentation/
 | `15-task-list.md` | Full 85-task list organized by phase, ready to paste into Notion |
 | `16-checkpoint-report.md` | Full checkpoint validation (all 22 tasks verified) |
 | `17-extended-governance-rules.md` | Extended Governance Rules (Rules 1-10) for task closeout |
+| `deep-coverage/01-task-analysis-report.md` | T022 Deep-Coverage: Task Analysis Report |
+| `deep-coverage/02-acceptance-coverage-matrix.md` | T022 Deep-Coverage: Acceptance Coverage Matrix |
+| `deep-coverage/03-file-impact-analysis.md` | T022 Deep-Coverage: File Impact Analysis |
+| `deep-coverage/04-dependency-matrix.md` | T022 Deep-Coverage: Dependency Matrix |
+| `deep-coverage/05-risk-mitigation-report.md` | T022 Deep-Coverage: Risk Mitigation Report |
+| `deep-coverage/06-validation-readiness-report.md` | T022 Deep-Coverage: Validation Readiness Report |
+| `deep-coverage/07-hidden-requirement-report.md` | T022 Deep-Coverage: Hidden Requirement Report |
+| `deep-coverage/08-implementation-coverage-report.md` | T022 Deep-Coverage: Implementation Coverage Report |
+| `deep-coverage/09-cross-task-coverage-report.md` | T022 Deep-Coverage: Cross-Task Coverage Report |
+| `deep-coverage/10-phase-consistency-report.md` | T022 Deep-Coverage: Phase Consistency Report |
+| `deep-coverage/11-overall-confidence-score.md` | T022 Deep-Coverage: Overall Confidence Score (95%) |
 
 ### `sql/` — Database Definition
 
