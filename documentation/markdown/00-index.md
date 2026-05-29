@@ -95,7 +95,7 @@ documentation/
 | `deep-coverage/08-implementation-coverage-report.md` | T022 Deep-Coverage: Implementation Coverage Report |
 | `deep-coverage/09-cross-task-coverage-report.md` | T022 Deep-Coverage: Cross-Task Coverage Report |
 | `deep-coverage/10-phase-consistency-report.md` | T022 Deep-Coverage: Phase Consistency Report |
-| `deep-coverage/11-overall-confidence-score.md` | T022 Deep-Coverage: Overall Confidence Score (95%) |
+| `deep-coverage/11-overall-confidence-score.md` | T022 Deep-Coverage: Overall Confidence Score (100%) |
 
 ### `sql/` — Database Definition
 
