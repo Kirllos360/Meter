@@ -2,7 +2,7 @@
 
 > Complete index of all documentation files organized by format type.
 > Each content piece exists in multiple formats for different use cases.
-> Last updated: 2026-05-29 (T027 — Contract Tests: listReadingReviewQueue)
+> Last updated: 2026-05-29 (T022 — Multi-Tool Validation)
 
 ---
 
@@ -81,56 +81,9 @@ documentation/
 | `13-T020-validation-report.md` | T020 validation: FE-001 API client foundation checks |
 | `13-T021-validation-report.md` | T021 validation: FE-002 React Query integration checks |
 | `13-T022-validation-report.md` | T022 validation: FE-003 Feature flags + docs checks |
-| `13-T023-validation-report.md` | T023 validation: US1 Contract tests (assignMeter) |
-| `13-T024-validation-report.md` | T024 validation: US1 Contract tests (terminateMeter) |
-| `13-T025-validation-report.md` | T025 validation: US1 Contract tests (simEligibility) |
-| `13-T026-validation-report.md` | T026 validation: US1 Contract tests (createReading) |
-| `13-T027-validation-report.md` | T027 validation: US1 Contract tests (listReadingReviewQueue) |
 | `14-mcp-setup.md` | Notion + Odoo MCP server setup guide with activation instructions |
 | `15-task-list.md` | Full 85-task list organized by phase, ready to paste into Notion |
 | `16-checkpoint-report.md` | Full checkpoint validation (all 22 tasks verified) |
-| `17-extended-governance-rules.md` | Extended Governance Rules (Rules 1-10) for task closeout |
-| `deep-coverage/01-task-analysis-report.md` | T022 Deep-Coverage: Task Analysis Report |
-| `deep-coverage/02-acceptance-coverage-matrix.md` | T022 Deep-Coverage: Acceptance Coverage Matrix |
-| `deep-coverage/03-file-impact-analysis.md` | T022 Deep-Coverage: File Impact Analysis |
-| `deep-coverage/04-dependency-matrix.md` | T022 Deep-Coverage: Dependency Matrix |
-| `deep-coverage/05-risk-mitigation-report.md` | T022 Deep-Coverage: Risk Mitigation Report |
-| `deep-coverage/06-validation-readiness-report.md` | T022 Deep-Coverage: Validation Readiness Report |
-| `deep-coverage/07-hidden-requirement-report.md` | T022 Deep-Coverage: Hidden Requirement Report |
-| `deep-coverage/08-implementation-coverage-report.md` | T022 Deep-Coverage: Implementation Coverage Report |
-| `deep-coverage/09-cross-task-coverage-report.md` | T022 Deep-Coverage: Cross-Task Coverage Report |
-| `deep-coverage/10-phase-consistency-report.md` | T022 Deep-Coverage: Phase Consistency Report |
-| `deep-coverage/11-overall-confidence-score.md` | T022 Deep-Coverage: Overall Confidence Score (100%) |
-| `deep-coverage/12-task-analysis-report.md` | T023 Deep-Coverage: Task Analysis Report |
-| `deep-coverage/13-acceptance-coverage-matrix.md` | T023 Deep-Coverage: Acceptance Coverage Matrix |
-| `deep-coverage/14-file-impact-analysis.md` | T023 Deep-Coverage: File Impact Analysis |
-| `deep-coverage/15-dependency-matrix.md` | T023 Deep-Coverage: Dependency Matrix |
-| `deep-coverage/16-risk-mitigation-report.md` | T023 Deep-Coverage: Risk Mitigation Report |
-| `deep-coverage/17-hidden-requirement-report.md` | T023 Deep-Coverage: Hidden Requirement Report |
-| `deep-coverage/18-task-analysis-report.md` | T024 Deep-Coverage: Task Analysis Report |
-| `deep-coverage/19-acceptance-coverage-matrix.md` | T024 Deep-Coverage: Acceptance Coverage Matrix |
-| `deep-coverage/20-file-impact-analysis.md` | T024 Deep-Coverage: File Impact Analysis |
-| `deep-coverage/21-dependency-matrix.md` | T024 Deep-Coverage: Dependency Matrix |
-| `deep-coverage/22-risk-mitigation-report.md` | T024 Deep-Coverage: Risk Mitigation Report |
-| `deep-coverage/23-hidden-requirement-report.md` | T024 Deep-Coverage: Hidden Requirement Report |
-| `deep-coverage/24-task-analysis-report.md` | T025 Deep-Coverage: Task Analysis Report |
-| `deep-coverage/25-acceptance-coverage-matrix.md` | T025 Deep-Coverage: Acceptance Coverage Matrix |
-| `deep-coverage/26-file-impact-analysis.md` | T025 Deep-Coverage: File Impact Analysis |
-| `deep-coverage/27-dependency-matrix.md` | T025 Deep-Coverage: Dependency Matrix |
-| `deep-coverage/28-risk-mitigation-report.md` | T025 Deep-Coverage: Risk Mitigation Report |
-| `deep-coverage/29-hidden-requirement-report.md` | T025 Deep-Coverage: Hidden Requirement Report |
-| `deep-coverage/30-task-analysis-report.md` | T026 Deep-Coverage: Task Analysis Report |
-| `deep-coverage/31-acceptance-coverage-matrix.md` | T026 Deep-Coverage: Acceptance Coverage Matrix |
-| `deep-coverage/32-file-impact-analysis.md` | T026 Deep-Coverage: File Impact Analysis |
-| `deep-coverage/33-dependency-matrix.md` | T026 Deep-Coverage: Dependency Matrix |
-| `deep-coverage/34-risk-mitigation-report.md` | T026 Deep-Coverage: Risk Mitigation Report |
-| `deep-coverage/35-hidden-requirement-report.md` | T026 Deep-Coverage: Hidden Requirement Report |
-| `deep-coverage/36-task-analysis-report.md` | T027 Deep-Coverage: Task Analysis Report |
-| `deep-coverage/37-acceptance-coverage-matrix.md` | T027 Deep-Coverage: Acceptance Coverage Matrix |
-| `deep-coverage/38-file-impact-analysis.md` | T027 Deep-Coverage: File Impact Analysis |
-| `deep-coverage/39-dependency-matrix.md` | T027 Deep-Coverage: Dependency Matrix |
-| `deep-coverage/40-risk-mitigation-report.md` | T027 Deep-Coverage: Risk Mitigation Report |
-| `deep-coverage/41-hidden-requirement-report.md` | T027 Deep-Coverage: Hidden Requirement Report |
 
 ### `sql/` — Database Definition
 

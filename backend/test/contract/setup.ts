@@ -89,8 +89,11 @@ function deepDereference(
   return value;
 }
 
-export function dereferenceSpec(spec: Record<string, unknown>): Record<string, unknown> {
-  return deepDereference(spec, spec, new Set()) as Record<string, unknown>;
+export function dereferenceSpec(
+  spec: Record<string, unknown>,
+  resolveContext?: Record<string, unknown>,
+): Record<string, unknown> {
+  return deepDereference(spec, resolveContext ?? spec, new Set()) as Record<string, unknown>;
 }
 
 export function getOperation(
@@ -171,7 +174,7 @@ export function getResponseSchema(
       }
 
       if (dereferenced && schema) {
-        return dereferenceSpec(schema) as Record<string, unknown>;
+        return dereferenceSpec(schema, spec) as Record<string, unknown>;
       }
 
       return schema;
