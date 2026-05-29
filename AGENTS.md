@@ -360,4 +360,35 @@ const source = getModuleSource('projects'); // returns 'mock' or 'api'
 - No existing tests broken
 
 ### Next Task
-- T024 (US1 Contract Tests: terminateMeter)
+- T025 (US1 Contract Tests: simEligibility)
+
+---
+
+## T024 Memory Log
+
+**Task**: T024 — US1 Contract Tests: terminateMeter
+**Story**: Phase 3 — User Story 1: Manage Meter and Location Assignments
+**Status**: Complete
+**Date**: 2026-05-29
+**Branch**: feature/t023-contract-assign-meter
+
+### What Changed
+- Created `backend/test/contract/meter-terminate.contract.spec.ts` — 12 tests covering:
+  - Contract definition (5): operationId, status codes, MeterTerminateRequest, MeterTerminateResult schemas
+  - Request schema validation (4): valid body, integer finalReading, missing fields, wrong types
+  - Response schema validation (2): MeterTerminateResult (200), simReusable false
+  - HTTP endpoint (1): status code validation (TDD fail)
+- Created `documentation/markdown/deep-coverage/18-task-analysis-report.md` through `23-hidden-requirement-report.md` (6 reports)
+- Created `documentation/markdown/13-T024-validation-report.md`
+
+### TDD Results
+- 11 tests PASS (spec validation, schema assertions)
+- 1 test FAILS (HTTP endpoint — returns 404, expected [200])
+- Proof: endpoint doesn't exist yet; T033 will implement it
+
+### Validation
+- `npm test` — 107 pass + 2 TDD fail = 109 total (10 existing suites pass)
+- `npm run build` — Clean
+
+### Next Task
+- T025 (US1 Contract Tests: simEligibility)
