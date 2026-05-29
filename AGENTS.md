@@ -280,5 +280,52 @@ Every time the user sends a message, run `git status --short` to detect any chan
 - Contains: CONTINUE_HERE.md (single-file restore point), AI_HANDOFF.md, RESTORE_POINT.md, AGENTS.md, T001-T021 summary, architecture, project tree, documentation index, git log
 - Attach the entire folder to any new AI session to continue from this exact point
 
+---
+
+## T022 Memory Log
+
+**Task**: T022 — FE-003 Feature Flag Toggles + Multi-Tool Validation & Documentation Update
+**Story**: Sprint 0 — Foundations (frontend)
+**Status**: Complete
+**Date**: 2026-05-29
+**Branch**: feature/t021-react-query (to create: feature/t022-validation-docs)
+
+### What Changed
+- Created `Frontend/src/lib/feature-flags.ts` — per-module mock/API toggle (Record<string, 'mock'|'api'>)
+- Created `Frontend/src/pages/api/features.ts` — API endpoint exposing feature flag state
+- Created `ROUTE_OF_DATA.md` — full architecture map (338 lines, 10 sections)
+- Created `documentation/markdown/16-checkpoint-report.md` — full checkpoint validation
+- Updated `AI_HANDOFF.md` — added T022 section, full renumbering, updated graphify data
+- Updated `RESTORE_POINT.md` — v2 with T022 snapshot
+- Updated `T001-T022-FINISHED-TASKS.md` — added T022
+- Updated `PROJECT_ARCHITECTURE_AND_TREE.md`, `PROJECT_TREE.md`, `documentation/markdown/00-index.md`
+
+### Validation (Multi-Tool Loop)
+- `cd Frontend && bun run build` — ✅ Clean (Next.js 16.2.6)
+- `cd Frontend && bun run lint --no-cache --max-warnings 0` — ✅ 0 errors, 0 warnings
+- `cd backend && npm test` — ✅ 82/82 passing (10 suites)
+- `cd backend && npm run build` — ✅ Clean
+- `cd backend && npm run lint` — ✅ Clean
+- `cd backend && npx prisma validate` — ✅ Valid
+- graphify structural AST — ✅ 198 code files parsed
+- SpeckIt skills — ✅ 9 agent skills mapped
+- Route of Data — ✅ `ROUTE_OF_DATA.md` generated
+
+### T022 Flag Usage Pattern
+```typescript
+import { getModuleSource } from '@/lib/feature-flags';
+const source = getModuleSource('projects'); // returns 'mock' or 'api'
+```
+
+### Multi-Tool Test Loop Results
+| Tool | Capability | Result |
+|---|---|---|
+| opencode | T001-T022 dependency verification | ✅ ALL PASS |
+| SpeckIt | 9 agent skills, SDD pipeline | ✅ Infrastructure mapped |
+| Graphify | Structural AST, knowledge graph | ✅ 198 files parsed |
+| OpenSpec | — | ❌ Not available in session |
+| open-interpreter | — | ❌ Not available in session |
+| ROUTE_OF_DATA.md | Architecture map | ✅ Created |
+
 ### Next Task
-- T022 (FE-003 Feature Flag Toggles)
+- T023 (US1 Contract Tests)

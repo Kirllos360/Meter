@@ -207,14 +207,14 @@ A frontend task is not "started" until its `graphify query` has been run and its
   - **Validation**: `cd Frontend && graphify query "centralized API client + error normalization" && bun run lint && bun run build`
   - **Risk**: Must not alter app shell or existing module behavior; keep wrapper additive.
 
-- [ ] T021 [US?-foundational] FE-002 React Query integration pattern in `Frontend/src/lib/api/`
+- [X] T021 [US?-foundational] FE-002 React Query integration pattern in `Frontend/src/lib/api/`
   - **Dependencies**: T020
   - **Area/Files**: `Frontend/src/lib/api/query-client.tsx`, `Frontend/src/hooks/use-*` conventions, provider mount in existing shell entry
   - **Acceptance**: Reusable query/mutation hook pattern documented in code; standardized loading/error/empty UI; ≥1 list + ≥1 detail page use server data hooks
   - **Validation**: `cd Frontend && graphify query "react query hooks + loading/error/empty standards" && bun run lint && bun run build && bun run test:smoke`
   - **Risk**: Provider placement must not break SSR/hydration in Next.js 16 app shell.
 
-- [ ] T022 [US?-foundational] FE-003 Feature-flag toggles for API migration in `Frontend/src/lib/`
+- [X] T022 [US?-foundational] FE-003 Feature-flag toggles for API migration in `Frontend/src/lib/`
   - **Dependencies**: T020
   - **Area/Files**: `Frontend/src/lib/feature-flags.ts`, integration into one module's data source selection
   - **Acceptance**: Per-module switch between mock and API mode; Projects module can switch source with no UI regression; mock fallback preserved

@@ -6,10 +6,11 @@ import { DatabaseModule } from './common/database/database.module';
 import { AuthModule } from './auth/auth.module';
 import { AuditModule } from './audit/audit.module';
 import { AuditInterceptor } from './audit/audit.interceptor';
+import { IdempotencyModule } from './idempotency/idempotency.module';
 import { CorrelationMiddleware } from './common/http/correlation.middleware';
 
 @Module({
-  imports: [AppConfigModule, DatabaseModule, AuthModule, AuditModule],
+  imports: [AppConfigModule, DatabaseModule, AuthModule, AuditModule, IdempotencyModule],
   controllers: [AppController],
   providers: [
     {

@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { apiGet } from '@/lib/api';
-import type { Project } from '@/lib/types';
+import type { Customer, Project } from '@/lib/types';
 
 const PROJECTS_KEY = 'projects';
 
@@ -22,6 +22,6 @@ export function useProjectDetail(id: string) {
 export function useCustomersList() {
   return useQuery({
     queryKey: ['customers'],
-    queryFn: () => apiGet<Project[]>('/customers'),
+    queryFn: () => apiGet<Customer[]>('/customers'),
   });
 }

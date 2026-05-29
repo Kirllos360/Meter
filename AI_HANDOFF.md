@@ -1,8 +1,9 @@
 # AI Handoff — Meter Pulse
 
 > **Purpose**: Single file containing EVERYTHING an AI agent needs to continue work on this project.
-> **Generated**: 2026-05-29 | **Last Completed**: T021 (FE-002 React Query)
-> **Next Task**: T022 (FE-003 Feature Flags)
+> **Generated**: 2026-05-29 | **Last Updated**: 2026-05-29 (T022)
+> **Last Completed**: T022 (Multi-Tool Validation & Documentation Update)
+> **Next Task**: T023 (US1 Contract Tests)
 
 ---
 
@@ -119,7 +120,7 @@ npx prisma generate      # Generate Prisma client
 | T019 | Derived views (3 views) | ✅ | `backend/prisma/migrations/*_views/` |
 | T020 | FE-001 API client foundation | ✅ | `Frontend/src/lib/api/` |
 | **T021** | **FE-002 React Query integration** | **✅** | **See §6 below** |
-| T022 | FE-003 Feature flag toggles | ❌ PENDING | `Frontend/src/lib/feature-flags.ts` |
+| T022 | FE-003 Feature flag toggles | ✅ | `Frontend/src/lib/feature-flags.ts`, `Frontend/src/pages/api/features.ts` |
 
 ### Phase 3 — User Story 1 (T023-T042) ❌ ALL PENDING
 | ID | Description | Depends On |
@@ -183,7 +184,46 @@ npx prisma generate      # Generate Prisma client
 
 ---
 
-## 6. T021 — JUST COMPLETED (FE-002 React Query Integration)
+## 6. T022 — JUST COMPLETED (FE-003 Feature Flags + Multi-Tool Validation)
+
+### What Was Created
+| File | Purpose |
+|---|---|
+| `Frontend/src/lib/feature-flags.ts` | Per-module mock/API toggle with `getModuleSource()` |
+| `Frontend/src/pages/api/features.ts` | API endpoint exposing current flag state |
+| `ROUTE_OF_DATA.md` | Complete architecture & data flow map (338 lines) |
+| `documentation/markdown/16-checkpoint-report.md` | Full checkpoint validation report |
+
+### What Was Updated
+| File | Change |
+|---|---|
+| `AI_HANDOFF.md` | Added T022 details, updated next task |
+| `AGENTS.md` | Added T022 memory log |
+| `RESTORE_POINT.md` | Updated to v2 |
+| `T001-T022-FINISHED-TASKS.md` | Added T022 |
+| `PROJECT_ARCHITECTURE_AND_TREE.md` | Updated tree + T022 |
+| `PROJECT_TREE.md` | Updated directory listing |
+| `documentation/markdown/00-index.md` | Added T022 entries |
+
+### Validation Results
+- `bun run build` — ✅ Clean
+- `bun run lint --no-cache --max-warnings 0` — ✅ 0 errors, 0 warnings
+- `cd backend && npm test` — ✅ 82/82 passing
+- `npm run build` — ✅ Clean
+- `npm run lint` — ✅ Clean
+- `npx prisma validate` — ✅ Valid
+- graphify structural AST — ✅ 198 files parsed
+
+### Feature Flag Usage Pattern
+```typescript
+import { featureFlags, getModuleSource } from '@/lib/feature-flags';
+const source = getModuleSource('projects'); // 'mock' | 'api'
+const data = source === 'api' ? apiData : mockData;
+```
+
+---
+
+## 7. T021 — (FE-002 React Query Integration)
 
 ### What Was Created
 
@@ -259,7 +299,7 @@ function MyPage() {
 
 ---
 
-## 7. Git Setup
+## 8. Git Setup
 
 ```bash
 # Current state
@@ -268,33 +308,33 @@ git remote -v
 # origin https://github.com/Kirllos360/Meter-.git (fetch/push)
 
 git branch -a
-# main, feature/t020-api-client (current), 19+ feature branches
+# main, feature/t021-react-query (current), 20+ feature branches
 
-# To commit T021 changes:
-git checkout -b feature/t021-react-query
-git add Frontend/src/lib/api/query-client.tsx Frontend/src/hooks/use-projects.ts Frontend/src/components/shared/QueryBoundary.tsx Frontend/src/lib/api/index.ts Frontend/src/app/layout.tsx Frontend/src/components/projects/ProjectsPage.tsx Frontend/src/components/projects/ProjectDetailPage.tsx
-git commit -m "T021: add React Query integration pattern" --author="Kirllos Hany <kirllos.hany@epower.com.eg>"
-git push origin feature/t021-react-query
-gh pr create --repo Abady001/Meter- --head Kirllos360:feature/t021-react-query --base main --title "T021: FE-002 React Query Integration Pattern" --body "Implements SSR-safe QueryClient, useProjectsList/useProjectDetail hooks, QueryBoundary component. Validated: lint ✅ build ✅"
+# T022 commit + PR:
+git checkout -b feature/t022-validation-docs
+git add ROUTE_OF_DATA.md AI_HANDOFF.md RESTORE_POINT.md T001-T022-FINISHED-TASKS.md PROJECT_TREE.md PROJECT_ARCHITECTURE_AND_TREE.md AGENTS.md documentation/markdown/00-index.md Frontend/src/lib/feature-flags.ts Frontend/src/pages/api/features.ts documentation/markdown/16-checkpoint-report.md
+git commit -m "T022: add feature flags, ROUTE_OF_DATA.md, multi-tool validation" --author="Kirllos Hany <kirllos.hany@epower.com.eg>"
+git push origin feature/t022-validation-docs
+gh pr create --repo Abady001/Meter- --head Kirllos360:feature/t022-validation-docs --base main --title "T022: Multi-Tool Validation & Documentation Update" --body "Adds FE-003 feature flags, ROUTE_OF_DATA.md (complete architecture map), updated AI_HANDOFF.md, RESTORE_POINT.md, AGENTS.md, T001-T022-FINISHED-TASKS.md. Validated: backend 82/82 tests ✅ frontend lint ✅ build ✅"
 ```
 
 ---
 
-## 8. PR Merge Order for Abady001/Meter-
+## 9. PR Merge Order for Abady001/Meter-
 
 The following PRs (all MERGEABLE, 0 behind main) should be merged in order:
 
 ```
 #12 (T013) → #13 (T008) → #15 (T014) → #16 (T015) → #17 (T016)
 → #18 (T017) → #19 (T012) → #21 (T018+T019) → #22 (T020)
-→ T021 (to be created)
+→ #23 (T021) → #24 (T022)
 ```
 
 After merge: `cd backend && npx prisma migrate deploy && npx prisma generate`
 
 ---
 
-## 9. Environment Configuration
+## 10. Environment Configuration
 
 ```env
 # Backend .env
@@ -315,7 +355,7 @@ NEXT_PUBLIC_API_URL=http://localhost:3001/api/v1
 
 ---
 
-## 10. Known Issues & Blockers
+## 11. Known Issues & Blockers
 
 | Issue | Details |
 |---|---|
@@ -327,7 +367,7 @@ NEXT_PUBLIC_API_URL=http://localhost:3001/api/v1
 
 ---
 
-## 11. Important File Paths (Quick Reference)
+## 12. Important File Paths (Quick Reference)
 
 | What | Path (relative to Meter-/) |
 |---|---|
@@ -359,18 +399,21 @@ NEXT_PUBLIC_API_URL=http://localhost:3001/api/v1
 | Error Envelope | `backend/src/common/http/error-envelope.ts` |
 | Correlation ID | `backend/src/common/http/correlation.middleware.ts` |
 | Idempotency Key | `backend/src/common/http/idempotency.interceptor.ts` |
+| Route of Data (Architecture Map) | `ROUTE_OF_DATA.md` |
+| Feature Flags | `Frontend/src/lib/feature-flags.ts` |
+| Feature Flags API | `Frontend/src/pages/api/features.ts` |
 | Tree + Architecture | `PROJECT_ARCHITECTURE_AND_TREE.md` |
 | AI Handoff (this file) | `AI_HANDOFF.md` |
 | Restore Point | `RESTORE_POINT.md` |
 
 ---
 
-## 12. Graphify Knowledge Graph Summary
+## 13. Graphify Knowledge Graph Summary
 
-- **128 files**, 1039 nodes, 2770 edges, 64 communities
+- **198 code files** (structural AST), 121 docs, 18 papers, 1 image
+- **Structural AST extraction**: 198/198 files completed ✅
+- **Semantic extraction**: Skipped (DeepSeek API needs credits)
+- **Frontend graph**: 128 files, 1039 nodes, 2770 edges, 64 communities
 - **God nodes**: `cn()` (276), `SmartTable()` (49), `Button()` (48), `StatusBadge()` (45), `PageHeader()` (35)
-- **Community 6**: Contains `QueryProvider`, `makeQueryClient`, `getQueryClient` (T021 additions)
-- **Community 3**: Contains `useProjectsList`, `mockProjects`, `ProjectsPage` — T021 changes
-- **Community 29**: Contains `api/` auth functions — T020 foundation
-- Graph built from commit: `8db1f3af`
-- After code changes, run: `cd Frontend && graphify update .`
+- Graph output at `graphify-out/` (root level, structural) and `Frontend/graphify-out/` (frontend-only)
+- After code changes, run: `graphify update .`

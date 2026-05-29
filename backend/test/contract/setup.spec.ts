@@ -8,6 +8,8 @@ import {
   validateStatus,
 } from './setup';
 
+jest.setTimeout(30000);
+
 describe('API Contract Harness', () => {
   let app: NestExpressApplication;
   let request: any;

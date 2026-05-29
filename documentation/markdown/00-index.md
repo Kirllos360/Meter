@@ -2,7 +2,7 @@
 
 > Complete index of all documentation files organized by format type.
 > Each content piece exists in multiple formats for different use cases.
-> Last updated: 2026-05-29
+> Last updated: 2026-05-29 (T022 — Multi-Tool Validation)
 
 ---
 
@@ -38,6 +38,7 @@ documentation/
 | **10** | **Progress & Health Report** | `10-progress-health-report.md` | — | `10-progress-health-report.txt` | — | `10-progress-health-report.pdf` |
 | **11** | **Email Report Log** | `11-email-report-log.md` | — | `11-email-report-log.txt` | `11-email-report-log.csv` | `11-email-report-log.pdf` |
 | **12** | **T002-T003 Verification** | `12-T002-T003-verification-report.md` | — | — | — | — |
+| **16** | **Checkpoint Report** | `16-checkpoint-report.md` | — | — | — | — |
 | **13** | **Validation Reports** | `13-T001-validation-report.md`<br>`13-T002-validation-report.md`<br>`13-T003-validation-report.md`<br>`13-T004-validation-report.md`<br>`13-T005-validation-report.md`<br>`13-T006-validation-report.md`<br>`13-T007-validation-report.md`<br>`13-T008-validation-report.md`<br>`13-T009-validation-report.md`<br>`13-T010-validation-report.md`<br>`13-T011-validation-report.md`<br>`13-T012-validation-report.md`<br>`13-T013-validation-report.md`<br>`13-T014-validation-report.md`<br>`13-T015-validation-report.md`<br>`13-T016-validation-report.md`<br>`13-T017-validation-report.md` | `13-T001-validation-report.sql`<br>`13-T002-validation-report.sql`<br>`13-T003-validation-report.sql`<br>`13-T004-validation-report.sql`<br>`13-T005-validation-report.sql`<br>`13-T006-validation-report.sql`<br>`13-T007-validation-report.sql`<br>`13-T008-validation-report.sql`<br>`13-T009-validation-report.sql`<br>`13-T010-validation-report.sql`<br>`13-T011-validation-report.sql`<br>`13-T012-validation-report.sql`<br>`13-T013-validation-report.sql`<br>`13-T014-validation-report.sql`<br>`13-T015-validation-report.sql`<br>`13-T016-validation-report.sql`<br>`13-T017-validation-report.sql` | `13-T001-validation-report.txt`<br>`13-T002-validation-report.txt`<br>`13-T003-validation-report.txt`<br>`13-T004-validation-report.txt`<br>`13-T005-validation-report.txt`<br>`13-T006-validation-report.txt`<br>`13-T007-validation-report.txt`<br>`13-T008-validation-report.txt`<br>`13-T009-validation-report.txt`<br>`13-T010-validation-report.txt`<br>`13-T011-validation-report.txt`<br>`13-T012-validation-report.txt`<br>`13-T013-validation-report.txt`<br>`13-T014-validation-report.txt`<br>`13-T015-validation-report.txt`<br>`13-T016-validation-report.txt`<br>`13-T017-validation-report.txt` | `13-T001-validation-report.csv`<br>`13-T002-validation-report.csv`<br>`13-T003-validation-report.csv`<br>`13-T004-validation-report.csv`<br>`13-T005-validation-report.csv`<br>`13-T006-validation-report.csv`<br>`13-T007-validation-report.csv`<br>`13-T008-validation-report.csv`<br>`13-T009-validation-report.csv`<br>`13-T010-validation-report.csv`<br>`13-T011-validation-report.csv`<br>`13-T012-validation-report.csv`<br>`13-T013-validation-report.csv`<br>`13-T014-validation-report.csv`<br>`13-T015-validation-report.csv`<br>`13-T016-validation-report.csv`<br>`13-T017-validation-report.csv` | `13-T001-validation-report.pdf`<br>`13-T002-validation-report.pdf`<br>`13-T003-validation-report.pdf`<br>`13-T004-validation-report.pdf`<br>`13-T009-validation-report.pdf`<br>`13-T010-validation-report.pdf`<br>`13-T011-validation-report.pdf` |
 
 ---
@@ -78,8 +79,11 @@ documentation/
 | `13-T018-validation-report.md` | T018 validation: AuditLog + ReportJob migration checks |
 | `13-T019-validation-report.md` | T019 validation: derived views (3 views) migration checks |
 | `13-T020-validation-report.md` | T020 validation: FE-001 API client foundation checks |
+| `13-T021-validation-report.md` | T021 validation: FE-002 React Query integration checks |
+| `13-T022-validation-report.md` | T022 validation: FE-003 Feature flags + docs checks |
 | `14-mcp-setup.md` | Notion + Odoo MCP server setup guide with activation instructions |
 | `15-task-list.md` | Full 85-task list organized by phase, ready to paste into Notion |
+| `16-checkpoint-report.md` | Full checkpoint validation (all 22 tasks verified) |
 
 ### `sql/` — Database Definition
 

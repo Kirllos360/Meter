@@ -1,10 +1,12 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
 
 export interface ErrorEnvelope {
+  statusCode: number;
   code: string;
   message: string;
   details?: unknown;
   correlationId: string;
+  timestamp: string;
 }
 
 interface HeaderBag {
@@ -21,7 +23,11 @@ export function getCorrelationId(headers: HeaderBag): string {
 export function toErrorEnvelope(
   exception: unknown,
   correlationId: string,
+  defaultStatus?: number,
 ): ErrorEnvelope {
+  const status = defaultStatus ?? statusFromException(exception);
+  const base = { statusCode: status, correlationId, timestamp: new Date().toISOString() };
+
   if (exception instanceof HttpException) {
     const response = exception.getResponse();
     const message =
@@ -31,25 +37,25 @@ export function toErrorEnvelope(
           ? (response as Record<string, unknown>).message ?? exception.message
           : exception.message;
     return {
+      ...base,
       code: exception.constructor.name,
       message: typeof message === 'string' ? message : JSON.stringify(message),
       details: typeof response === 'object' && response !== null ? response : undefined,
-      correlationId,
     };
   }
 
   if (exception instanceof Error) {
     return {
+      ...base,
       code: 'InternalServerError',
       message: 'An unexpected error occurred',
-      correlationId,
     };
   }
 
   return {
+    ...base,
     code: 'InternalServerError',
     message: 'An unexpected error occurred',
-    correlationId,
   };
 }
 
