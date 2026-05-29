@@ -357,10 +357,8 @@ const source = getModuleSource('projects'); // returns 'mock' or 'api'
 ### Validation
 - `npm test` — 96 pass + 1 TDD fail = 97 total (10 existing suites pass)
 - `npm run build` — Clean
-- No existing tests broken
-
 ### Next Task
-- T025 (US1 Contract Tests: simEligibility)
+- T026 (US1 Contract Tests: createReading)
 
 ---
 
@@ -391,4 +389,33 @@ const source = getModuleSource('projects'); // returns 'mock' or 'api'
 - `npm run build` — Clean
 
 ### Next Task
-- T025 (US1 Contract Tests: simEligibility)
+- T026 (US1 Contract Tests: createReading)
+
+---
+
+## T025 Memory Log
+
+**Task**: T025 — US1 Contract Tests: simEligibility
+**Story**: Phase 3 — User Story 1: Manage Meter and Location Assignments
+**Status**: Complete
+**Date**: 2026-05-29
+**Branch**: feature/t023-contract-assign-meter
+
+### What Changed
+- Created `backend/test/contract/sim-eligibility.contract.spec.ts` — 7 tests covering:
+  - Contract definition (3): operationId, status code, SimEligibility schema
+  - Response schema (3): with/without cooldownUntil, eligible false
+  - HTTP endpoint (1): status code validation (TDD fail)
+- Created `documentation/markdown/deep-coverage/24-task-analysis-report.md` through `29-hidden-requirement-report.md` (6 reports)
+- Created `documentation/markdown/13-T025-validation-report.md`
+
+### TDD Results
+- 6 tests PASS (spec validation, schema assertions)
+- 1 test FAILS (HTTP endpoint — GET returns 404, expected [200])
+
+### Validation
+- `npm test` — 113 pass + 3 TDD fail = 116 total (10 existing suites pass)
+- `npm run build` — Clean
+
+### Next Task
+- T026 (US1 Contract Tests: createReading)
