@@ -9,6 +9,23 @@ on:
 jobs:
   test-agent:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_DB: meter_pulse
+          POSTGRES_USER: meter_pulse
+          POSTGRES_PASSWORD: meter_pulse_dev
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      DATABASE_URL: postgresql://meter_pulse:meter_pulse_dev@localhost:5432/meter_pulse?schema=sim_system
+      JWT_SECRET: ci-test-secret
     steps:
       - uses: actions/checkout@v4
 
@@ -35,12 +52,10 @@ jobs:
 
       - name: Prisma Generate
         run: cd backend && npx prisma generate
-        env:
-          DATABASE_URL: postgresql://test:test@localhost:5432/test?schema=sim_system
-
+      - name: Prisma Migrate Deploy
+        run: cd backend && npx prisma migrate deploy
       - name: Backend Build
         run: cd backend && npm run build
-
       - name: Stage 2 — Tests
         run: cd backend && npm test -- --silent --bail
 
