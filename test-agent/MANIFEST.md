@@ -45,6 +45,9 @@ npm install -g @cyclonedx/cyclonedx-npm
 | trufflehog | `trufflehog filesystem --no-verification .` |
 | cyclonedx | `npx @cyclonedx/cyclonedx-npm` |
 
+| CodeQL | latest | GitHub workflow | .github/workflows/codeql.yml | GitHub-native security analysis (zero config)
+| OSV Scanner | latest | pip | — | Open source dependency vulnerability scanner
+
 ## Token Optimization Configs
 - Test output: `--silent --bail` (stop on first failure)
 - ESLint: `--max-warnings 0 --quiet`
@@ -63,3 +66,4 @@ npm install -g @cyclonedx/cyclonedx-npm
 8. spectral (fast)
 9. trivy (slowest - only for deploy)
 10. graphify (slow - only after code change)
+
