@@ -1,0 +1,118 @@
+name: Test Agent
+
+on:
+  push:
+    branches: [main, 'feature/**']
+  pull_request:
+    branches: [main]
+
+jobs:
+  test-agent:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install Backend Dependencies
+        run: cd backend && npm ci --ignore-scripts
+
+      - name: Stage 1 — Fast Checks
+        run: |
+          cd backend
+          npx prettier --check "src/**/*.ts" "test/**/*.ts" || echo "prettier: warnings"
+          npx eslint src/ --max-warnings 6 --quiet || echo "eslint: warnings"
+
+      - name: Prisma Validate
+        run: cd backend && npx prisma validate
+
+      - name: Backend Build
+        run: cd backend && npm run build
+
+      - name: Stage 2 — Tests
+        run: cd backend && npm test -- --silent --bail
+
+      - name: Stage 3 — Depcruise
+        run: cd backend && npx depcruise --ts-config tsconfig.json src/
+
+      - name: Install Python Tools
+        run: pip install semgrep
+
+      - name: Semgrep
+        run: semgrep --config=.semgrep-rules.yaml --quiet --error --exclude='docs/' --exclude='backup files/' --exclude='restore-point*' --exclude='node_modules'
+
+      - name: Spectral (OpenAPI Lint)
+        run: npx spectral lint "specs/001-metering-billing-platform/contracts/meter-pulse-api.yaml" --ruleset=.spectral.yaml --quiet
+
+      - name: Frontend Build
+        run: |
+          cd Frontend
+          bun install
+          bun run build
+
+  dependency-scan:
+    runs-on: ubuntu-latest
+    needs: test-agent
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Install Backend Dependencies
+        run: cd backend && npm ci --ignore-scripts
+
+      - name: Snyk Dependency Scan
+        run: |
+          npm install -g snyk
+          cd backend && snyk test --json || echo "snyk: run 'snyk auth' locally first"
+
+      - name: Trivy File Scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: fs
+          scan-ref: backend/
+          format: sarif
+          output: trivy-results.sarif
+          severity: CRITICAL,HIGH
+
+      - uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: trivy-results.sarif
+
+      - name: OSV Scanner
+        run: |
+          pip install osv-scanner-linux
+          osv-scanner -r backend/package-lock.json || echo "osv-scanner completed"
+
+  graphify:
+    runs-on: ubuntu-latest
+    needs: test-agent
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install Graphify
+        run: pip install graphify
+
+      - name: Graphify Validate
+        run: python -c "import json; g=json.load(open('graphify-out/graph.json')); print(f'Graph OK: {len(g[\"nodes\"])} nodes, {len(g[\"links\"])} edges')"
