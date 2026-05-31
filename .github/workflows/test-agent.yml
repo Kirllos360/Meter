@@ -33,8 +33,10 @@ jobs:
           npx prettier --check "src/**/*.ts" "test/**/*.ts" || echo "prettier: warnings"
           npx eslint src/ --max-warnings 6 --quiet || echo "eslint: warnings"
 
-      - name: Prisma Validate
-        run: cd backend && npx prisma validate
+      - name: Prisma Generate
+        run: cd backend && npx prisma generate
+        env:
+          DATABASE_URL: postgresql://test:test@localhost:5432/test?schema=sim_system
 
       - name: Backend Build
         run: cd backend && npm run build
