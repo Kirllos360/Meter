@@ -3,8 +3,6 @@ import { PrismaService } from '../common/database/prisma.service';
 import { Prisma } from '@prisma/client';
 import * as crypto from 'crypto';
 
-const EMPTY_HASH = '';
-
 export interface AuditEntry {
   actorId: string;
   actorRole: string;

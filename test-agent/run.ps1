@@ -1,0 +1,62 @@
+# TEST AGENT — PowerShell Master Test Runner
+# Run: .\test-agent\run.ps1 [-Mode fast|full|deploy]
+# ============================================================
+param([string]$Mode = "fast")
+
+$ErrorActionPreference = "Stop"
+$ProjectDir = Split-Path -Parent (Split-Path -Parent $PSCommandPath)
+$ReportDir = "$ProjectDir\test-agent\reports"
+$null = New-Item -ItemType Directory -Path $ReportDir -Force
+$Timestamp = Get-Date -Format "yyyyMMdd-HHmmss"
+$ReportFile = "$ReportDir\test-run-$Timestamp.txt"
+$Pass = 0; $Fail = 0
+
+function Check($Name, $Command) {
+    Write-Host -NoNewline "[$Name]".PadRight(28)
+    try {
+        $output = Invoke-Expression $Command 2>&1 | Out-String
+        if ($LASTEXITCODE -eq 0 -or -not $LASTEXITCODE) {
+            Write-Host "  ✅ PASS" -ForegroundColor Green
+            $script:Pass++
+        } else {
+            Write-Host "  ❌ FAIL" -ForegroundColor Red
+            $script:Fail++
+        }
+    } catch {
+        Write-Host "  ❌ FAIL ($($_.Exception.Message.Split("`n")[0]))" -ForegroundColor Red
+        $script:Fail++
+    }
+}
+
+"=== TEST AGENT RUN ($Mode) ===" | Out-File $ReportFile
+"Started: $(Get-Date)" | Out-File $ReportFile -Append
+"" | Out-File $ReportFile -Append
+
+# Stage 1: Fast Checks
+Write-Host "--- Stage 1: Fast Checks ---" -ForegroundColor Cyan
+Check "Prettier" "cd $ProjectDir\backend; npx prettier --check 'src/**/*.ts' 'test/**/*.ts' --loglevel error 2>`$null"
+Check "ESLint" "cd $ProjectDir\backend; npx eslint src/ --max-warnings 0 --quiet 2>`$null"
+Check "Prisma" "cd $ProjectDir\backend; npx prisma validate 2>`$null"
+Check "Backend Build" "cd $ProjectDir\backend; npm run build 2>`$null"
+
+# Stage 2: Tests
+Write-Host "--- Stage 2: Tests ---" -ForegroundColor Cyan
+Check "Jest" "cd $ProjectDir\backend; npm test -- --silent --bail 2>`$null"
+
+# Stage 3: Extended checks
+if ($Mode -ne "fast") {
+    Write-Host "--- Stage 3: Extended ---" -ForegroundColor Cyan
+    Check "Depcruise" "cd $ProjectDir\backend; npx depcruise --ts-config tsconfig.json src/ 2>`$null"
+    Check "Spectral" "cd $ProjectDir; npx spectral lint 'specs/001-metering-billing-platform/contracts/meter-pulse-api.yaml' --ruleset=test-agent/configs/.spectral.yaml --quiet 2>`$null"
+}
+
+# Summary
+"" | Out-File $ReportFile -Append
+Write-Host "=== RESULTS ===" -ForegroundColor Cyan
+Write-Host "Passed: $Pass | Failed: $Fail"
+Write-Host "Report: $ReportFile"
+"Passed: $Pass | Failed: $Fail" | Out-File $ReportFile -Append
+"Report: $ReportFile" | Out-File $ReportFile -Append
+
+if ($Fail -gt 0) { Write-Host "❌ SOME CHECKS FAILED" -ForegroundColor Red; exit 1 }
+else { Write-Host "✅ ALL CHECKS PASSED" -ForegroundColor Green; exit 0 }

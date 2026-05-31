@@ -147,7 +147,10 @@
 - **Container**: `backend/Dockerfile`, `Frontend/Dockerfile`, `.dockerignore`
 - **Security controls before/after**: 6 → **15** active controls (+SecurityAuditService)
 - **Comprehensive README**: Created at repo root `README.md`
-- **Tests**: 293/293 ✅ (35 suites, +6 new security audit tests)
+- **Tests**: 316/316 ✅ (38 suites, +23 new: refresh tokens 9, password policy 8, endpoint access 6)
+- **Test Agent Framework**: Created `test-agent/` with MANIFEST.md, run.sh, run.ps1, configs/ — all tools centralized locally
+- **New tools installed**: Husky (pre-commit), lint-staged, TruffleHog (secret scanner), pino (structured logging)
+- **Weaknesses fixed**: Refresh tokens, password policy + lockout, full-stack docker-compose, audit hash chain, CSRF guard, functional access tests, frontend .env.example, pre-commit hooks
 - **Validation**: Build clean, ESLint 0 errors, Prettier ALL clean, Prisma valid, depcruise 0 violations
 
 ---
