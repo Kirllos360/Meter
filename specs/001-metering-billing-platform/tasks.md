@@ -561,42 +561,42 @@ A frontend task is not "started" until its `graphify query` has been run and its
 
 ### Implementation for User Story 3
 
-- [ ] T061 [P] [US3] Tariff + billing-period module in `backend/src/billing/tariffs/`
+- [X] T061 [P] [US3] Tariff + billing-period module in `backend/src/billing/tariffs/`
   - **Dependencies**: T015, T009
   - **Area/Files**: `backend/src/billing/tariffs/tariff.service.ts`, `backend/src/billing/periods/period.service.ts`
   - **Acceptance**: Manage tariff rates (effective windows) + billing periods used by generation
   - **Validation**: `cd backend && npm test -- tariff period`
   - **Risk**: Overlapping effective windows pick wrong rate; enforce non-overlap.
 
-- [ ] T062 [US3] Invoice generation `POST /api/v1/invoices/generate` (utility split + tax) in `backend/src/billing/`
+- [X] T062 [US3] Invoice generation `POST /api/v1/invoices/generate` (utility split + tax) in `backend/src/billing/`
   - **Dependencies**: T061, T048, T053
   - **Area/Files**: `backend/src/billing/invoice-generate.command.ts`, `billing.controller.ts`
   - **Acceptance**: Separate invoice per utility type per period from billable readings only (each water meter — main or sub — billed on its own `water` invoice); applies project tax when enabled; incomplete cycles excluded; returns batch `202`; makes T053 (generate) pass
   - **Validation**: `cd backend && npm test -- invoices.contract`
   - **Risk**: Including non-`valid` readings in totals; filter strictly.
 
-- [ ] T062a [US3] Apply per-project water difference handling in invoice generation in `backend/src/billing/`
+- [X] T062a [US3] Apply per-project water difference handling in invoice generation in `backend/src/billing/`
   - **Dependencies**: T062, T048a, T027 (`water_difference_mode`)
   - **Area/Files**: `backend/src/billing/water-difference.policy.ts`, `invoice-generate.command.ts`
   - **Acceptance**: When `water_difference_mode=billable`, add the main-vs-sub variance as a distinct `InvoiceLine` on the main meter's water invoice; when `report_only`, exclude variance from billing (operational report only) (FR-009, I1)
   - **Validation**: `cd backend && npm test -- water-difference`
   - **Risk**: Double-counting if variance is also billed on child invoices; assert variance billed once, on main only.
 
-- [ ] T063 [US3] Invoice issue `POST /api/v1/invoices/{invoiceId}/issue` (immutability + high-risk approval) in `backend/src/billing/`
+- [X] T063 [US3] Invoice issue `POST /api/v1/invoices/{invoiceId}/issue` (immutability + high-risk approval) in `backend/src/billing/`
   - **Dependencies**: T062, T057, T010
   - **Area/Files**: `backend/src/billing/invoice-issue.command.ts`, `billing.controller.ts`
   - **Acceptance**: Sets `immutable_at`; high-risk invoices (manual adjustments/flagged/over-threshold) require approval else `409` (FR-019); writes ledger `invoice_charge` + audit; makes T053 (issue) + T057 pass
   - **Validation**: `cd backend && npm test -- invoices.contract invoice-immutability`
   - **Risk**: High-risk detection rules must be explicit and testable.
 
-- [ ] T064 [US3] Invoice adjustments `POST /api/v1/invoices/{invoiceId}/adjustments` in `backend/src/billing/`
+- [X] T064 [US3] Invoice adjustments `POST /api/v1/invoices/{invoiceId}/adjustments` in `backend/src/billing/`
   - **Dependencies**: T063, T054
   - **Area/Files**: `backend/src/billing/invoice-adjustment.command.ts`
   - **Acceptance**: Credit/debit adjustment on issued invoice with reason + audit; writes ledger entry; makes T054 pass
   - **Validation**: `cd backend && npm test -- adjustments.contract`
   - **Risk**: Adjustment must update remaining balance + ledger atomically.
 
-- [ ] T065 [US3] Payments `POST /api/v1/payments` (oldest-due-first allocation + ledger) in `backend/src/payments/`
+- [X] T065 [US3] Payments `POST /api/v1/payments` (oldest-due-first allocation + ledger) in `backend/src/payments/`
   - **Dependencies**: T063, T058, T008, T010
   - **Area/Files**: `backend/src/payments/payments.controller.ts`, `payment-create.command.ts`
   - **Acceptance**: Records full/partial payment; default oldest-due-first allocation (or explicit); updates invoice remaining + ledger `payment_credit`; makes T055 (create) + T058 pass

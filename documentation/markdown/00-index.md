@@ -13,31 +13,30 @@ documentation/
 ├── markdown/   ← Readable documentation (50 files + 59 deep-coverage)
 ├── sql/        ← Database DDL scripts + validation queries (8 files)
 ├── text/       ← Plain text versions (52 files + 59 deep-coverage)
-├── excel/      ← CSV/tabular data (16 files)
-└── pdf/        ← Printable PDF versions (18 files)
+└── excel/      ← CSV/tabular data (16 files)
 ```
 
 ---
 
 ## Documentation Inventory
 
-| # | Content | markdown/ | sql/ | text/ | excel/ | pdf/ |
-|---|---------|-----------|------|-------|--------|------|
-| 00 | **Index** | `00-index.md` | — | `00-index.txt` | — | `00-index.pdf` |
-| 01 | **Conversation Log** | `01-conversation-log.md` | — | `01-conversation-log.txt` | `01-conversation-log.csv` | `01-conversation-log.pdf` |
-| 02 | **Memory Files** | `02-memory-files.md` | — | `02-memory-files.txt` | — | `02-memory-files.pdf` |
-| 03 | **Database Schema** | `03-database-schema-overview.md` | `03-database-schema.sql` | `03-database-schema-overview.txt` | `03-database-tables.csv`<br>`03-state-transitions.csv`<br>`03-business-rules.csv` | `03-database-schema-overview.pdf`<br>`03-database-schema.pdf` |
-| 04 | **Audit Log** | — | — | — | `04-audit-log.csv` | `04-audit-log.pdf` |
-| 04a | **Last Update (RCA)** | `04-30-am_01-06-2026_last_update.md` | — | — | — | — |
-| 05 | **Programming Languages** | `05-programming-languages.md` | — | `05-programming-languages.txt` | `05-programming-languages.csv` | `05-programming-languages.pdf` |
-| 06 | **Required Tools & Services** | `06-github-packages-needed.md` | — | `06-github-packages-needed.txt` | `06-github-packages.csv` | `06-github-packages-needed.pdf` |
-| 07 | *(merged into 06)* | — | — | `07-github-packages-needed.txt` | — | `07-github-packages-needed.pdf` |
-| 08 | *(see 06 for full list)* | — | — | `08-required-apps.txt` | — | `08-required-apps.pdf` |
-| **09** | **Git Commit Log** | `09-git-commit-log.md` | — | `09-git-commit-log.txt` | `09-git-commit-log.csv` | `09-git-commit-log.pdf` |
-| **14** | **MCP Server Setup** | `14-mcp-setup.md` | — | `14-mcp-setup.txt` | — | — |
-| **15** | **Task List (Notion)** | `15-task-list.md` | — | — | — | — |
-| **10** | **Progress & Health Report** | `10-progress-health-report.md` | — | `10-progress-health-report.txt` | — | `10-progress-health-report.pdf` |
-| **11** | **Email Report Log** | `11-email-report-log.md` | — | `11-email-report-log.txt` | `11-email-report-log.csv` | `11-email-report-log.pdf` |
+| # | Content | markdown/ | sql/ | text/ | excel/ |
+|---|---------|-----------|------|-------|--------|
+| 00 | **Index** | `00-index.md` | — | `00-index.txt` | — | `00-index.txt` |
+| 01 | **Conversation Log** | `01-conversation-log.md` | — | `01-conversation-log.txt` | `01-conversation-log.csv` |
+| 02 | **Memory Files** | `02-memory-files.md` | — | `02-memory-files.txt` | — |
+| 03 | **Database Schema** | `03-database-schema-overview.md` | `03-database-schema.sql` | `03-database-schema-overview.txt` | `03-database-tables.csv`<br>`03-state-transitions.csv`<br>`03-business-rules.csv` |
+| 04 | **Audit Log** | — | — | — | `04-audit-log.csv` |
+| 04a | **Last Update (RCA)** | `04-30-am_01-06-2026_last_update.md` | — | — | — |
+| 05 | **Programming Languages** | `05-programming-languages.md` | — | `05-programming-languages.txt` | `05-programming-languages.csv` |
+| 06 | **Required Tools & Services** | `06-github-packages-needed.md` | — | `06-github-packages-needed.txt` | `06-github-packages.csv` |
+| 07 | *(merged into 06)* | — | — | `07-github-packages-needed.txt` | — |
+| 08 | *(see 06 for full list)* | — | — | `08-required-apps.txt` | — |
+| **09** | **Git Commit Log** | `09-git-commit-log.md` | — | `09-git-commit-log.txt` | `09-git-commit-log.csv` |
+| **14** | **MCP Server Setup** | `14-mcp-setup.md` | — | `14-mcp-setup.txt` | — |
+| **15** | **Task List (Notion)** | `15-task-list.md` | — | — | — |
+| **10** | **Progress & Health Report** | `10-progress-health-report.md` | — | `10-progress-health-report.txt` | — |
+| **11** | **Email Report Log** | `11-email-report-log.md` | — | `11-email-report-log.txt` | `11-email-report-log.csv` |
 | **12** | **T002-T003 Verification** | `12-T002-T003-verification-report.md` | — | — | — | — |
 | **16** | **Checkpoint Report** | `16-checkpoint-report.md` | — | — | — | — |
 | **17** | **Extended Governance Rules** | `17-extended-governance-rules.md` | — | — | — | — |
