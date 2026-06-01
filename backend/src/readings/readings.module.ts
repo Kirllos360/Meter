@@ -4,10 +4,12 @@ import { ReadingsService } from './readings.service';
 import { ThresholdsModule } from '../projects/thresholds/thresholds.module';
 import { PrismaService } from '../common/database/prisma.service';
 import { PollingModule } from './polling/polling.module';
+import { WaterBalanceModule } from './water-balance/water-balance.module';
 
 @Module({
-  imports: [ThresholdsModule, PollingModule],
+  imports: [ThresholdsModule, PollingModule, WaterBalanceModule],
   controllers: [ReadingsController],
-  providers: [ReadingsService, PrismaService]
+  providers: [ReadingsService, PrismaService],
+  exports: [WaterBalanceModule]
 })
 export class ReadingsModule {}
