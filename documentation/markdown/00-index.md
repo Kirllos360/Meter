@@ -2,7 +2,7 @@
 
 > Complete index of all documentation files organized by format type.
 > Each content piece exists in multiple formats for different use cases.
-> Last updated: 2026-05-31 (Security Weaver 1-5 + Graphify update + CI/CD + Docker + Full documentation overhaul)
+> Last updated: 2026-06-01 (RCA Sprint + CI fixes + T061-T065 implementation + 373/373 tests)
 
 ---
 
@@ -10,9 +10,9 @@
 
 ```
 documentation/
-├── markdown/   ← Readable documentation (44 files + 59 deep-coverage)
+├── markdown/   ← Readable documentation (50 files + 59 deep-coverage)
 ├── sql/        ← Database DDL scripts + validation queries (8 files)
-├── text/       ← Plain text versions (29 files)
+├── text/       ← Plain text versions (52 files + 59 deep-coverage)
 ├── excel/      ← CSV/tabular data (16 files)
 └── pdf/        ← Printable PDF versions (18 files)
 ```
@@ -28,6 +28,7 @@ documentation/
 | 02 | **Memory Files** | `02-memory-files.md` | — | `02-memory-files.txt` | — | `02-memory-files.pdf` |
 | 03 | **Database Schema** | `03-database-schema-overview.md` | `03-database-schema.sql` | `03-database-schema-overview.txt` | `03-database-tables.csv`<br>`03-state-transitions.csv`<br>`03-business-rules.csv` | `03-database-schema-overview.pdf`<br>`03-database-schema.pdf` |
 | 04 | **Audit Log** | — | — | — | `04-audit-log.csv` | `04-audit-log.pdf` |
+| 04a | **Last Update (RCA)** | `04-30-am_01-06-2026_last_update.md` | — | — | — | — |
 | 05 | **Programming Languages** | `05-programming-languages.md` | — | `05-programming-languages.txt` | `05-programming-languages.csv` | `05-programming-languages.pdf` |
 | 06 | **Required Tools & Services** | `06-github-packages-needed.md` | — | `06-github-packages-needed.txt` | `06-github-packages.csv` | `06-github-packages-needed.pdf` |
 | 07 | *(merged into 06)* | — | — | `07-github-packages-needed.txt` | — | `07-github-packages-needed.pdf` |
@@ -58,6 +59,7 @@ documentation/
 | `01-conversation-log.md` | Full session transcript: prompts, responses, decisions, git commits |
 | `02-memory-files.md` | All agent memory files: AGENTS.md, Speckit constitution, skills, OpenCode config, Graphify |
 | `03-database-schema-overview.md` | 20 entities with column details, state transitions, derived views, business rules |
+| `04-30-am_01-06-2026_last_update.md` | RCA Sprint session state — 373/373 tests, CI all 5 jobs green, T061-T065 implemented |
 | `05-programming-languages.md` | Languages used/planned with versions, purpose, configuration files |
 | `06-github-packages-needed.md` | All 30+ GitHub tools with versions, purposes, and download links |
 | `09-git-commit-log.md` | Full commit history with timestamps, messages, and file counts |
@@ -212,6 +214,21 @@ documentation/
 | `13-T015-validation-report.txt` | T015 validation plain text |
 | `13-T016-validation-report.txt` | T016 validation plain text |
 | `13-T017-validation-report.txt` | T017 validation plain text |
+| `13-T018-validation-report.txt` | T018 validation plain text |
+| `13-T019-validation-report.txt` | T019 validation plain text |
+| `13-T020-validation-report.txt` | T020 validation plain text |
+| `13-T023-validation-report.txt` | T023 validation plain text |
+| `13-T024-validation-report.txt` | T024 validation plain text |
+| `13-T025-validation-report.txt` | T025 validation plain text |
+| `13-T026-validation-report.txt` | T026 validation plain text |
+| `13-T027-validation-report.txt` | T027 validation plain text |
+| `14-mcp-setup.txt` | MCP server setup plain text |
+| `15-task-list.txt` | Task list plain text |
+| `16-checkpoint-report.txt` | Checkpoint plain text |
+| `17-extended-governance-rules.txt` | Governance rules plain text |
+| `04-30-am_01-06-2026_last_update.txt` | RCA Sprint last update plain text |
+| `phase-3-execution-prompt.txt` | Phase 3 execution prompt plain text |
+| `deep-coverage/` task-analysis-report.txt (59 files) | Deep-coverage gate reports plain text (T022-T030) |
 | `07-github-packages-needed.txt` | *(deprecated — see 06 for full list)* |
 | `08-required-apps.txt` | *(deprecated — see 06 for full list)* |
 
@@ -283,7 +300,7 @@ documentation/
 ├── markdown/03-database-schema-overview.md ← Data model reference
 ├── markdown/05-programming-languages.md    ← Tech stack
 ├── markdown/06-github-packages-needed.md  ← GitHub tools
-├── markdown/09-git-commit-log.md         ← Commit log (66 commits)
+├── markdown/09-git-commit-log.md         ← Commit log (91 commits)
 ├── markdown/10-progress-health-report.md ← System health & progress
 ├── markdown/11-email-report-log.md         ← Email reports sent
 ├── markdown/12-T002-T003-verification-report.md ← Pre-T004 verification
@@ -313,9 +330,9 @@ documentation/
 | `backend/Dockerfile` | Multi-stage NestJS production build |
 | `Frontend/Dockerfile` | Multi-stage Next.js production build |
 | `.dockerignore` | Excludes node_modules, .env, .next from Docker context |
-| `.github/workflows/ci.yml` | CI pipeline (4 jobs: backend, frontend, security, secret-scan) |
+| `.github/workflows/ci.yml` | CI pipeline (5 jobs: backend, frontend, security, secret-scan, test-agent) |
 | `Frontend/graphify-out/` | Knowledge graph: 2573 nodes, 4293 edges, 184 communities |
-| `restore-point-20260531-094024/` | Session restore point with AI_HANDOFF.md |
+| `restore-point-20260531-132118/` | Session restore point with AI_HANDOFF.md (RCA Sprint) |
 
 ---
 
@@ -335,9 +352,9 @@ documentation/
 | Analyze in spreadsheet | `excel/` folder — CSV data ready for import |
 | Review security posture | `markdown/security-assessment.md` (attack surface) + `security-gap-analysis.md` (gaps) |
 | Plan security improvements | `markdown/security-roadmap.md` (Phase A-D with effort/risk) |
-| Verify security controls | `markdown/security-validation-report.md` (14 controls active) |
+| Verify security controls | `markdown/security-validation-report.md` (18 controls active) |
 | Explore the knowledge graph | `Frontend/graphify-out/graph.html` (visual) or `graph.json` (data) |
-| Run CI/CD locally | `.github/workflows/ci.yml` — 4 jobs (backend, frontend, security, secret-scan) |
+| Run CI/CD locally | `.github/workflows/ci.yml` — 5 jobs (backend, frontend, security, secret-scan, test-agent) |
 | Build Docker images | `backend/Dockerfile` + `Frontend/Dockerfile` (multi-stage) |
 
 

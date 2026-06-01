@@ -1,7 +1,7 @@
 # Git Commit Log — Meter Pulse
 
 > Full commit history with timestamps, messages, and file counts.
-> Last updated: 2026-05-31
+> Last updated: 2026-06-01
 
 ## Commit History
 
@@ -69,12 +69,37 @@
 | 2026-05-29 | `df58682` | T028: contract test for generateInvoices (TDD — 7 pass, 1 fail) | 3 | ++210 | -0 |
 | 2026-05-29 | `ab1e294` | T029: contract test for issueInvoice (TDD — 6 pass, 1 fail) | 3 | ++180 | -0 |
 | 2026-05-29 | `bb0096e` | T030: contract test for addInvoiceAdjustment (TDD — 7 pass, 1 fail) | 3 | ++195 | -0 |
+| 2026-05-31 | `8e19557` | feat: US3 complete — T055-T060 contract + integration tests (373/373) | 80+ | ++4500+ | --500+ |
+| 2026-05-31 | `fbfb27d` | fix: resolve 17 Dependabot alerts via npm overrides + .github/dependabot.yml | 2 | ++200+ | -0 |
+| 2026-05-31 | `c0e2836` | fix: add dependabot config at repo root | 1 | ++20+ | -0 |
+| 2026-05-31 | `96920ad` | tools: add CodeQL workflow + OSV Scanner, update test-agent MANIFEST | 6 | ++200+ | -0 |
+| 2026-05-31 | `ad273e3` | tools: install njsscan, codespell, snyk into test-agent + fix typo | 3 | ++50+ | -0 |
+| 2026-05-31 | `dcf2ef4` | fix: revert NestJS v11->v10, revert Jest v28->v29, restore 373/373 tests | 7 | ++400+ | --300+ |
+| 2026-05-31 | `4b103ef` | ci: add test-agent workflow — runs all 15+ tools on every push | 9 | ++350+ | -0 |
+| 2026-05-31 | `0926b76` | fix: test-agent workflow YAML syntax + add check-graph.py script | 2 | ++10+ | -0 |
+| 2026-05-31 | `c0ea00c` | fix: lockfile regen — all NestJS v10, all tests 373/373 | 2 | ++800+ | --700+ |
+| 2026-05-31 | `d22a45e` | fix: replace prisma validate with prisma generate (no DB in CI) | 1 | ++3+ | -0 |
+| 2026-05-31 | `213eb7e` | fix: add PostgreSQL service + migrate to test-agent workflow | 1 | ++30+ | -0 |
+| 2026-05-31 | `31fbf86` | fix: use postgres user for CI PostgreSQL service | 1 | ++1+ | -0 |
+| 2026-05-31 | `7af3c2a` | fix: pg_isready healthcheck quoting | 1 | ++2+ | -0 |
+| 2026-05-31 | `066dd1f` | fix: use correct spectral package name | 1 | ++1+ | -0 |
+| 2026-05-31 | `25b9b3e` | fix: add bun setup for frontend build in CI | 1 | ++6+ | -0 |
+| 2026-05-31 | `d324ea4` | fix: remove graphify pip install, add continue-on-error for codeql | 1 | ++2+ | -0 |
+| 2026-05-31 | `d5df8a5` | fix: remove graphify job from CI (build artifacts) | 1 | ++2+ | -0 |
+| 2026-05-31 | `2a80c54` | docs: add SECURITY.md with vulnerability reporting policy | 1 | ++57+ | -0 |
+| 2026-06-01 | `75f7b68` | fix: RCA deep scan fixes + T061-T065 billing implementation | 33 | ++922+ | --163+ |
+| 2026-06-01 | `1f93b0d` | fix: CI workflow failures — husky prepare script + SBOM deps + Trivy SARIF guard | 2 | ++8+ | --5+ |
+| 2026-06-01 | `a708827` | fix: CI workflow — prisma validate needs DATABASE_URL, SBOM peer dep issues, SARIF upload permissions | 1 | ++13+ | --8+ |
+| 2026-06-01 | `3b18d30` | fix: CI backend — DatabaseService reads DB_USER/DB_PASSWORD from ConfigService (not DATABASE_URL) | 1 | ++6+ | -0 |
+| 2026-06-01 | `4f1f4f0` | fix: CI backend — create .env file in CI for ConfigService compatibility | 1 | ++1+ | -0 |
+| 2026-06-01 | `ccbaa7a` | fix: CI backend — create sim_system schema before tests | 1 | ++1+ | -0 |
+| 2026-06-01 | `95ea349` | fix: CI backend — run prisma migrate deploy for integration tests | 1 | ++1+ | -0 |
 
 ---
 
 ## Summary
 
-- **Total commits**: 66
+- **Total commits**: 91
 - **Author**: Kirllos Hany <kirllos.hany@epower.com.eg>
-- **Uncommitted changes**: Security Weaver 1-5 (4 docs + 8 controls + CI pipeline + Dockerfiles), graphify update (2573 nodes), T047/T048 Readings+Billing modules, safety tooling, restore point
-- **Last updated**: 2026-05-31
+- **Uncommitted changes**: None — all changes committed
+- **Last updated**: 2026-06-01

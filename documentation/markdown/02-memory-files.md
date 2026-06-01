@@ -1,7 +1,7 @@
 # Memory Files — Meter Pulse
 
 > All agent memory files: AGENTS.md, Speckit constitution, skills, OpenCode config, Graphify.
-> Last updated: 2026-05-31 (Security Weaver 1-5 + T047/T048/T053/T054 + Restore Point + Safety Tools + Graphify Update)
+> Last updated: 2026-06-01 (RCA Sprint + CI fixes + T061-T065 implementation + 373/373 tests)
 
 ---
 
@@ -178,6 +178,27 @@
 - **Checkpoint report**: Updated with Security Weaver risk register, graphify metrics, full tooling status
 - **Temp files cleaned**: graphify_update.py, restore_check.py, merge_graph.py removed
 - **Next tasks**: Security Weaver Framework (Phase 1–5)
+
+---
+
+### RCA Sprint — Deep Scan Fixes + CI Workflow Fixes + T061-T065
+
+- **Date**: 2026-06-01
+- **Task**: RCA Sprint (deep scan fixes + CI workflow fixes)
+- **Branch**: `feature/t055-payments-contract`
+- **Commits**: `75f7b68`, `1f93b0d`, `a708827`, `3b18d30`, `4f1f4f0`, `ccbaa7a`, `95ea349`
+- **Tests**: **373/373 passing** (47 suites)
+- **CI**: All 5 jobs passing (backend, frontend, security, secret-scan, test-agent)
+- **What changed**:
+  - T061-T065: Tariff plan + Invoice generate/issue/adjust + Payment implementation
+  - RCA deep scan fixes: depcruise, ESLint, Prettier, Husky, lockfile regen
+  - CI workflow fixes: PostgreSQL service, Prisma migrate, .env creation, SBOM deps
+  - Dependabot alerts: 17 resolved via npm overrides + dependabot.yml
+  - Security: CodeQL workflow, OSV Scanner, njsscan, codespell, snyk, SECURITY.md
+  - Test-agent workflow: 15+ tools on every push
+- **RCA report**: `test-agent/reports/RCA-REPORT-20260601.md`
+- **Restore point**: `restore-point-20260531-132118/` with AI_HANDOFF.md manifest
+- **Next tasks**: T062a (Water difference billing policy), T066-T072 (US3 remaining), T073-T085 (Phase 6)
 
 
 

@@ -1,9 +1,9 @@
 # AI Handoff — Meter Pulse
 
 > **Purpose**: Single file containing EVERYTHING an AI agent needs to continue work on this project.
-> **Generated**: 2026-05-29 | **Last Updated**: 2026-05-29 (T022)
-> **Last Completed**: T022 (Multi-Tool Validation & Documentation Update)
-> **Next Task**: T023 (US1 Contract Tests)
+> **Generated**: 2026-05-29 | **Last Updated**: 2026-06-01 (RCA Sprint + CI Fixes)
+> **Last Completed**: RCA Sprint (deep scan fixes + CI workflow fixes) + T061-T065
+> **Next Task**: T062a (Water difference billing policy) or T066 (Payment reversal)
 
 ---
 
@@ -21,8 +21,9 @@
 | GitHub Fork | **Kirllos360/Meter-** (origin remote) |
 | Git Author | `Kirllos Hany <kirllos.hany@epower.com.eg>` |
 | Git Remotes | `abady` (upstream), `origin` (fork) |
-| Current Branch | `feature/t020-api-client` |
-| T021 Branch to Create | `feature/t021-react-query` |
+| Current Branch | `feature/t055-payments-contract` |
+| Tests | 373/373 passing (47 suites) |
+| CI Status | ✅ All 5 jobs green (backend, frontend, security, sbom, secret-scan) |
 
 ---
 
@@ -434,3 +435,54 @@ cd ../Frontend && bun install && bun run build
 - **God nodes**: `cn()` (276), `SmartTable()` (49), `Button()` (48), `StatusBadge()` (45), `PageHeader()` (35)
 - Graph output at `graphify-out/` (root level, structural) and `Frontend/graphify-out/` (frontend-only)
 - After code changes, run: `graphify update .`
+
+---
+
+## 14. RCA Sprint Memory Log (2026-06-01)
+
+**Task**: RCA Sprint — deep scan fixes + CI workflow fixes + T061-T065 billing implementation
+**Branch**: `feature/t055-payments-contract`
+**Status**: Complete
+**Commits**: `95ea349` (HEAD) | 7 commits this session
+
+### Fixed Issues
+
+| # | Issue | Root Cause | Fix |
+|---|-------|-----------|-----|
+| 1 | **Depcruise dependency confusion** | `depcruise` is a name-squatted placeholder | Changed to `npx dependency-cruiser` in run.ps1 and test-agent.yml |
+| 2 | **ESLint v10 flat config** | ESLint v10 dropped `.eslintrc.*`; env var workaround is Unix-only | Created `eslint.config.js`, upgraded `eslint-plugin-security` v2→v4 |
+| 3 | **Prettier 127 files** | Never run `prettier --write` project-wide | Ran `prettier --write` on all 127 backend .ts files |
+| 4 | **Husky broken** | `husky.sh` missing, POSIX-only hook, ESLint incompatibility | Rewrote for v9 format, set `git config core.hooksPath .husky` |
+| 5 | **Njsscan crash** | Python `libsast/semgrep` version mismatch | Added graceful fallback + semgrep direct scan in run.ps1 |
+| 6 | **Codespell 9 typos** | `MapPin` (lucide icon) false positives | Created `.codespell-ignore` ignore file |
+| 7 | **CI backend — npm ci fail** | `prepare: husky` runs but husky in root node_modules | Changed to safe try/catch wrapper + `--ignore-scripts` |
+| 8 | **CI sbom — cyclonedx fail** | No deps installed before SBOM generation | Added `npm install` before cyclonedx |
+| 9 | **CI backend — prisma validate fail** | `DATABASE_URL` env var not set on step | Moved to job-level env |
+| 10 | **CI backend — prisma migrate fail** | PostgreSQL schema `sim_system` doesn't exist | Added `CREATE SCHEMA` + `prisma migrate deploy` |
+| 11 | **CI security — SARIF upload fail** | Missing `security-events: write` permission | Added permissions block |
+| 12 | **CI backend — DB auth fail** | ConfigService loads `.env` which doesn't exist on CI | Created `.env` from CI env vars |
+
+### Validation
+
+| Check | Result |
+|-------|--------|
+| Backend Build (tsc) | ✅ Clean |
+| Backend ESLint | ✅ 0 errors, 6 warnings |
+| Frontend Lint | ✅ 0 errors |
+| Frontend Build (Next.js 16) | ✅ Clean |
+| Prettier (127 files) | ✅ All matched |
+| Prisma Schema | ✅ Valid |
+| Tests | ✅ **373/373 passing** (47 suites) |
+| Depcruise | ✅ 0 violations |
+| Codespell | ✅ 0 typos |
+| CI (5 jobs) | ✅ **All green** |
+
+### Restore Point
+- RCA Report: `test-agent/reports/RCA-REPORT-20260601.md`
+- OneDrive: `C:\Users\EPower\OneDrive - EPower\kirllos\app\meter-pulse\Meter-\`
+
+### Next Tasks
+- T062a: Water difference billing policy
+- T066: Payment reversal (`POST /payments/:id/reverse`)
+- T067: Ledger service + `GET /customers/:id/statement`
+- T068-T072: Frontend API migration
