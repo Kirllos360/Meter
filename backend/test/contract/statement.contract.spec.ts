@@ -1,7 +1,12 @@
 import { NestExpressApplication } from '@nestjs/platform-express';
 import {
-  createTestApp, loadContract, getOperation, getResponseSchema,
-  validateResponseBody, validateStatus, getExpectedStatuses
+  createTestApp,
+  loadContract,
+  getOperation,
+  getResponseSchema,
+  validateResponseBody,
+  validateStatus,
+  getExpectedStatuses
 } from './setup';
 
 jest.setTimeout(30000);
@@ -22,7 +27,9 @@ describe('GET /customers/{customerId}/statement (getCustomerStatement)', () => {
     authHeader = testApp.authHeader;
   });
 
-  afterAll(async () => { await app.close(); });
+  afterAll(async () => {
+    await app.close();
+  });
 
   describe('Contract definition', () => {
     it('should have operationId in OpenAPI spec', () => {
@@ -58,7 +65,8 @@ describe('GET /customers/{customerId}/statement (getCustomerStatement)', () => {
 
   describe('HTTP endpoint', () => {
     it('should return 200 or 404 (TDD)', async () => {
-      const res = await request.get(`/api/v1/customers/${testCustomerId}/statement?from=${from}&to=${to}`)
+      const res = await request
+        .get(`/api/v1/customers/${testCustomerId}/statement?from=${from}&to=${to}`)
         .set('Authorization', authHeader);
       expect([200, 403, 404]).toContain(res.status);
     });

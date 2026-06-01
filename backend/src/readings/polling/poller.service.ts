@@ -21,9 +21,14 @@ export class PollerService {
     this.logger.log(`Registered adapter: ${adapter.meterType}`);
   }
 
-  async pollMeter(meterId: string, meterType: string, config: Record<string, unknown> = {}): Promise<PollingResult> {
+  async pollMeter(
+    meterId: string,
+    meterType: string,
+    config: Record<string, unknown> = {}
+  ): Promise<PollingResult> {
     const adapter = this.adapters.get(meterType);
-    if (!adapter) return { success: false, error: `No adapter for meter type: ${meterType}`, meterId };
+    if (!adapter)
+      return { success: false, error: `No adapter for meter type: ${meterType}`, meterId };
 
     const idempotencyKey = `poll-${meterId}-${Date.now()}`;
     if (this.processedKeys.has(idempotencyKey)) {
@@ -36,7 +41,11 @@ export class PollerService {
     return this.executeWithRetry(poll, idempotencyKey);
   }
 
-  private async executeWithRetry(poll: PendingPoll, key: string, attempt = 1): Promise<PollingResult> {
+  private async executeWithRetry(
+    poll: PendingPoll,
+    key: string,
+    attempt = 1
+  ): Promise<PollingResult> {
     try {
       const result = await poll.adapter.fetchReading(poll.meterId, poll.config);
       if (result.success) {
@@ -48,8 +57,10 @@ export class PollerService {
       const message = err instanceof Error ? err.message : String(err);
       if (poll.retriesLeft > 0) {
         const delay = this.BASE_DELAY_MS * Math.pow(2, this.MAX_RETRIES - poll.retriesLeft);
-        this.logger.warn(`Poll failed: ${poll.meterId}, retrying in ${delay}ms (${poll.retriesLeft} left): ${message}`);
-        await new Promise(r => setTimeout(r, delay));
+        this.logger.warn(
+          `Poll failed: ${poll.meterId}, retrying in ${delay}ms (${poll.retriesLeft} left): ${message}`
+        );
+        await new Promise((r) => setTimeout(r, delay));
         poll.retriesLeft--;
         return this.executeWithRetry(poll, key, attempt + 1);
       }

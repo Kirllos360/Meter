@@ -15,7 +15,8 @@ describe('PollerService', () => {
   beforeEach(async () => {
     mockFetchReading.mockReset();
     mockFetchReading.mockResolvedValue({
-      success: true, meterId: 'meter-1',
+      success: true,
+      meterId: 'meter-1',
       reading: { meterId: 'meter-1', value: 150, timestamp: new Date() }
     });
     const module: TestingModule = await Test.createTestingModule({
@@ -42,9 +43,11 @@ describe('PollerService', () => {
   });
 
   it('should retry on failure once then succeed', async () => {
-    mockFetchReading
-      .mockRejectedValueOnce(new Error('Timeout'))
-      .mockResolvedValueOnce({ success: true, meterId: 'meter-1', reading: { meterId: 'meter-1', value: 200, timestamp: new Date() } });
+    mockFetchReading.mockRejectedValueOnce(new Error('Timeout')).mockResolvedValueOnce({
+      success: true,
+      meterId: 'meter-1',
+      reading: { meterId: 'meter-1', value: 200, timestamp: new Date() }
+    });
 
     const result = await service.pollMeter('meter-1', 'test-electricity');
     expect(result.success).toBe(true);

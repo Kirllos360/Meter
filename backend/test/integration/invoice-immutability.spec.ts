@@ -23,7 +23,9 @@ describe('Invoice Immutability (T057)', () => {
     await app.init();
   });
 
-  afterAll(async () => { await app.close(); });
+  afterAll(async () => {
+    await app.close();
+  });
 
   it('should reject direct edit on issued invoice (or 404 if not implemented)', async () => {
     const res = await request(app.getHttpServer())
@@ -58,8 +60,10 @@ describe('Invoice Immutability (T057)', () => {
 
   it('should create audit trail on adjustment (schema check)', () => {
     const auditEntry = {
-      actorId: 'admin', action: 'INVOICE_ADJUSTMENT',
-      resourceType: 'invoice', resourceId: 'inv-1',
+      actorId: 'admin',
+      action: 'INVOICE_ADJUSTMENT',
+      resourceType: 'invoice',
+      resourceId: 'inv-1',
       afterState: { adjustmentType: 'credit', amount: 100 }
     };
     expect(auditEntry.actorId).toBe('admin');

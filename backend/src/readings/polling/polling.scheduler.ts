@@ -33,7 +33,13 @@ export class PollingScheduler implements OnModuleDestroy {
     return this.enabled;
   }
 
-  scheduleTask(id: string, meterId: string, meterType: string, intervalMs: number, config: Record<string, unknown> = {}): void {
+  scheduleTask(
+    id: string,
+    meterId: string,
+    meterType: string,
+    intervalMs: number,
+    config: Record<string, unknown> = {}
+  ): void {
     if (this.tasks.has(id)) {
       this.logger.warn(`Task ${id} already scheduled, skipping`);
       return;

@@ -16,15 +16,23 @@ describe('Ledger Running Balance (T060)', () => {
     await app.init();
   });
 
-  afterAll(async () => { await app.close(); });
+  afterAll(async () => {
+    await app.close();
+  });
 
   function calculateRunningBalance(entries: { type: string; amount: number }[]): number[] {
     let balance = 0;
-    return entries.map(e => {
+    return entries.map((e) => {
       switch (e.type) {
-        case 'invoice_charge': balance += e.amount; break;
-        case 'payment_credit': balance -= e.amount; break;
-        case 'payment_reversal': balance += e.amount; break;
+        case 'invoice_charge':
+          balance += e.amount;
+          break;
+        case 'payment_credit':
+          balance -= e.amount;
+          break;
+        case 'payment_reversal':
+          balance += e.amount;
+          break;
         case 'adjustment':
           if (e.amount > 0) balance += e.amount;
           else balance -= Math.abs(e.amount);
@@ -82,7 +90,7 @@ describe('Ledger Running Balance (T060)', () => {
 
   it('should handle large sequence', () => {
     const entries = Array.from({ length: 100 }, (_, i) => ({
-      type: i % 2 === 0 ? 'invoice_charge' as const : 'payment_credit' as const,
+      type: i % 2 === 0 ? ('invoice_charge' as const) : ('payment_credit' as const),
       amount: 100
     }));
     const balances = calculateRunningBalance(entries);

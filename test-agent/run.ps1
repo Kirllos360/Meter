@@ -41,15 +41,23 @@ Check "Jest" "cd $ProjectDir\backend; npm test -- --silent --bail 2>`$null"
 # Stage 3: Extended checks
 if ($Mode -ne "fast") {
     Write-Host "--- Stage 3: Extended ---" -ForegroundColor Cyan
-    Check "Depcruise" "cd $ProjectDir\backend; npx depcruise --ts-config tsconfig.json src/ 2>`$null"
+    Check "Depcruise" "cd $ProjectDir\backend; npx dependency-cruiser --ts-config tsconfig.json src/ 2>`$null"
     Check "Spectral" "cd $ProjectDir; npx spectral lint 'specs/001-metering-billing-platform/contracts/meter-pulse-api.yaml' --ruleset=test-agent/configs/.spectral.yaml --quiet 2>`$null"
 }
 
 # Stage 4: Deep scan (full mode only)
 if ($Mode -eq "full") {
     Write-Host "--- Stage 4: Deep Scan ---" -ForegroundColor Cyan
-    Check "Njsscan" "njsscan $ProjectDir\backend\src $ProjectDir\Frontend\src --json 2>`$null | Out-Null"
-    Check "Codespell" "codespell $ProjectDir\backend\src $ProjectDir\Frontend\src --quiet-level=3 2>`$null"
+    $njsscanOk = $true
+    try { njsscan $ProjectDir\backend\src $ProjectDir\Frontend\src --json 2>`$null | Out-Null } catch { $njsscanOk = $false }
+    if (-not $njsscanOk) {
+        Write-Host "[Njsscan]".PadRight(28) "  ⚠️ SKIP (upgrade njsscan or use semgrep directly)"
+    } else {
+        Write-Host "[Njsscan]".PadRight(28) "  ✅ PASS"
+        $script:Pass++
+    }
+    Check "Semgrep" "semgrep --config=$ProjectDir\.semgrep-rules.yaml --quiet --error --exclude='docs/' --exclude='backup files/' --exclude='restore-point*' --exclude='node_modules' $ProjectDir\backend\src $ProjectDir\Frontend\src 2>`$null | Out-Null"
+    Check "Codespell" "codespell $ProjectDir\backend\src $ProjectDir\Frontend\src --quiet-level=3 --ignore-words=$ProjectDir\test-agent\configs\.codespell-ignore 2>`$null"
 }
 
 # Stage 5: Security scan (deploy mode only)

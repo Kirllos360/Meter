@@ -21,7 +21,9 @@ describe('Payment Reversal (T059)', () => {
     await app.init();
   });
 
-  afterAll(async () => { await app.close(); });
+  afterAll(async () => {
+    await app.close();
+  });
 
   function makeToken(role: string) {
     return jwtService.sign({ sub: 'user', userId: 'user', role });

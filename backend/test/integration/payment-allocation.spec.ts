@@ -22,7 +22,9 @@ describe('Payment Allocation (T058)', () => {
     await app.init();
   });
 
-  afterAll(async () => { await app.close(); });
+  afterAll(async () => {
+    await app.close();
+  });
 
   it('should default to oldest_due_first allocation', () => {
     const defaultMode = 'oldest_due_first';
@@ -57,7 +59,9 @@ describe('Payment Allocation (T058)', () => {
       .send({
         projectId: '33333333-3333-4333-8333-333333333333',
         customerId: '11111111-1111-4111-8111-111111111111',
-        amount: 500, paymentDate: new Date().toISOString(), method: 'cash'
+        amount: 500,
+        paymentDate: new Date().toISOString(),
+        method: 'cash'
       });
     expect([201, 403, 404]).toContain(res.status);
   });

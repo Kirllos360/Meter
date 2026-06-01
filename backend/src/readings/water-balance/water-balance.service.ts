@@ -24,7 +24,11 @@ export class WaterBalanceService {
 
     const mainMeter = mainMeters[0];
     const mainReading = await this.prisma.reading.aggregate({
-      where: { meterId: mainMeter.id, readingAt: { gte: from, lte: to }, status: { not: 'rejected' } },
+      where: {
+        meterId: mainMeter.id,
+        readingAt: { gte: from, lte: to },
+        status: { not: 'rejected' }
+      },
       _sum: { consumptionValue: true }
     });
     const totalMain = Number(mainReading._sum.consumptionValue ?? 0);
@@ -40,7 +44,11 @@ export class WaterBalanceService {
 
     for (const child of childMeters) {
       const childReading = await this.prisma.reading.aggregate({
-        where: { meterId: child.id, readingAt: { gte: from, lte: to }, status: { not: 'rejected' } },
+        where: {
+          meterId: child.id,
+          readingAt: { gte: from, lte: to },
+          status: { not: 'rejected' }
+        },
         _sum: { consumptionValue: true },
         _count: true
       });
