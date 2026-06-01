@@ -44,6 +44,7 @@ jobs:
       - run: npx prisma validate
       - run: npx prisma generate
       - run: PGPASSWORD=meter_pulse_dev psql -h localhost -U meter_pulse -d meter_pulse -c "CREATE SCHEMA IF NOT EXISTS sim_system;"
+      - run: npx prisma migrate deploy
       - run: npm run build
       - run: npm test
       - run: npm run lint
