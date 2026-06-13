@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Meter Pulse — Utility Metering & Billing Management",
+  title: "Meter Verse — Utility Metering & Billing Management",
   description: "Modern SaaS platform for managing electricity meters, water meters, customers, projects, readings, consumption, invoices, payments, and more.",
   icons: {
     icon: "https://z-cdn.chatglm.cn/z-ai/static/logo.svg",

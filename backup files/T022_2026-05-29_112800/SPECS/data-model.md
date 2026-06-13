@@ -67,7 +67,7 @@
 - Fields:
   - `id` (uuid)
   - `serial_number` (string, unique)
-  - `meter_type` (enum: electricity, water_main, water_child)
+  - `Meter_Verse_type` (enum: electricity, water_main, water_child)
   - `brand` (string)
   - `model` (string)
   - `status` (enum: available, assigned, active, offline, faulty, replaced, terminated, retired)
@@ -76,7 +76,7 @@
   - `termination_date` (date, nullable)
   - `project_id` (fk -> Project)
   - `location_id` (fk -> LocationNode, nullable)
-  - `parent_main_meter_id` (fk -> Meter, nullable; required when `meter_type=water_child`)
+  - `parent_main_Meter_Verse_id` (fk -> Meter, nullable; required when `Meter_Verse_type=water_child`)
 
 ## SIMCard
 
@@ -94,7 +94,7 @@
 
 - Fields:
   - `id` (uuid)
-  - `meter_id` (fk -> Meter)
+  - `Meter_Verse_id` (fk -> Meter)
   - `customer_id` (fk -> Customer)
   - `unit_id` (fk -> LocationNode)
   - `project_id` (fk -> Project)
@@ -103,14 +103,14 @@
   - `change_reason` (string)
   - `status` (enum: active, ended)
 - Constraints:
-  - partial unique index on `(meter_id)` where `end_at is null`
+  - partial unique index on `(Meter_Verse_id)` where `end_at is null`
 
 ## SIMAssignment
 
 - Fields:
   - `id` (uuid)
   - `sim_id` (fk -> SIMCard)
-  - `meter_id` (fk -> Meter)
+  - `Meter_Verse_id` (fk -> Meter)
   - `start_at` (timestamp)
   - `end_at` (timestamp, nullable)
   - `change_reason` (string)
@@ -122,7 +122,7 @@
 
 - Fields:
   - `id` (uuid)
-  - `meter_id` (fk -> Meter)
+  - `Meter_Verse_id` (fk -> Meter)
   - `project_id` (fk -> Project)
   - `customer_id_snapshot` (uuid)
   - `unit_id_snapshot` (uuid)
@@ -136,7 +136,7 @@
   - `entered_by` (uuid)
   - `notes` (text, nullable)
 - Constraints:
-  - unique `(meter_id, reading_at, source)`
+  - unique `(Meter_Verse_id, reading_at, source)`
 
 ## ReadingReview
 
@@ -153,7 +153,7 @@
 - Fields:
   - `id` (uuid)
   - `project_id` (fk -> Project)
-  - `meter_type` (enum: electricity, water_main, water_child)
+  - `Meter_Verse_type` (enum: electricity, water_main, water_child)
   - `rate_per_unit` (decimal)
   - `currency` (string)
   - `effective_from` (date)
@@ -178,7 +178,7 @@
   - `project_id` (fk -> Project)
   - `customer_id` (fk -> Customer)
   - `unit_id` (fk -> LocationNode)
-  - `meter_id` (fk -> Meter)
+  - `Meter_Verse_id` (fk -> Meter)
   - `utility_type` (enum: electricity, water)
   - `billing_period_id` (fk -> BillingPeriod)
   - `status` (enum: draft, pending_approval, issued, partially_paid, paid, overdue, cancelled)
@@ -322,7 +322,7 @@
 
 - `customer_statement_view`: opening balance, period charges, payments,
   adjustments, reversals, closing balance.
-- `meter_assignment_active_view`: one active row per meter.
+- `Meter_Verse_assignment_active_view`: one active row per meter.
 - `sim_assignment_active_view`: one active row per SIM.
 
 ## Validation rules mapped to spec

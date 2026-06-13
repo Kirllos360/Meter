@@ -216,7 +216,7 @@ export function LoginPage() {
           transition={{ delay: 0.7, duration: 0.3 }}
           className="text-center text-xs text-muted-foreground mt-6"
         >
-          &copy; {new Date().getFullYear()} Meter Pulse. All rights reserved.
+          &copy; {new Date().getFullYear()} Meter Verse. All rights reserved.
         </motion.p>
       </motion.div>
     </div>

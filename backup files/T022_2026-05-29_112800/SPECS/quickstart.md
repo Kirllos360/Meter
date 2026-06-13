@@ -9,7 +9,7 @@ This quickstart validates planning assumptions before `/speckit-tasks` and imple
    - `specs/001-metering-billing-platform/plan.md`
    - `specs/001-metering-billing-platform/research.md`
    - `specs/001-metering-billing-platform/data-model.md`
-   - `specs/001-metering-billing-platform/contracts/meter-pulse-api.yaml`
+   - `specs/001-metering-billing-platform/contracts/meter-verse-api.yaml`
 2. Confirm frontend baseline remains unchanged and healthy in `Frontend/`.
 
 ## 2) Frontend baseline verification
@@ -51,7 +51,7 @@ Confirm implementation tasks include:
 
 - NestJS modules aligned to plan bounded contexts
 - PostgreSQL schema/migrations for all core entities
-- Contract tests for every endpoint in `meter-pulse-api.yaml`
+- Contract tests for every endpoint in `meter-verse-api.yaml`
 - Transactional safeguards for:
   - meter/SIM assignment uniqueness
   - SIM reuse after termination

@@ -21,7 +21,7 @@ export class DatabaseService implements OnModuleInit, OnModuleDestroy {
       database,
       user,
       password,
-      application_name: 'meter-pulse-backend',
+      application_name: 'meter-verse-backend',
       options: `-c search_path=${schema},public`
     });
   }

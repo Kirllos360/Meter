@@ -6,9 +6,9 @@ description: "Dependency-ordered implementation tasks for the Utility Metering a
 
 **Input**: Design documents from `/specs/001-metering-billing-platform/`
 
-**Prerequisites**: plan.md, spec.md, research.md, data-model.md, contracts/meter-pulse-api.yaml, quickstart.md, Frontend/FRONTEND_BUILD.md, Frontend/FRONTEND_SPRINT_BACKLOG.md
+**Prerequisites**: plan.md, spec.md, research.md, data-model.md, contracts/meter-verse-api.yaml, quickstart.md, Frontend/FRONTEND_BUILD.md, Frontend/FRONTEND_SPRINT_BACKLOG.md
 
-**Tests**: INCLUDED. Contract tests (against `contracts/meter-pulse-api.yaml`) and domain integration tests are explicitly required by the feature spec and plan Testing Plan. Write them before the implementation they cover.
+**Tests**: INCLUDED. Contract tests (against `contracts/meter-verse-api.yaml`) and domain integration tests are explicitly required by the feature spec and plan Testing Plan. Write them before the implementation they cover.
 
 ## Format: `[ID] [P?] [Story] Description`
 
@@ -20,7 +20,7 @@ description: "Dependency-ordered implementation tasks for the Utility Metering a
 
 - **Backend (new)**: `backend/src/<module>/`, migrations in `backend/prisma/`, tests in `backend/test/`
 - **Frontend (existing — do NOT rebuild)**: `Frontend/src/...`, smoke in `Frontend/scripts/smoke-all-pages.mjs`
-- **Contracts**: `specs/001-metering-billing-platform/contracts/meter-pulse-api.yaml`
+- **Contracts**: `specs/001-metering-billing-platform/contracts/meter-verse-api.yaml`
 
 ## ⚠️ Graphify-First Rule (frontend tasks)
 
@@ -63,7 +63,7 @@ A frontend task is not "started" until its `graphify query` has been run and its
 - [X] T002 Add config + PostgreSQL connection module in `backend/src/common/config/`
   - **Dependencies**: T001
   - **Area/Files**: `backend/src/common/config/config.module.ts`, `backend/.env.example`, `backend/src/common/database/database.module.ts`
-  - **Acceptance**: `@nestjs/config` loads env; DB target is `meter_pulse` DB / `sim_system` schema; connection validated on boot
+  - **Acceptance**: `@nestjs/config` loads env; DB target is `Meter_Verse_pulse` DB / `sim_system` schema; connection validated on boot
   - **Validation**: `cd backend && npm run start:dev` shows successful DB connection log
   - **Risk**: Secrets leakage — keep real `.env` out of git, only commit `.env.example`.
 
@@ -84,7 +84,7 @@ A frontend task is not "started" until its `graphify query` has been run and its
 - [X] T005 [P] Add local PostgreSQL via docker-compose in `backend/`
   - **Dependencies**: none
   - **Area/Files**: `backend/docker-compose.yml`, `backend/README.md` (DB run instructions)
-  - **Acceptance**: `docker compose up -d db` exposes a reachable `meter_pulse` Postgres
+  - **Acceptance**: `docker compose up -d db` exposes a reachable `Meter_Verse_pulse` Postgres
   - **Validation**: `cd backend && docker compose up -d db && docker compose ps`
   - **Risk**: Port collision with existing local services; make port configurable via env.
 
@@ -138,11 +138,11 @@ A frontend task is not "started" until its `graphify query` has been run and its
   - **Area/Files**: `backend/src/main.ts`, `backend/src/common/openapi/openapi.setup.ts`
   - **Acceptance**: All routes mount under `/api/v1`; generated OpenAPI doc served at `/api/v1/docs`
   - **Validation**: `cd backend && npm run start:dev` then `curl -s localhost:3000/api/v1/docs-json | head`
-  - **Risk**: Generated spec diverging from `meter-pulse-api.yaml`; reconcile in T083.
+  - **Risk**: Generated spec diverging from `meter-verse-api.yaml`; reconcile in T083.
 
-- [X] T012 Build contract-test harness against `meter-pulse-api.yaml` in `backend/test/contract/`
+- [X] T012 Build contract-test harness against `meter-verse-api.yaml` in `backend/test/contract/`
   - **Dependencies**: T011
-  - **Area/Files**: `backend/test/contract/setup.ts` (supertest app bootstrap + OpenAPI response validator loading `specs/001-metering-billing-platform/contracts/meter-pulse-api.yaml`)
+  - **Area/Files**: `backend/test/contract/setup.ts` (supertest app bootstrap + OpenAPI response validator loading `specs/001-metering-billing-platform/contracts/meter-verse-api.yaml`)
   - **Acceptance**: Harness can assert any response against a schema/operationId from the YAML; one smoke assertion passes
   - **Validation**: `cd backend && npm test -- test/contract/setup`
   - **Risk**: Relative path to YAML from `backend/` must be stable; resolve via repo-root anchor.
@@ -158,15 +158,15 @@ A frontend task is not "started" until its `graphify query` has been run and its
 
 - [X] T014 [P] Migration — Meter, SIMCard, MeterAssignment, SIMAssignment in `backend/prisma/`
   - **Dependencies**: T013
-  - **Area/Files**: `backend/prisma/schema.prisma`, `backend/prisma/migrations/*_meter_sim/`
-  - **Acceptance**: Unique `serial_number`, unique `iccid`; **partial unique index on `(meter_id) WHERE end_at IS NULL`** and **`(sim_id) WHERE end_at IS NULL`** (FR-004/FR-005); `parent_main_meter_id` required for `water_child`
-  - **Validation**: `cd backend && npx prisma migrate dev --name meter_sim && npx prisma migrate status`
+  - **Area/Files**: `backend/prisma/schema.prisma`, `backend/prisma/migrations/*_Meter_Verse_sim/`
+  - **Acceptance**: Unique `serial_number`, unique `iccid`; **partial unique index on `(Meter_Verse_id) WHERE end_at IS NULL`** and **`(sim_id) WHERE end_at IS NULL`** (FR-004/FR-005); `parent_main_Meter_Verse_id` required for `water_child`
+  - **Validation**: `cd backend && npx prisma migrate dev --name Meter_Verse_sim && npx prisma migrate status`
   - **Risk**: Prisma partial unique indexes require raw SQL in migration; verify they actually apply in DB.
 
 - [X] T015 [P] Migration — Reading, ReadingReview, TariffPlan, BillingPeriod in `backend/prisma/`
   - **Dependencies**: T014
   - **Area/Files**: `backend/prisma/schema.prisma`, `backend/prisma/migrations/*_readings_tariff/`
-  - **Acceptance**: Reading has unique `(meter_id, reading_at, source)`, status enum, snapshots, `raw_payload` jsonb; TariffPlan + BillingPeriod created
+  - **Acceptance**: Reading has unique `(Meter_Verse_id, reading_at, source)`, status enum, snapshots, `raw_payload` jsonb; TariffPlan + BillingPeriod created
   - **Validation**: `cd backend && npx prisma migrate dev --name readings_tariff && npx prisma migrate status`
   - **Risk**: jsonb defaults and decimal precision for consumption/rate must be explicit.
 
@@ -191,11 +191,11 @@ A frontend task is not "started" until its `graphify query` has been run and its
   - **Validation**: `cd backend && npx prisma migrate dev --name audit_reports && npx prisma migrate status`
   - **Risk**: AuditLog volume growth; add created_at index for retention queries.
 
-- [X] T019 Migration — derived views (`customer_statement_view`, `meter_assignment_active_view`, `sim_assignment_active_view`)
+- [X] T019 Migration — derived views (`customer_statement_view`, `Meter_Verse_assignment_active_view`, `sim_assignment_active_view`)
   - **Dependencies**: T014, T017
   - **Area/Files**: `backend/prisma/migrations/*_views/migration.sql`
   - **Acceptance**: Views return one active row per meter/SIM and a running-balance statement projection
-  - **Validation**: `cd backend && npx prisma migrate dev --name views` then `psql -c 'select * from meter_assignment_active_view limit 1'`
+  - **Validation**: `cd backend && npx prisma migrate dev --name views` then `psql -c 'select * from Meter_Verse_assignment_active_view limit 1'`
   - **Risk**: Views must stay aligned with table renames; document dependency.
 
 ### Frontend Sprint 0 foundation (Graphify-first)
@@ -446,7 +446,7 @@ A frontend task is not "started" until its `graphify query` has been run and its
   - **Note**: Approve/reject/correct actions not yet implemented (pending T048a).
 
 - [X] T048a [US2] Water main-vs-sub variance service + `GET /api/v1/projects/{projectId}/water-balance` in `backend/src/readings/water-balance/`
-  - **Dependencies**: T047, T030 (parent_main_meter_id linkage)
+  - **Dependencies**: T047, T030 (parent_main_Meter_Verse_id linkage)
   - **Area/Files**: `backend/src/readings/water-balance/water-balance.service.ts`, `water-balance.controller.ts`
   - **Acceptance**: Computes variance = main-meter consumption − Σ(child-meter consumption) per period for operational review; returns variance + per-child breakdown (FR-009 comparison/variance)
   - **Validation**: `cd backend && npm test -- water-balance`
@@ -743,9 +743,9 @@ A frontend task is not "started" until its `graphify query` has been run and its
   - **Validation**: `cd Frontend && bun run lint && bun run build && bun run test:smoke && graphify update .`
   - **Risk**: Final regression window; freeze scope after green.
 
-- [ ] T083 Reconcile full backend contract suite against `meter-pulse-api.yaml`
+- [ ] T083 Reconcile full backend contract suite against `meter-verse-api.yaml`
   - **Dependencies**: T023–T024, T043–T044, T053–T056, T074
-  - **Area/Files**: `backend/test/contract/*`, `specs/001-metering-billing-platform/contracts/meter-pulse-api.yaml`
+  - **Area/Files**: `backend/test/contract/*`, `specs/001-metering-billing-platform/contracts/meter-verse-api.yaml`
   - **Acceptance**: Every contract operation has a passing test; served OpenAPI matches the YAML (no drift)
   - **Validation**: `cd backend && npm test -- test/contract`
   - **Risk**: Spec drift over the build; treat YAML as source of truth.
@@ -849,17 +849,294 @@ T027 Projects  T028 Locations  T029 Customers  T030 Meters  T031 SIM
 - **[P]** = different files, no incomplete dependencies.
 - Backend validation commands assume `npm` scripts in `backend/`; adjust if a different runner is configured in T001.
 - Frontend commands use `bun` per `Frontend/FRONTEND_BUILD.md` (`lint`, `build`, `test:smoke`).
-- `meter-pulse-api.yaml` is the contract source of truth; resolve any served-spec drift in T083.
+- `meter-verse-api.yaml` is the contract source of truth; resolve any served-spec drift in T083.
 - Constitution ratification (T085) is the final gate per plan Gate 4 — the feature is not "done" until it passes.
 
+---
 
+# Meter Verse v2.0.0 — T086-T120
 
+---
 
+## Phase 0: Foundation (Core DB + Auth)
 
+**Purpose**: Core databases, RBAC with 16 profiles, i18n engine. Everything builds on this.
 
+- [ ] T086 Create Core DB schema (15 tables: User, Role, Permission, Area, Project, etc.)
+  - **Dependencies**: None (new project)
+  - **Area/Files**: `backend/prisma/schema.prisma` (core schema), migration for `core_db/`
+  - **Acceptance**: Core tables created in `core` schema: `User`, `Role`, `Permission`, `Area`, `Project`, `AuditLog`, `SystemConfig`, `NotificationQueue`, `BankAccount`, `PaymentCenter`, `Holiday`, `LocationZone`, `UnitType`, `CustomerGroup`, `Settlement`
+  - **Validation**: `npx prisma validate && npx prisma migrate dev --name core_db`
+  - **Risk**: Multi-schema Prisma requires raw SQL for cross-schema references
 
+- [ ] T087 Create Features DB schema (10 tables: Tariff, Charge, Report, Job, etc.)
+  - **Dependencies**: T086
+  - **Area/Files**: `backend/prisma/schema.prisma` (features schema), migration for `features_db/`
+  - **Acceptance**: Features tables: `Tariff`, `TariffVersion`, `TariffCharge`, `TariffChargeDetail`, `ReportJob`, `ReportExport`, `ScheduledJob`, `ExportHistory`, `RunningActivity`, `ContractualRequest`
+  - **Validation**: `npx prisma migrate dev --name features_db`
+  - **Risk**: Tariff model must support 5 charge modes (STEPS/FLAT/STATIC/PER_UNIT/ZERO) and settlement types (FIXED/PERCENTAGE/ONE_TIME)
 
+- [ ] T088 Create Area DB template (45 tables)
+  - **Dependencies**: T087
+  - **Area/Files**: `backend/prisma/schema.prisma` (area template), migration script per area
+  - **Acceptance**: 45 tables per area: `Customer`, `CustomerMeter`, `MeterReading`, `Transaction`, `InvoiceDetail`, `PaymentAllocation`, `CustomerLedgerEntry`, `Alert`, `ChatMessage`, `Task`, `Approval`, `Attachment`, `TroubleTicket`, `WaterBalance`, `SolarWalletTransaction`, `ChilledWaterSettlement`, `SIMCard`, `SIMAssignment`, `MeterStatusLog`, `ReadingReview`, `ReadingThreshold`, `JournalEntry`, etc.
+  - **Validation**: Template applied to 1 test area; all FK/indexes verified
+  - **Risk**: 15 schemas × 45 tables = 675 tables total — migration time could be significant
 
+- [ ] T089 Implement 16-profile RBAC with area middleware
+  - **Dependencies**: T086
+  - **Area/Files**: `backend/src/auth/`, new `area.middleware.ts`, role enum expansion
+  - **Acceptance**: 16 roles (super_admin, system_admin, admin, area_manager, team_leader, operator, technician, finance, support, customer, collector, meter_reader, inspector, supervisor, accountant, viewer); area-scoped queries enforced via middleware; feature-level permissions (27+)
+  - **Validation**: `npm test -- auth rbac area`
+  - **Risk**: Area middleware must not add >50ms per request; index on `area_id`
 
+- [ ] T090 i18n engine: 676 AR/EN keys
+  - **Dependencies**: T086
+  - **Area/Files**: `Frontend/src/lib/i18n/`, `backend/src/common/i18n/`
+  - **Acceptance**: All UI strings in Arabic + English; language toggle persists per session; RTL support maintained
+  - **Validation**: `bun run build` (no missing key errors)
+  - **Risk**: Key coverage must match all new pages; audit against reference system UI strings
 
+---
 
+## Phase 1: Infrastructure (Symbiot Bridge + Availability Plans)
+
+- [ ] T091 Symbiot bridge: 10 TCP × 100 HTTP multiplex
+  - **Dependencies**: T086
+  - **Area/Files**: `backend/src/symbiot/`, WinService wrapper
+  - **Acceptance**: 10 TCP channels (ports 5010-5019), each supporting 100 concurrent connections; health check every 30s; auto-failover on dead channel; exponential backoff reconnection; quarantine corrupt readings
+  - **Validation**: `npm test -- symbiot` + manual channel kill/recovery test
+  - **Risk**: Windows service packaging; use `node-windows` or .NET wrapper
+
+- [ ] T092 3 availability plans (Full/Safety/Failover)
+  - **Dependencies**: T086, T087, T088
+  - **Area/Files**: `backend/src/common/availability/`, `Frontend/src/lib/availability.ts`
+  - **Acceptance**: Plan 1 (Full) = all modules; Plan 2 (Safety) = Core DB + area DBs, no billing; Plan 3 (Failover) = read-only Core DB cache; switchable via config + feature flag
+  - **Validation**: Each plan starts, loads its module set, and rejects unauthorized features
+  - **Risk**: Safety plan must not accidentally expose billing routes; test with integration tests
+
+---
+
+## Phase 2: Core Pages (UI Implementation)
+
+- [ ] T093 Customer page (3×5 business cards design)
+  - **Dependencies**: T086, T088, T090
+  - **Area/Files**: `Frontend/src/components/customers/` (rewrite)
+  - **Acceptance**: Business card grid (3 columns × 5 rows); each card shows: name, code, phone, meter count, balance (color-coded); inline editing; attachment upload; customer statement matrix; transfer ownership; solar wallet display
+  - **Validation**: `graphify query "customer cards grid" && bun run lint && bun run build`
+  - **Risk**: Must preserve existing customer detail navigation
+
+- [ ] T094 Meter page (type icons, relay signals, 11 actions)
+  - **Dependencies**: T086, T088
+  - **Area/Files**: `Frontend/src/components/meters/` (rewrite), `backend/src/meters/`
+  - **Acceptance**: 5 meter types with distinct icons; relay status signals (CONNECTED/DISCONNECTED); 11 per-meter actions (View, Edit, Readings, History, Assign, Unassign, Synchronize, Transfer, Replace, Terminate, Delete); 8-status lifecycle (available/assigned/active/offline/faulty/replaced/terminated/retired)
+  - **Validation**: `graphify query "meter type icons relay signals lifecycle" && bun run lint && bun run build`
+  - **Risk**: Real-time relay status requires Symbiot bridge (T091) or polling
+
+- [ ] T095 Balances page (5 tabs: Water/Electric/Solar/Chilled/Gas)
+  - **Dependencies**: T086, T088
+  - **Area/Files**: `Frontend/src/components/billing/BalancesPage.tsx`
+  - **Acceptance**: 5 utility tabs; per-tab: total invoiced, total paid, outstanding, aging buckets (0-30/31-60/61-90/90+), stacked bar chart, per-customer aging table with color-coded balances, credit balance with CR suffix
+  - **Validation**: `graphify query "balances aging tabs utilities" && bun run lint && bun run build`
+  - **Risk**: Aging query performance on 100k+ invoices; add indexes
+
+- [ ] T096 Payments page (search → history → pay flow)
+  - **Dependencies**: T086, T088
+  - **Area/Files**: `Frontend/src/components/billing/PaymentsPage.tsx`, `backend/src/payments/`
+  - **Acceptance**: Search customer → view balance history → record payment (6 methods: Cash/Cheque/Bank Transfer/Mobile Wallet/Online/Card); payment allocation oldest-due-first; receipt printing; payment reversal (super_admin only); bulk payment upload Excel/CSV
+  - **Validation**: `graphify query "payments search history record allocation" && bun run lint && bun run build`
+  - **Risk**: Allocation must be atomic in transaction
+
+- [ ] T097 Invoices page (preview + pay + delete + under review)
+  - **Dependencies**: T086, T088
+  - **Area/Files**: `Frontend/src/components/billing/InvoicesPage.tsx`, `backend/src/billing/`
+  - **Acceptance**: Invoice list with 18 columns; per-invoice detail (line items, payment history, activity timeline); invoice statuses (Draft/Issued/Partial/Paid/Overdue/Cancelled); PDF download; batch invoice generation; invoice adjustment; overdue detection; solar + chilled water invoice support
+  - **Validation**: `graphify query "invoices preview pay delete lifecycle" && bun run lint && bun run build`
+  - **Risk**: Immutability after issue; enforce via DB trigger
+
+- [ ] T098 Readings page (unified + quarantine + solar wallet)
+  - **Dependencies**: T086, T088, T091
+  - **Area/Files**: `Frontend/src/components/readings/ReadingsPage.tsx`, `backend/src/readings/`
+  - **Acceptance**: Unified reading list (all meter types); review queue tab (pending/suspicious/corrected); reading entry with smart validation (negative/high/zero warnings); quarantine system for corrupt Symbiot data; solar wallet register tracking (180/280 readings); 6 reading statuses (valid/pending/estimated/suspicious/corrected/rejected)
+  - **Validation**: `graphify query "readings unified quarantine solar smart validation" && bun run lint && bun run build`
+  - **Risk**: Quarantine must not block valid readings; separate quarantine queue
+
+---
+
+## Phase 3: Features (Lifecycle, Tariffs, Reports, Admin)
+
+- [ ] T099 Meter Lifecycle + Data Hub (4-stage + all processes)
+  - **Dependencies**: T094, T098
+  - **Area/Files**: `Frontend/src/components/meters/` (lifecycle views), `backend/src/meters/lifecycle/`
+  - **Acceptance**: 4 lifecycle stages (Installation → Operation → Maintenance → Retirement); all processes per stage: Assign, Activate, Read, Replace, Terminate, Retire, Reactivate, Transfer; status transition guard with audit
+  - **Validation**: Lifecycle state machine covers all valid transitions; invalid ones rejected
+  - **Risk**: Complex state machine; test all 8×8 transition matrix
+
+- [ ] T100 Tariffs page (unified with charges + measurement points)
+  - **Dependencies**: T087, T090
+  - **Area/Files**: `Frontend/src/components/billing/TariffsPage.tsx`, `backend/src/billing/tariffs/`
+  - **Acceptance**: Unified tariff list across all 5 meter types; 5 charge modes (STEPS/FLAT/STATIC/PER_UNIT/ZERO); tiered pricing per charge; 3 settlement types (FIXED/PERCENTAGE/ONE_TIME); tariff versioning with effective dates; per-project assignment
+  - **Validation**: `graphify query "tariffs unified charges steps settlement" && bun run lint && bun run build`
+  - **Risk**: Charge calculation engine must handle overlapping tiers; versioned pricing
+
+- [ ] T101 Workspace (alerts + tickets + assign requests)
+  - **Dependencies**: T093-T098
+  - **Area/Files**: `Frontend/src/components/workspace/`, `backend/src/workspace/`
+  - **Acceptance**: Alert list with 4 severity levels (Critical/High/Medium/Low); acknowledge workflow; ticket kanban (5 columns: Open/In Progress/Waiting/Resolved/Closed); customer support workspace (quick lookup + 4 info tabs); chat system
+  - **Validation**: `graphify query "workspace alerts tickets kanban support" && bun run lint && bun run build`
+  - **Risk**: Real-time notifications require WebSocket or polling
+
+- [ ] T102 32 reports (port 93 JasperReports one-by-one)
+  - **Dependencies**: T087
+  - **Area/Files**: `Frontend/src/components/reports/`, `backend/src/reports/`
+  - **Acceptance**: 32 reports across 7 categories (same as SBill): Dashboard (1), Payments (4), Customers (2), Meters (3), Invoices (4), Consumptions (3), System (1); + 14 Collection System reports + 12 Meter Pulse reports merged; all with PDF + Excel export
+  - **Validation**: Each report generates with correct filters; PDF renders properly; Excel opens without errors
+  - **Risk**: JasperReports port 93 legacy; replace with native fpdf2 + openpyxl
+
+- [ ] T103 Admin + Superadmin merged page
+  - **Dependencies**: T089, T090
+  - **Area/Files**: `Frontend/src/components/admin/`, `backend/src/admin/`
+  - **Acceptance**: Unified admin panel: user management (16 roles, 27 permissions), system config (37+ keys), DB browser, health monitoring, error log viewer, API panel, data management, duplicate detection, approval workflow, contractual requests, running activities, holiday calendar, payment centers, bank accounts
+  - **Validation**: `graphify query "admin superadmin merged panel" && bun run lint && bun run build`
+  - **Risk**: Must not expose superadmin features to non-superadmin users
+
+- [ ] T104 Locations page (renamed units + smart search)
+  - **Dependencies**: T086, T088
+  - **Area/Files**: `Frontend/src/components/locations/`
+  - **Acceptance**: Hierarchical location tree (zone → building → floor → unit); expandable cards with floor grouping; smart search across all location levels; per-unit customer/meter assignment display
+  - **Validation**: `graphify query "locations hierarchy tree expandable smart search" && bun run lint && bun run build`
+  - **Risk**: Deep nesting (5+ levels) must not break UI
+
+- [ ] T105 Login page (Meter Verse theme, role redirect)
+  - **Dependencies**: T089
+  - **Area/Files**: `Frontend/src/components/auth/LoginPage.tsx` (rewrite)
+  - **Acceptance**: Meter Verse branded login; MFA support (optional); role-based redirect on login (admin→dashboard, customer→support, etc.); Arabic/English toggle on login screen
+  - **Validation**: `graphify query "login page mfa role redirect bilingual" && bun run lint && bun run build`
+  - **Risk**: MFA requires TOTP secret management in DB
+
+- [ ] T106 Dashboard (per-area KPIs + 5 Recharts)
+  - **Dependencies**: T093-T098
+  - **Area/Files**: `Frontend/src/components/dashboard/DashboardPage.tsx` (rewrite)
+  - **Acceptance**: Per-area KPI cards (8 stat cards with animated counters + trend %); 5 Recharts (Consumption AreaChart, Revenue BarChart, Meter Status Doughnut, Alert Summary, Recent Activity Timeline); area selector dropdown; date range picker
+  - **Validation**: `graphify query "dashboard recharts per-area kpi animated" && bun run lint && bun run build`
+  - **Risk**: Recharts requires `recharts` npm package — verify compatibility
+
+---
+
+## Phase 4: Data Migration (SBill + Collection Tracker → New Structure)
+
+- [ ] T107 Solar wallet + historical data migration
+  - **Dependencies**: T098
+  - **Area/Files**: `scripts/migration/solar-wallet/`
+  - **Acceptance**: Solar wallet transactions migrated from Collection System; 180/280 register readings preserved; customer solar balance history intact
+  - **Validation**: Post-migration balance matches pre-migration totals
+  - **Risk**: Data format differences between old and new; reconcile row by row
+
+- [ ] T108 Data migration: SBill Palm Hills → Area DBs
+  - **Dependencies**: T088
+  - **Area/Files**: `scripts/migration/sbill-palm-hills/`
+  - **Acceptance**: Customers, meters, readings, invoices, payments, tariffs migrated from SBill Palm Hills (10.50.30.2:9999) to respective area DBs
+  - **Validation**: Row count match; total balance match
+  - **Risk**: SBill has 18 reports, 27 endpoints — data model mismatch; map carefully
+
+- [ ] T109 Data migration: SBill Estates → Area DBs
+  - **Dependencies**: T088
+  - **Area/Files**: `scripts/migration/sbill-estates/`
+  - **Acceptance**: Same scope as T108 but for SBill Estates (10.50.30.5:9000)
+  - **Validation**: Row count match; total balance match
+  - **Risk**: Estates has 5 OBIS reading types, sub-meter hierarchy — additional mapping complexity
+
+- [ ] T110 Data migration: Collection Tracker → new structure
+  - **Dependencies**: T088
+  - **Area/Files**: `scripts/migration/collection-tracker/`
+  - **Acceptance**: All 36 tables mapped to new structure; 8 area schemas merged into 15; billing history (5 charge modes, tiered pricing, settlement types) preserved; attachments, chat, approvals migrated
+  - **Validation**: `python scripts/validation/compare_balances.py` — balance match per area
+  - **Risk**: Collection Tracker uses per-area schema isolation — merge into 15 unified area DBs
+
+- [ ] T111 30-day parallel run validation
+  - **Dependencies**: T108-T110
+  - **Area/Files**: `scripts/validation/parallel-run/`
+  - **Acceptance**: Both old (Collection System + SBill) and new (Meter Verse) process daily operations; nightly reconciliation report flags discrepancies; zero data loss confirmed
+  - **Validation**: 30 consecutive daily reconciliation reports with 0 discrepancies
+  - **Risk**: Parallel run doubles operational workload; must be automated
+
+---
+
+## Phase 5: Quality (Security, Load, Certification)
+
+- [ ] T112 Security audit + penetration testing
+  - **Dependencies**: T086-T106
+  - **Area/Files**: `.semgrep-rules.yaml`, `security/`, CI pipeline
+  - **Acceptance**: OWASP Top 10 scanned; no SQL injection, XSS, or CSRF vulnerabilities; RBAC enforcement verified; secrets scanned; dependency CVEs checked
+  - **Validation**: `semgrep --config=auto .` 0 findings; `npm audit` 0 critical
+  - **Risk**: False positives; tune rules per framework
+
+- [ ] T113 Load test (20 concurrent users)
+  - **Dependencies**: T086-T106
+  - **Area/Files**: `scripts/load-test/`
+  - **Acceptance**: 20 concurrent users executing all CRUD operations; page load < 2s; API response < 500ms P95; no connection pool exhaustion
+  - **Validation**: `k6 run scripts/load-test/scenario.js`
+  - **Risk**: DB connection pool may need tuning; watch `max_connections`
+
+- [ ] T114 Graphify 1000-node certification
+  - **Dependencies**: T086-T106
+  - **Area/Files**: `Frontend/graphify-out/`
+  - **Acceptance**: Knowledge graph parses 1000+ code nodes; structural AST completes without errors; god nodes identified; communities detected
+  - **Validation**: `graphify update . && graphify query "node count >= 1000"`
+  - **Risk**: Graph size may exceed memory; split by module
+
+- [ ] T115 SpeckIt loop testing per phase
+  - **Dependencies**: T086-T106
+  - **Area/Files**: `.specify/`, `scripts/speckit-loop/`
+  - **Acceptance**: Automated loop test for each phase runs spec requirements → implementation → validation → report; all phases pass
+  - **Validation**: `python scripts/speckit-loop.py`
+  - **Risk**: SpeckIt requires .NET runtime; verify availability
+
+- [ ] T116 CI/CD pipeline (Linux + Windows)
+  - **Dependencies**: T086-T106
+  - **Area/Files**: `ci-cd/`, `.github/workflows/`
+  - **Acceptance**: GitHub Actions: frontend lint+build on Ubuntu, backend test on Ubuntu, Symbiot bridge build on Windows, security scan, SBOM generation; all 5 jobs green
+  - **Validation**: Push to branch triggers full CI; all jobs pass
+  - **Risk**: Windows runner may need self-hosted runner for Symbiot bridge build
+
+---
+
+## Phase 6: Launch (Deploy, Cutover, Documentation)
+
+- [ ] T117 Deploy: Core on Linux, Symbiot bridge on Windows
+  - **Dependencies**: T116
+  - **Area/Files**: `MASTER-DEPLOYMENT-GUIDE.md`, deployment scripts
+  - **Acceptance**: NestJS API + Next.js frontend running on Linux (Ubuntu 22.04); Symbiot bridge running as Windows service; PostgreSQL cluster with Core + Features + 15 Area DBs; Nginx reverse proxy with SSL
+  - **Validation**: `curl https://core.meter-verse.internal/api/v1/health` returns 200
+  - **Risk**: Network latency between Linux API and Windows bridge; keep bridge on same LAN
+
+- [ ] T118 Cutover + DNS switch
+  - **Dependencies**: T117
+  - **Area/Files**: DNS config, Nginx config
+  - **Acceptance**: DNS switched from old systems to new; old systems remain available for rollback; 24h monitoring after cutover
+  - **Validation**: All user traffic reaches new system; no errors in first 24h
+  - **Risk**: DNS propagation delay; keep old systems up for 7 days
+
+- [ ] T119 Documentation freeze + user training
+  - **Dependencies**: T118
+  - **Area/Files**: `documentation/`, `docs/`
+  - **Acceptance**: All documentation final: architecture, deployment, migration, user guides, API docs; user training completed (1 session per role)
+  - **Validation**: Training sign-off from all user groups
+  - **Risk**: Documentation drift after freeze; enforce change freeze
+
+- [ ] T120 Post-launch monitoring (30 days)
+  - **Dependencies**: T119
+  - **Area/Files**: `MONITORING.md`, monitoring dashboard
+  - **Acceptance**: 30-day monitoring period: error rate < 0.1%, uptime > 99.9%, page load < 2s, data reconciliation 0 discrepancies, all 15 areas active
+  - **Validation**: Daily monitoring report; 30 consecutive green days
+  - **Risk**: Monitoring fatigue; automate with alert thresholds
+
+---
+
+## Reserved: T121-T150
+
+| ID | Description |
+|---|---|
+| T121-T130 | Bug fixes from post-launch monitoring (priority-ranked) |
+| T131-T140 | Feature enhancements (user-requested) |
+| T141-T150 | Performance optimizations + technical debt
