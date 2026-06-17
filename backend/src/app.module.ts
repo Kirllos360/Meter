@@ -18,6 +18,7 @@ import { DashboardModule } from './projects/dashboard/dashboard.module';
 import { ReadingsModule } from './readings/readings.module';
 import { WaterBalanceModule } from './readings/water-balance/water-balance.module';
 import { BillingModule } from './billing/billing.module';
+import { PaymentsModule } from './payments/payments.module';
 import { CorrelationMiddleware } from './common/http/correlation.middleware';
 
 @Module({
@@ -36,7 +37,8 @@ import { CorrelationMiddleware } from './common/http/correlation.middleware';
     DashboardModule,
     ReadingsModule,
     WaterBalanceModule,
-    BillingModule
+    BillingModule,
+    PaymentsModule
   ],
   controllers: [AppController],
   providers: [

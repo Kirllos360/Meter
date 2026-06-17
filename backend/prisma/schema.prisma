@@ -5,7 +5,7 @@ generator client {
 datasource db {
   provider          = "postgresql"
   url               = env("DATABASE_URL")
-  schemas           = ["sim_system"]
+  schemas           = ["sim_system", "core", "features"]
 }
 
 // ===== Enums =====
@@ -663,4 +663,1158 @@ model LoginAttempt {
   @@map("login_attempts")
   @@schema("sim_system")
   @@index([userId, attemptedAt])
+}
+
+// ===== Core Schema Enums (v2.0.0) =====
+
+enum UserStatus {
+  active
+  inactive
+  locked
+  suspended
+  @@map("user_status")
+  @@schema("core")
+}
+
+enum AuditActionType {
+  create
+  update
+  delete
+  login
+  logout
+  assign
+  unassign
+  approve
+  reject
+  correct
+  generate
+  issue
+  cancel
+  @@map("audit_action_type")
+  @@schema("core")
+}
+
+enum NotificationType {
+  email
+  sms
+  push
+  in_app
+  @@map("notification_type")
+  @@schema("core")
+}
+
+enum ReferenceObjectType {
+  invoice
+  payment
+  adjustment
+  reading
+  assignment
+  customer
+  meter
+  @@map("reference_object_type")
+  @@schema("core")
+}
+
+enum SettlementStatus {
+  pending
+  in_progress
+  settled
+  disputed
+  @@map("settlement_status")
+  @@schema("core")
+}
+
+enum ZoneType {
+  country
+  governorate
+  city
+  district
+  area
+  @@map("zone_type")
+  @@schema("core")
+}
+
+// ===== Core Schema Models (v2.0.0) =====
+
+model CoreUser {
+  id                   String     @id @default(uuid()) @map("id")
+  username             String     @unique @map("username")
+  email                String     @unique @map("email")
+  passwordHash         String     @map("password_hash")
+  isMfaEnabled         Boolean    @default(false) @map("is_mfa_enabled")
+  mfaSecret            String?    @map("mfa_secret")
+  status               UserStatus @default(active) @map("status")
+  lastLoginAt          DateTime?  @map("last_login_at")
+  passwordChangedAt    DateTime?  @map("password_changed_at")
+  failedLoginAttempts  Int        @default(0) @map("failed_login_attempts")
+  refreshTokenHash     String?    @map("refresh_token_hash")
+  createdAt            DateTime   @default(now()) @map("created_at")
+  updatedAt            DateTime   @updatedAt @map("updated_at")
+  createdBy            String?    @map("created_by")
+  updatedBy            String?    @map("updated_by")
+
+  roleAssignments CoreUserRoleAssignment[]
+  audits          CoreAuditLog[]
+  notifications   CoreNotificationQueue[]
+
+
+  @@map("users")
+  @@schema("core")
+}
+
+model CoreRole {
+  id          String   @id @default(uuid()) @map("id")
+  roleName    String   @map("role_name")
+  roleCode    String   @unique @map("role_code")
+  description String?  @map("description")
+  isSystem    Boolean  @default(false) @map("is_system")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  permissions CoreRolePermission[]
+  assignments CoreUserRoleAssignment[]
+
+  @@map("roles")
+  @@schema("core")
+}
+
+model CorePermission {
+  id             String   @id @default(uuid()) @map("id")
+  permissionCode String   @unique @map("permission_code")
+  displayName    String   @map("display_name")
+  module         String   @map("module")
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  roles CoreRolePermission[]
+
+  @@map("permissions")
+  @@schema("core")
+}
+
+model CoreRolePermission {
+  id           String        @id @default(uuid()) @map("id")
+  roleId       String        @map("role_id")
+  permissionId String        @map("permission_id")
+  role         CoreRole      @relation(fields: [roleId], references: [id])
+  permission   CorePermission @relation(fields: [permissionId], references: [id])
+
+  @@unique([roleId, permissionId])
+  @@map("role_permissions")
+  @@schema("core")
+}
+
+model CoreUserRoleAssignment {
+  id         String   @id @default(uuid()) @map("id")
+  userId     String   @map("user_id")
+  roleId     String   @map("role_id")
+  areaId     String?  @map("area_id")
+  assignedAt DateTime @default(now()) @map("assigned_at")
+  assignedBy String   @map("assigned_by")
+  user       CoreUser @relation(fields: [userId], references: [id])
+  role       CoreRole @relation(fields: [roleId], references: [id])
+
+  @@map("user_role_assignments")
+  @@schema("core")
+}
+
+model CoreArea {
+  id               String   @id @default(uuid()) @map("id")
+  areaCode         String   @unique @map("area_code")
+  areaName         String   @map("area_name")
+  databaseName     String   @map("database_name")
+  connectionString String   @map("connection_string")
+  isActive         Boolean  @default(true) @map("is_active")
+  createdAt        DateTime @default(now()) @map("created_at")
+
+  projects        CoreProject[]
+  holidays        CoreHoliday[]
+  settlements     CoreSettlement[]
+  paymentCenters  CorePaymentCenter[]
+
+  @@map("areas")
+  @@schema("core")
+}
+
+model CoreProject {
+  id           String   @id @default(uuid()) @map("id")
+  areaId       String   @map("area_id")
+  projectCode  String   @map("project_code")
+  projectName  String   @map("project_name")
+  locationJson Json?    @map("location_json")
+  isActive     Boolean  @default(true) @map("is_active")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+  area         CoreArea @relation(fields: [areaId], references: [id])
+
+  @@unique([areaId, projectCode])
+  @@map("projects")
+  @@schema("core")
+}
+
+model CoreAuditLog {
+  id          BigInt          @id @default(autoincrement()) @map("id")
+  userId      String          @map("user_id")
+  actionType  AuditActionType @map("action_type")
+  entityType  String          @map("entity_type")
+  entityId    String          @map("entity_id")
+  oldValues   Json?           @map("old_values")
+  newValues   Json?           @map("new_values")
+  ipAddress   String?         @map("ip_address")
+  userAgent   String?         @map("user_agent")
+  areaId      String?         @map("area_id")
+  createdAt   DateTime        @default(now()) @map("created_at")
+  user        CoreUser        @relation(fields: [userId], references: [id])
+
+  @@index([createdAt])
+  @@index([userId])
+  @@index([entityType, entityId])
+  @@map("audit_log")
+  @@schema("core")
+}
+
+model CoreSystemConfig {
+  id          String    @id @default(uuid()) @map("id")
+  module      String    @map("module")
+  configKey   String    @map("config_key")
+  configValue Json      @map("config_value")
+  dataType    String    @default("string") @map("data_type")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+  updatedBy   String?   @map("updated_by")
+
+  @@unique([module, configKey])
+  @@map("system_config")
+  @@schema("core")
+}
+
+model CoreNotificationQueue {
+  id               BigInt              @id @default(autoincrement()) @map("id")
+  userId           String              @map("user_id")
+  notificationType NotificationType    @map("notification_type")
+  title            String              @map("title")
+  body             String?             @map("body")
+  referenceType    ReferenceObjectType @map("reference_type")
+  referenceId      String              @map("reference_id")
+  isRead           Boolean             @default(false) @map("is_read")
+  sentAt           DateTime            @default(now()) @map("sent_at")
+  readAt           DateTime?           @map("read_at")
+  user             CoreUser            @relation(fields: [userId], references: [id])
+
+  @@index([userId, isRead])
+  @@index([sentAt])
+  @@map("notification_queue")
+  @@schema("core")
+}
+
+model CorePaymentCenter {
+  id          String       @id @default(uuid()) @map("id")
+  centerCode  String       @unique @map("center_code")
+  centerName  String       @map("center_name")
+  address     String?      @map("address")
+  isActive    Boolean      @default(true) @map("is_active")
+  createdAt   DateTime     @default(now()) @map("created_at")
+  areaId      String       @map("area_id")
+  area        CoreArea     @relation(fields: [areaId], references: [id])
+
+  bankAccounts CoreBankAccount[]
+
+  @@map("payment_centers")
+  @@schema("core")
+}
+
+model CoreBankAccount {
+  id              String           @id @default(uuid()) @map("id")
+  paymentCenterId String           @map("payment_center_id")
+  accountNumber   String           @map("account_number")
+  bankName        String           @map("bank_name")
+  branchName      String?          @map("branch_name")
+  iban            String?          @map("iban")
+  isActive        Boolean          @default(true) @map("is_active")
+  createdAt       DateTime         @default(now()) @map("created_at")
+  paymentCenter   CorePaymentCenter @relation(fields: [paymentCenterId], references: [id])
+
+  @@map("bank_accounts")
+  @@schema("core")
+}
+
+model CoreHoliday {
+  id          String    @id @default(uuid()) @map("id")
+  areaId      String?   @map("area_id")
+  holidayDate DateTime  @map("holiday_date")
+  description String    @map("description")
+  isRecurring Boolean   @default(false) @map("is_recurring")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  area        CoreArea? @relation(fields: [areaId], references: [id])
+
+  @@unique([areaId, holidayDate])
+  @@map("holidays")
+  @@schema("core")
+}
+
+model CoreLocationZone {
+  id           String          @id @default(uuid()) @map("id")
+  parentZoneId String?         @map("parent_zone_id")
+  zoneCode     String          @map("zone_code")
+  zoneName     String          @map("zone_name")
+  zoneType     ZoneType        @map("zone_type")
+  sortOrder    Int             @default(0) @map("sort_order")
+  createdAt    DateTime        @default(now()) @map("created_at")
+  parentZone   CoreLocationZone? @relation("LocationZoneHierarchy", fields: [parentZoneId], references: [id])
+  childZones   CoreLocationZone[] @relation("LocationZoneHierarchy")
+
+  @@index([parentZoneId])
+  @@map("location_zones")
+  @@schema("core")
+}
+
+model CoreUnitType {
+  id               String   @id @default(uuid()) @map("id")
+  typeCode         String   @unique @map("type_code")
+  typeName         String   @map("type_name")
+  meterTypeDefault String?  @map("meter_type_default")
+  createdAt        DateTime @default(now()) @map("created_at")
+
+  @@map("unit_types")
+  @@schema("core")
+}
+
+model CoreCustomerGroup {
+  id          String   @id @default(uuid()) @map("id")
+  groupName   String   @map("group_name")
+  description String?  @map("description")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@map("customer_groups")
+  @@schema("core")
+}
+
+model CoreSettlement {
+  id             String           @id @default(uuid()) @map("id")
+  areaId         String           @map("area_id")
+  periodStart    DateTime         @map("period_start")
+  periodEnd      DateTime         @map("period_end")
+  status         SettlementStatus @default(pending) @map("status")
+  totalInvoiced  Decimal          @db.Decimal(14, 3) @default(0) @map("total_invoiced")
+  totalCollected Decimal          @db.Decimal(14, 3) @default(0) @map("total_collected")
+  variance       Decimal?         @db.Decimal(14, 3) @map("variance")
+  settledAt      DateTime?        @map("settled_at")
+  createdAt      DateTime         @default(now()) @map("created_at")
+  updatedAt      DateTime         @updatedAt @map("updated_at")
+  area           CoreArea         @relation(fields: [areaId], references: [id])
+
+  @@unique([areaId, periodStart, periodEnd])
+  @@map("settlements")
+  @@schema("core")
+}
+
+// ===== Features Schema Enums (v2.0.0) =====
+
+enum TariffChargeMode {
+  STEPS
+  FLAT
+  STATIC
+  PER_UNIT
+  ZERO
+  @@map("tariff_charge_mode")
+  @@schema("features")
+}
+
+enum TariffSettlementType {
+  FIXED
+  PERCENTAGE
+  ONE_TIME
+  @@map("tariff_settlement_type")
+  @@schema("features")
+}
+
+enum BillingCycleStatus {
+  OPEN
+  LOCKED
+  APPROVED
+  CLOSED
+  CANCELLED
+  @@map("billing_cycle_status")
+  @@schema("features")
+}
+
+enum WalletTransactionType {
+  DEPOSIT
+  WITHDRAWAL
+  TRANSFER
+  ALLOCATION
+  REFUND
+  @@map("wallet_transaction_type")
+  @@schema("features")
+}
+
+enum WalletTransferStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  CANCELLED
+  @@map("wallet_transfer_status")
+  @@schema("features")
+}
+
+enum ChilledWaterAllocationMethod {
+  PROPORTIONAL
+  FIXED
+  METERED
+  @@map("chilled_water_allocation_method")
+  @@schema("features")
+}
+
+enum SettlementRuleType {
+  FIXED_PERCENTAGE
+  TIERED
+  FORMULA
+  MANUAL
+  @@map("settlement_rule_type")
+  @@schema("features")
+}
+
+enum DocumentStatus {
+  DRAFT
+  FINAL
+  ARCHIVED
+  @@map("document_status")
+  @@schema("features")
+}
+
+// ===== Features Schema Models (v2.0.0) =====
+// Domain 1: Tariff Management (Original T087 spec)
+
+model Tariff {
+  id                String              @id @default(uuid()) @map("id")
+  tariffCode        String              @unique @map("tariff_code")
+  tariffName        String              @map("tariff_name")
+  description       String?             @map("description")
+  utilityType       UtilityType         @map("utility_type")
+  isActive          Boolean             @default(true) @map("is_active")
+  effectiveFrom     DateTime            @map("effective_from")
+  effectiveTo       DateTime?           @map("effective_to")
+  createdAt         DateTime            @default(now()) @map("created_at")
+  updatedAt         DateTime            @updatedAt @map("updated_at")
+  createdBy         String              @map("created_by")
+  updatedBy         String              @map("updated_by")
+
+  versions          TariffVersion[]
+  charges           TariffCharge[]
+
+  @@map("tariffs")
+  @@schema("features")
+}
+
+model TariffVersion {
+  id          String   @id @default(uuid()) @map("id")
+  tariffId    String   @map("tariff_id")
+  versionNo   Int      @map("version_no")
+  changeLog   String   @map("change_log")
+  approvedBy  String   @map("approved_by")
+  approvedAt  DateTime @map("approved_at")
+  createdAt   DateTime @default(now()) @map("created_at")
+  tariff      Tariff   @relation(fields: [tariffId], references: [id])
+
+  @@unique([tariffId, versionNo])
+  @@map("tariff_versions")
+  @@schema("features")
+}
+
+model TariffCharge {
+  id             String             @id @default(uuid()) @map("id")
+  tariffId       String             @map("tariff_id")
+  chargeCode     String             @map("charge_code")
+  chargeName     String             @map("charge_name")
+  chargeMode     TariffChargeMode   @map("charge_mode")
+  settlementType TariffSettlementType @map("settlement_type")
+  rateAmount     Decimal?           @db.Decimal(14, 6) @map("rate_amount")
+  unitOfMeasure  String?            @map("unit_of_measure")
+  minCharge      Decimal?           @db.Decimal(14, 3) @map("min_charge")
+  maxCharge      Decimal?           @db.Decimal(14, 3) @map("max_charge")
+  sortOrder      Int                @default(0) @map("sort_order")
+  isActive       Boolean            @default(true) @map("is_active")
+  createdAt      DateTime           @default(now()) @map("created_at")
+  updatedAt      DateTime           @updatedAt @map("updated_at")
+  createdBy      String             @map("created_by")
+  updatedBy      String             @map("updated_by")
+  tariff         Tariff             @relation(fields: [tariffId], references: [id])
+
+  details TariffChargeDetail[]
+
+  @@unique([tariffId, chargeCode])
+  @@map("tariff_charges")
+  @@schema("features")
+}
+
+model TariffChargeDetail {
+  id              String       @id @default(uuid()) @map("id")
+  chargeId        String       @map("charge_id")
+  stepFrom        Decimal?     @db.Decimal(14, 3) @map("step_from")
+  stepTo          Decimal?     @db.Decimal(14, 3) @map("step_to")
+  stepRate        Decimal?     @db.Decimal(14, 6) @map("step_rate")
+  stepAmount      Decimal?     @db.Decimal(14, 3) @map("step_amount")
+  isPercentage    Boolean      @default(false) @map("is_percentage")
+  createdAt       DateTime     @default(now()) @map("created_at")
+  charge          TariffCharge @relation(fields: [chargeId], references: [id])
+
+  @@map("tariff_charge_details")
+  @@schema("features")
+}
+
+// Domain 1b: Reporting & Jobs (Original T087 spec)
+
+model ReportDefinition {
+  id             String        @id @default(uuid()) @map("id")
+  reportCode     String        @map("report_code")
+  reportName     String        @map("report_name")
+  reportCategory String        @map("report_category")
+  description    String?       @map("description")
+  parameters     Json?         @map("parameters")
+  isActive       Boolean       @default(true) @map("is_active")
+  createdAt      DateTime      @default(now()) @map("created_at")
+  updatedAt      DateTime      @updatedAt @map("updated_at")
+  createdBy      String        @map("created_by")
+  updatedBy      String        @map("updated_by")
+
+  exports        ReportExport[]
+
+  @@unique([reportCode])
+  @@map("report_definitions")
+  @@schema("features")
+}
+
+model ReportExport {
+  id             String     @id @default(uuid()) @map("id")
+  reportDefId    String     @map("report_def_id")
+  format         String     @map("format")
+  filters        Json?      @map("filters")
+  fileUrl        String?    @map("file_url")
+  fileSize       Int?       @map("file_size")
+  status         String     @default("pending") @map("status")
+  errorMessage   String?    @map("error_message")
+  requestedBy    String     @map("requested_by")
+  requestedAt    DateTime   @default(now()) @map("requested_at")
+  completedAt    DateTime?  @map("completed_at")
+  expiresAt      DateTime?  @map("expires_at")
+  reportDef     ReportDefinition @relation(fields: [reportDefId], references: [id])
+
+  @@index([status])
+  @@index([requestedBy])
+  @@map("report_exports")
+  @@schema("features")
+}
+
+model ScheduledJob {
+  id              String    @id @default(uuid()) @map("id")
+  jobName         String    @map("job_name")
+  jobType         String    @map("job_type")
+  cronExpression  String    @map("cron_expression")
+  parameters      Json?     @map("parameters")
+  isActive        Boolean   @default(true) @map("is_active")
+  lastRunAt       DateTime? @map("last_run_at")
+  nextRunAt       DateTime? @map("next_run_at")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+  createdBy       String    @map("created_by")
+  updatedBy       String    @map("updated_by")
+
+  @@map("scheduled_jobs")
+  @@schema("features")
+}
+
+model ExportHistory {
+  id             String    @id @default(uuid()) @map("id")
+  exportType     String    @map("export_type")
+  fileName       String    @map("file_name")
+  fileUrl        String    @map("file_url")
+  fileSize       Int       @map("file_size")
+  recordCount    Int       @default(0) @map("record_count")
+  status         String    @default("completed") @map("status")
+  errorMessage   String?   @map("error_message")
+  requestedBy    String    @map("requested_by")
+  createdAt      DateTime  @default(now()) @map("created_at")
+  completedAt    DateTime? @map("completed_at")
+
+  @@index([requestedBy])
+  @@index([createdAt])
+  @@map("export_history")
+  @@schema("features")
+}
+
+model RunningActivity {
+  id            String   @id @default(uuid()) @map("id")
+  activityType  String   @map("activity_type")
+  referenceType String   @map("reference_type")
+  referenceId   String   @map("reference_id")
+  status        String   @default("running") @map("status")
+  progressPct   Int      @default(0) @map("progress_pct")
+  startedBy     String   @map("started_by")
+  startedAt     DateTime @default(now()) @map("started_at")
+  completedAt   DateTime? @map("completed_at")
+  errorMessage  String?  @map("error_message")
+
+  @@index([status])
+  @@index([activityType])
+  @@map("running_activities")
+  @@schema("features")
+}
+
+model ContractualRequest {
+  id              String    @id @default(uuid()) @map("id")
+  requestCode     String    @unique @map("request_code")
+  requestType     String    @map("request_type")
+  areaId          String    @map("area_id")
+  projectId       String?   @map("project_id")
+  customerId      String?   @map("customer_id")
+  status          String    @default("draft") @map("status")
+  requestData     Json      @map("request_data")
+  approvalData    Json?     @map("approval_data")
+  requestedBy     String    @map("requested_by")
+  approvedBy      String?   @map("approved_by")
+  requestedAt     DateTime  @default(now()) @map("requested_at")
+  approvedAt      DateTime? @map("approved_at")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  @@index([areaId, status])
+  @@index([requestedBy])
+  @@map("contractual_requests")
+  @@schema("features")
+}
+
+// Domain 2: Solar Wallet
+
+model WalletAccount {
+  id             String   @id @default(uuid()) @map("id")
+  accountCode    String   @unique @map("account_code")
+  accountName    String   @map("account_name")
+  customerId     String   @map("customer_id")
+  areaId         String   @map("area_id")
+  currency       String   @default("EGP") @map("currency")
+  balance        Decimal  @default(0) @db.Decimal(14, 3) @map("balance")
+  status         String   @default("active") @map("status")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+  createdBy      String   @map("created_by")
+  updatedBy      String   @map("updated_by")
+
+  transactions   WalletTransaction[]
+  balances       WalletBalance[]
+  transfersOut   WalletTransfer[]       @relation("TransferSource")
+  transfersIn    WalletTransfer[]       @relation("TransferTarget")
+  allocations    WalletAllocation[]
+
+  @@index([customerId])
+  @@index([areaId])
+  @@map("wallet_accounts")
+  @@schema("features")
+}
+
+model WalletTransaction {
+  id              String               @id @default(uuid()) @map("id")
+  accountId       String               @map("account_id")
+  transactionCode String               @unique @map("transaction_code")
+  transactionType WalletTransactionType @map("transaction_type")
+  amount          Decimal              @db.Decimal(14, 3) @map("amount")
+  balanceBefore   Decimal              @db.Decimal(14, 3) @map("balance_before")
+  balanceAfter    Decimal              @db.Decimal(14, 3) @map("balance_after")
+  referenceType   String?              @map("reference_type")
+  referenceId     String?              @map("reference_id")
+  description     String?              @map("description")
+  status          String               @default("completed") @map("status")
+  createdAt       DateTime             @default(now()) @map("created_at")
+  performedBy     String               @map("performed_by")
+  account         WalletAccount        @relation(fields: [accountId], references: [id])
+
+  @@index([accountId, createdAt])
+  @@index([referenceType, referenceId])
+  @@map("wallet_transactions")
+  @@schema("features")
+}
+
+model WalletBalance {
+  id          String        @id @default(uuid()) @map("id")
+  accountId   String        @map("account_id")
+  balanceDate DateTime      @map("balance_date")
+  openingBal  Decimal       @db.Decimal(14, 3) @map("opening_balance")
+  closingBal  Decimal       @db.Decimal(14, 3) @map("closing_balance")
+  totalDebit  Decimal       @default(0) @db.Decimal(14, 3) @map("total_debit")
+  totalCredit Decimal       @default(0) @db.Decimal(14, 3) @map("total_credit")
+  createdAt   DateTime      @default(now()) @map("created_at")
+  account     WalletAccount @relation(fields: [accountId], references: [id])
+
+  @@unique([accountId, balanceDate])
+  @@map("wallet_balances")
+  @@schema("features")
+}
+
+model WalletAllocation {
+  id              String        @id @default(uuid()) @map("id")
+  accountId       String        @map("account_id")
+  allocationCode  String        @unique @map("allocation_code")
+  allocatedAmount Decimal       @db.Decimal(14, 3) @map("allocated_amount")
+  usedAmount      Decimal       @default(0) @db.Decimal(14, 3) @map("used_amount")
+  purpose         String        @map("purpose")
+  referenceType   String?       @map("reference_type")
+  referenceId     String?       @map("reference_id")
+  expiresAt       DateTime?     @map("expires_at")
+  status          String        @default("active") @map("status")
+  createdAt       DateTime      @default(now()) @map("created_at")
+  createdBy       String        @map("created_by")
+  account         WalletAccount @relation(fields: [accountId], references: [id])
+
+  @@index([accountId])
+  @@index([status])
+  @@map("wallet_allocations")
+  @@schema("features")
+}
+
+model WalletTransfer {
+  id                  String             @id @default(uuid()) @map("id")
+  transferCode        String             @unique @map("transfer_code")
+  sourceAccountId     String             @map("source_account_id")
+  targetAccountId     String             @map("target_account_id")
+  amount              Decimal            @db.Decimal(14, 3) @map("amount")
+  fee                 Decimal            @default(0) @db.Decimal(14, 3) @map("fee")
+  status              WalletTransferStatus @default(PENDING) @map("status")
+  description         String?            @map("description")
+  approvedBy          String?            @map("approved_by")
+  approvedAt          DateTime?          @map("approved_at")
+  createdAt           DateTime           @default(now()) @map("created_at")
+  completedAt         DateTime?          @map("completed_at")
+  performedBy         String             @map("performed_by")
+  sourceAccount       WalletAccount      @relation("TransferSource", fields: [sourceAccountId], references: [id])
+  targetAccount       WalletAccount      @relation("TransferTarget", fields: [targetAccountId], references: [id])
+
+  @@index([sourceAccountId])
+  @@index([targetAccountId])
+  @@index([status])
+  @@map("wallet_transfers")
+  @@schema("features")
+}
+
+// Domain 3: Chilled Water
+
+model ChilledWaterConfig {
+  id                  String                     @id @default(uuid()) @map("id")
+  areaId              String                     @map("area_id")
+  configCode          String                     @unique @map("config_code")
+  allocationMethod    ChilledWaterAllocationMethod @map("allocation_method")
+  baseRate            Decimal                    @db.Decimal(14, 6) @map("base_rate")
+  peakRate            Decimal?                   @db.Decimal(14, 6) @map("peak_rate")
+  offPeakRate         Decimal?                   @db.Decimal(14, 6) @map("off_peak_rate")
+  serviceCharge       Decimal                    @default(0) @db.Decimal(14, 3) @map("service_charge")
+  billingCycle        String                     @default("monthly") @map("billing_cycle")
+  effectiveFrom       DateTime                   @map("effective_from")
+  effectiveTo         DateTime?                  @map("effective_to")
+  isActive            Boolean                    @default(true) @map("is_active")
+  createdAt           DateTime                   @default(now()) @map("created_at")
+  updatedAt           DateTime                   @updatedAt @map("updated_at")
+  createdBy           String                     @map("created_by")
+  updatedBy           String                     @map("updated_by")
+
+  readings            ChilledWaterReading[]
+  consumptions        ChilledWaterConsumption[]
+  invoices            ChilledWaterInvoice[]
+  allocations         ChilledWaterAllocation[]
+
+  @@map("chilled_water_configs")
+  @@schema("features")
+}
+
+model ChilledWaterReading {
+  id              String   @id @default(uuid()) @map("id")
+  configId        String   @map("config_id")
+  customerId      String   @map("customer_id")
+  unitId          String   @map("unit_id")
+  readingDate     DateTime @map("reading_date")
+  readingValue    Decimal  @db.Decimal(12, 3) @map("reading_value")
+  previousReading Decimal? @db.Decimal(12, 3) @map("previous_reading")
+  consumption     Decimal? @db.Decimal(12, 3) @map("consumption")
+  source          String   @default("manual") @map("source")
+  notes           String?  @map("notes")
+  recordedBy      String   @map("recorded_by")
+  recordedAt      DateTime @default(now()) @map("recorded_at")
+  config          ChilledWaterConfig @relation(fields: [configId], references: [id])
+
+  @@index([configId, readingDate])
+  @@index([customerId])
+  @@map("chilled_water_readings")
+  @@schema("features")
+}
+
+model ChilledWaterConsumption {
+  id             String   @id @default(uuid()) @map("id")
+  configId       String   @map("config_id")
+  customerId     String   @map("customer_id")
+  periodStart    DateTime @map("period_start")
+  periodEnd      DateTime @map("period_end")
+  totalConsumed  Decimal  @db.Decimal(12, 3) @map("total_consumed")
+  peakConsumed   Decimal? @db.Decimal(12, 3) @map("peak_consumed")
+  offPeakConsumed Decimal? @db.Decimal(12, 3) @map("off_peak_consumed")
+  calculatedAt   DateTime @default(now()) @map("calculated_at")
+  config         ChilledWaterConfig @relation(fields: [configId], references: [id])
+
+  invoices       ChilledWaterInvoice[]
+
+  @@unique([configId, customerId, periodStart])
+  @@map("chilled_water_consumptions")
+  @@schema("features")
+}
+
+model ChilledWaterInvoice {
+  id               String   @id @default(uuid()) @map("id")
+  configId         String   @map("config_id")
+  consumptionId    String   @unique @map("consumption_id")
+  customerId       String   @map("customer_id")
+  invoiceNumber    String   @unique @map("invoice_number")
+  consumptionAmount Decimal  @db.Decimal(14, 3) @map("consumption_amount")
+  serviceCharge    Decimal  @default(0) @db.Decimal(14, 3) @map("service_charge")
+  taxAmount        Decimal  @default(0) @db.Decimal(14, 3) @map("tax_amount")
+  totalAmount      Decimal  @db.Decimal(14, 3) @map("total_amount")
+  status           String   @default("draft") @map("status")
+  issuedAt         DateTime? @map("issued_at")
+  dueAt            DateTime? @map("due_at")
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+  config           ChilledWaterConfig @relation(fields: [configId], references: [id])
+  consumption      ChilledWaterConsumption @relation(fields: [consumptionId], references: [id])
+
+  allocations      ChilledWaterAllocation[]
+
+  @@index([configId, status])
+  @@index([customerId])
+  @@map("chilled_water_invoices")
+  @@schema("features")
+}
+
+model ChilledWaterAllocation {
+  id              String   @id @default(uuid()) @map("id")
+  configId        String   @map("config_id")
+  invoiceId       String   @map("invoice_id")
+  customerId      String   @map("customer_id")
+  allocatedAmount Decimal  @db.Decimal(14, 3) @map("allocated_amount")
+  allocationPct   Decimal  @db.Decimal(5, 2) @map("allocation_pct")
+  periodStart     DateTime @map("period_start")
+  periodEnd       DateTime @map("period_end")
+  createdAt       DateTime @default(now()) @map("created_at")
+  config          ChilledWaterConfig @relation(fields: [configId], references: [id])
+  invoice         ChilledWaterInvoice @relation(fields: [invoiceId], references: [id])
+
+  @@index([configId, periodStart])
+  @@map("chilled_water_allocations")
+  @@schema("features")
+}
+
+// Domain 4: Settlement Engine
+
+model SettlementConfig {
+  id              String             @id @default(uuid()) @map("id")
+  configCode      String             @unique @map("config_code")
+  configName      String             @map("config_name")
+  ruleType        SettlementRuleType @map("rule_type")
+  formula         String?            @map("formula")
+  baseValue       Decimal?           @db.Decimal(14, 6) @map("base_value")
+  minValue        Decimal?           @db.Decimal(14, 3) @map("min_value")
+  maxValue        Decimal?           @db.Decimal(14, 3) @map("max_value")
+  isActive        Boolean            @default(true) @map("is_active")
+  effectiveFrom   DateTime           @map("effective_from")
+  effectiveTo     DateTime?          @map("effective_to")
+  createdAt       DateTime           @default(now()) @map("created_at")
+  updatedAt       DateTime           @updatedAt @map("updated_at")
+  createdBy       String             @map("created_by")
+  updatedBy       String             @map("updated_by")
+
+  rules SettlementRule[]
+
+  @@map("settlement_configs")
+  @@schema("features")
+}
+
+model SettlementPeriod {
+  id            String   @id @default(uuid()) @map("id")
+  periodCode    String   @unique @map("period_code")
+  periodName    String   @map("period_name")
+  startDate     DateTime @map("start_date")
+  endDate       DateTime @map("end_date")
+  status        String   @default("pending") @map("status")
+  isActive      Boolean  @default(true) @map("is_active")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+  createdBy     String   @map("created_by")
+  updatedBy     String   @map("updated_by")
+
+  transactions SettlementTransaction[]
+
+  @@unique([startDate, endDate])
+  @@map("settlement_periods")
+  @@schema("features")
+}
+
+model SettlementRule {
+  id             String           @id @default(uuid()) @map("id")
+  configId       String           @map("config_id")
+  ruleCode       String           @unique @map("rule_code")
+  ruleName       String           @map("rule_name")
+  ruleType       SettlementRuleType @map("rule_type")
+  priority       Int              @default(0) @map("priority")
+  conditions     Json?            @map("conditions")
+  formula        String?          @map("formula")
+  rateValue      Decimal?         @db.Decimal(14, 6) @map("rate_value")
+  minThreshold   Decimal?         @db.Decimal(14, 3) @map("min_threshold")
+  maxThreshold   Decimal?         @db.Decimal(14, 3) @map("max_threshold")
+  isActive       Boolean          @default(true) @map("is_active")
+  createdAt      DateTime         @default(now()) @map("created_at")
+  updatedAt      DateTime         @updatedAt @map("updated_at")
+  createdBy      String           @map("created_by")
+  updatedBy      String           @map("updated_by")
+  config         SettlementConfig @relation(fields: [configId], references: [id])
+
+  @@index([configId, priority])
+  @@map("settlement_rules")
+  @@schema("features")
+}
+
+model SettlementTransaction {
+  id               String           @id @default(uuid()) @map("id")
+  periodId         String           @map("period_id")
+  transactionCode  String           @unique @map("transaction_code")
+  areaId           String           @map("area_id")
+  sourceType       String           @map("source_type")
+  sourceId         String           @map("source_id")
+  amount           Decimal          @db.Decimal(14, 3) @map("amount")
+  fee              Decimal          @default(0) @db.Decimal(14, 3) @map("fee")
+  netAmount        Decimal          @db.Decimal(14, 3) @map("net_amount")
+  status           String           @default("pending") @map("status")
+  description      String?          @map("description")
+  processedAt      DateTime?        @map("processed_at")
+  createdAt        DateTime         @default(now()) @map("created_at")
+  period           SettlementPeriod @relation(fields: [periodId], references: [id])
+
+  allocations SettlementAllocation[]
+
+  @@index([periodId])
+  @@index([areaId, status])
+  @@map("settlement_transactions")
+  @@schema("features")
+}
+
+model SettlementAllocation {
+  id              String               @id @default(uuid()) @map("id")
+  transactionId   String               @map("transaction_id")
+  targetType      String               @map("target_type")
+  targetId        String               @map("target_id")
+  allocatedAmount Decimal              @db.Decimal(14, 3) @map("allocated_amount")
+  allocationPct   Decimal              @db.Decimal(5, 2) @map("allocation_pct")
+  description     String?              @map("description")
+  createdAt       DateTime             @default(now()) @map("created_at")
+  transaction     SettlementTransaction @relation(fields: [transactionId], references: [id])
+
+  @@index([transactionId])
+  @@map("settlement_allocations")
+  @@schema("features")
+}
+
+// Domain 5: Bill Cycle Governance
+
+model BillingCycle {
+  id              String            @id @default(uuid()) @map("id")
+  cycleCode       String            @unique @map("cycle_code")
+  cycleName       String            @map("cycle_name")
+  status          BillingCycleStatus @default(OPEN) @map("status")
+  startDate       DateTime          @map("start_date")
+  endDate         DateTime          @map("end_date")
+  dueDate         DateTime          @map("due_date")
+  lockDate        DateTime?         @map("lock_date")
+  approveDate     DateTime?         @map("approve_date")
+  closeDate       DateTime?         @map("close_date")
+  notes           String?           @map("notes")
+  createdAt       DateTime          @default(now()) @map("created_at")
+  updatedAt       DateTime          @updatedAt @map("updated_at")
+  createdBy       String            @map("created_by")
+  updatedBy       String            @map("updated_by")
+
+  projects        BillingCycleProject[]
+  approvals       BillingCycleApproval[]
+  audits          BillingCycleAudit[]
+
+  @@map("billing_cycles")
+  @@schema("features")
+}
+
+model BillingCycleProject {
+  id          String       @id @default(uuid()) @map("id")
+  cycleId     String       @map("cycle_id")
+  projectId   String       @map("project_id")
+  areaId      String       @map("area_id")
+  status      BillingCycleStatus @default(OPEN) @map("status")
+  createdAt   DateTime     @default(now()) @map("created_at")
+  updatedAt   DateTime     @updatedAt @map("updated_at")
+  cycle       BillingCycle @relation(fields: [cycleId], references: [id])
+
+  @@unique([cycleId, projectId])
+  @@map("billing_cycle_projects")
+  @@schema("features")
+}
+
+model BillingCycleApproval {
+  id            String       @id @default(uuid()) @map("id")
+  cycleId       String       @map("cycle_id")
+  projectId     String?      @map("project_id")
+  approvedBy    String       @map("approved_by")
+  approvedRole  String       @map("approved_role")
+  approvedAt    DateTime     @default(now()) @map("approved_at")
+  action        String       @map("action")
+  comments      String?      @map("comments")
+  cycle         BillingCycle @relation(fields: [cycleId], references: [id])
+
+  @@index([cycleId])
+  @@map("billing_cycle_approvals")
+  @@schema("features")
+}
+
+model BillingCycleAudit {
+  id          String       @id @default(uuid()) @map("id")
+  cycleId     String       @map("cycle_id")
+  action      String       @map("action")
+  field       String?      @map("field")
+  oldValue    String?      @map("old_value")
+  newValue    String?      @map("new_value")
+  performedBy String       @map("performed_by")
+  performedAt DateTime     @default(now()) @map("performed_at")
+  cycle       BillingCycle @relation(fields: [cycleId], references: [id])
+
+  @@index([cycleId])
+  @@map("billing_cycle_audits")
+  @@schema("features")
+}
+
+// Domain 6: Document Engine
+
+model DocumentTemplate {
+  id              String     @id @default(uuid()) @map("id")
+  templateCode    String     @unique @map("template_code")
+  templateName    String     @map("template_name")
+  documentType    String     @map("document_type")
+  category        String     @map("category")
+  content         String     @map("content")
+  variables       Json?      @map("variables")
+  isActive        Boolean    @default(true) @map("is_active")
+  createdAt       DateTime   @default(now()) @map("created_at")
+  updatedAt       DateTime   @updatedAt @map("updated_at")
+  createdBy       String     @map("created_by")
+  updatedBy       String     @map("updated_by")
+
+  versions        TemplateVersion[]
+  documents       GeneratedDocument[]
+
+  @@map("document_templates")
+  @@schema("features")
+}
+
+model TemplateVersion {
+  id              String           @id @default(uuid()) @map("id")
+  templateId      String           @map("template_id")
+  versionNo       Int              @map("version_no")
+  content         String           @map("content")
+  changeLog       String           @map("change_log")
+  approvedBy      String            @map("approved_by")
+  approvedAt      DateTime         @map("approved_at")
+  createdAt       DateTime         @default(now()) @map("created_at")
+  template        DocumentTemplate @relation(fields: [templateId], references: [id])
+
+  @@unique([templateId, versionNo])
+  @@map("template_versions")
+  @@schema("features")
+}
+
+model GeneratedDocument {
+  id              String           @id @default(uuid()) @map("id")
+  templateId      String           @map("template_id")
+  documentNumber  String           @unique @map("document_number")
+  referenceType   String           @map("reference_type")
+  referenceId     String           @map("reference_id")
+  status          DocumentStatus   @default(DRAFT) @map("status")
+  content         String           @map("content")
+  renderedHtml    String?          @map("rendered_html")
+  fileUrl         String?          @map("file_url")
+  fileSize        Int?             @map("file_size")
+  generatedBy     String           @map("generated_by")
+  generatedAt     DateTime         @default(now()) @map("generated_at")
+  finalizedAt     DateTime?        @map("finalized_at")
+  template        DocumentTemplate @relation(fields: [templateId], references: [id])
+
+  audits DocumentAudit[]
+
+  @@index([referenceType, referenceId])
+  @@index([templateId])
+  @@map("generated_documents")
+  @@schema("features")
+}
+
+model DocumentAudit {
+  id              String            @id @default(uuid()) @map("id")
+  documentId      String            @map("document_id")
+  action          String            @map("action")
+  performedBy     String            @map("performed_by")
+  performedAt     DateTime          @default(now()) @map("performed_at")
+  details         Json?             @map("details")
+  document        GeneratedDocument @relation(fields: [documentId], references: [id])
+
+  @@index([documentId])
+  @@map("document_audits")
+  @@schema("features")
+}
+
+// Domain 7: Invoice Governance
+
+model InvoiceHash {
+  id             String   @id @default(uuid()) @map("id")
+  invoiceId      String   @unique @map("invoice_id")
+  invoiceNumber  String   @map("invoice_number")
+  hashValue      String   @map("hash_value")
+  algorithm      String   @default("SHA-256") @map("algorithm")
+  previousHash   String?  @map("previous_hash")
+  signedBy       String?  @map("signed_by")
+  signedAt       DateTime? @map("signed_at")
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  @@index([hashValue])
+  @@map("invoice_hashes")
+  @@schema("features")
+}
+
+model InvoiceQRCode {
+  id             String   @id @default(uuid()) @map("id")
+  invoiceId      String   @unique @map("invoice_id")
+  invoiceNumber  String   @map("invoice_number")
+  qrData         String   @map("qr_data")
+  qrImageUrl     String?  @map("qr_image_url")
+  generatedAt    DateTime @default(now()) @map("generated_at")
+  expiresAt      DateTime? @map("expires_at")
+  generatedBy    String   @map("generated_by")
+
+  @@index([invoiceId])
+  @@map("invoice_qr_codes")
+  @@schema("features")
+}
+
+model InvoiceGenerationBatch {
+  id             String    @id @default(uuid()) @map("id")
+  batchCode      String    @unique @map("batch_code")
+  cycleId        String    @map("cycle_id")
+  areaId         String    @map("area_id")
+  totalInvoices  Int       @default(0) @map("total_invoices")
+  successfulCnt  Int       @default(0) @map("successful_count")
+  failedCnt      Int       @default(0) @map("failed_count")
+  totalAmount    Decimal   @default(0) @db.Decimal(16, 3) @map("total_amount")
+  status         String    @default("pending") @map("status")
+  errorLog       Json?     @map("error_log")
+  startedAt      DateTime? @map("started_at")
+  completedAt    DateTime? @map("completed_at")
+  createdAt      DateTime  @default(now()) @map("created_at")
+  createdBy      String    @map("created_by")
+
+  @@index([cycleId])
+  @@index([status])
+  @@map("invoice_generation_batches")
+  @@schema("features")
 }

@@ -1,14 +1,14 @@
 import 'reflect-metadata';
 import helmet from 'helmet';
-import express from 'express';
 import { ValidationPipe, Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
+import { NestExpressApplication } from '@nestjs/platform-express';
 import { AppModule } from './app.module';
 import { AllExceptionsFilter } from './common/http/all-exceptions.filter';
 import { setupOpenApi } from './common/openapi/openapi.setup';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, {
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
     logger:
       process.env.NODE_ENV === 'production'
         ? ['log', 'error', 'warn']
@@ -26,7 +26,7 @@ async function bootstrap() {
     allowedHeaders: ['Content-Type', 'Authorization', 'Idempotency-Key']
   });
 
-  app.use(express.json({ limit: '1mb' }));
+  app.useBodyParser('json', { limit: '1mb' });
 
   app.useGlobalPipes(
     new ValidationPipe({

@@ -21,6 +21,7 @@ import { TariffService } from './tariffs/tariff.service';
 import { PeriodService } from './periods/period.service';
 import { LedgerService } from './ledger.service';
 import { WaterBalanceService } from '../readings/water-balance/water-balance.service';
+import { WaterDifferencePolicy } from './water-difference.policy';
 
 @ApiTags('Billing')
 @Controller()
@@ -32,7 +33,8 @@ export class BillingController {
     private readonly tariffService: TariffService,
     private readonly periodService: PeriodService,
     private readonly ledgerService: LedgerService,
-    private readonly waterBalanceService: WaterBalanceService
+    private readonly waterBalanceService: WaterBalanceService,
+    private readonly waterDifferencePolicy: WaterDifferencePolicy
   ) {}
 
   @Post('invoices/generate')
@@ -112,44 +114,15 @@ export class BillingController {
         });
       }
 
-      if (
-        utilityType === 'water' &&
-        (meter.meterType as string) === 'water_main' &&
-        waterDiffMode === 'billable'
-      ) {
-        try {
-          const balance = await this.waterBalanceService.getWaterBalance(
-            dto.projectId,
-            period.startDate,
-            period.endDate
-          );
-          const variance = balance.variance;
-          if (variance !== 0) {
-            await this.prisma.invoiceLine.create({
-              data: {
-                invoiceId: invoice.id,
-                description: 'Water difference variance (billable)',
-                quantity: 1,
-                unitPrice: variance,
-                lineAmount: variance
-              }
-            });
-            const varianceTax = variance * taxRate;
-            await this.prisma.invoice.update({
-              where: { id: invoice.id },
-              data: {
-                subtotalAmount: { increment: variance },
-                taxAmount: { increment: varianceTax },
-                totalAmount: { increment: variance + varianceTax },
-                remainingAmount: { increment: variance + varianceTax }
-              }
-            });
-          }
-        } catch {
-          this.logger.warn(
-            `Water balance unavailable for period ${dto.billingPeriodId}, skipping variance`
-          );
-        }
+      if (utilityType === 'water' && (meter.meterType as string) === 'water_main') {
+        await this.waterDifferencePolicy.apply(
+          invoice.id,
+          dto.projectId,
+          period.startDate,
+          period.endDate,
+          waterDiffMode,
+          taxRate
+        );
       }
 
       count++;
@@ -372,5 +345,65 @@ export class BillingController {
     const where: any = {};
     if (projectId) where.projectId = projectId;
     return this.prisma.billingPeriod.findMany({ where, orderBy: { startDate: 'desc' } });
+  }
+
+  @Get('invoices')
+  @Roles(Role.OPERATOR, Role.PROJECT_ADMIN, Role.SUPER_ADMIN, Role.FINANCE, Role.SUPPORT)
+  @ApiOperation({ summary: 'List invoices' })
+  async listInvoices(
+    @Query('projectId') projectId?: string,
+    @Query('customerId') customerId?: string,
+    @Query('status') status?: string
+  ) {
+    const where: any = {};
+    if (projectId) where.projectId = projectId;
+    if (customerId) where.customerId = customerId;
+    if (status) where.status = status;
+    const invoices = await this.prisma.invoice.findMany({
+      where,
+      orderBy: { createdAt: 'desc' }
+    });
+    const lines = await this.prisma.invoiceLine.findMany({
+      where: { invoiceId: { in: invoices.map((i) => i.id) } }
+    });
+    return invoices.map((inv) => ({
+      ...inv,
+      subtotalAmount: Number(inv.subtotalAmount),
+      taxAmount: Number(inv.taxAmount),
+      totalAmount: Number(inv.totalAmount),
+      paidAmount: Number(inv.paidAmount),
+      remainingAmount: Number(inv.remainingAmount),
+      lines: lines.filter((l) => l.invoiceId === inv.id).map((l) => ({
+        ...l,
+        quantity: Number(l.quantity),
+        unitPrice: Number(l.unitPrice),
+        lineAmount: Number(l.lineAmount)
+      }))
+    }));
+  }
+
+  @Get('invoices/:id')
+  @Roles(Role.OPERATOR, Role.PROJECT_ADMIN, Role.SUPER_ADMIN, Role.FINANCE, Role.SUPPORT)
+  @ApiOperation({ summary: 'Get invoice by ID' })
+  async getInvoice(@Param('id', ParseUUIDPipe) id: string) {
+    const invoice = await this.prisma.invoice.findUnique({ where: { id } });
+    if (!invoice) return { status: 'not_found' };
+    const lines = await this.prisma.invoiceLine.findMany({
+      where: { invoiceId: id }
+    });
+    return {
+      ...invoice,
+      subtotalAmount: Number(invoice.subtotalAmount),
+      taxAmount: Number(invoice.taxAmount),
+      totalAmount: Number(invoice.totalAmount),
+      paidAmount: Number(invoice.paidAmount),
+      remainingAmount: Number(invoice.remainingAmount),
+      lines: lines.map((l) => ({
+        ...l,
+        quantity: Number(l.quantity),
+        unitPrice: Number(l.unitPrice),
+        lineAmount: Number(l.lineAmount)
+      }))
+    };
   }
 }

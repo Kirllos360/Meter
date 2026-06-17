@@ -18,7 +18,7 @@ function yamlPath(): string {
     'specs',
     '001-metering-billing-platform',
     'contracts',
-    'meter-verse-api.yaml'
+    'meter-pulse-api.yaml'
   );
 }
 
