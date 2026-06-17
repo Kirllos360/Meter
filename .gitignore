@@ -86,3 +86,6 @@ graphify-out/cache/
 # Copy artifacts
 backup files/
 --version/
+
+# Runtime logs
+logs/

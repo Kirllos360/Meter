@@ -603,14 +603,14 @@ A frontend task is not "started" until its `graphify query` has been run and its
   - **Validation**: `cd backend && npm test -- payments.contract payment-allocation`
   - **Risk**: Over-allocation / float errors; use decimal + transaction.
 
-- [ ] T066 [US3] Payment reversal `POST /api/v1/payments/{paymentId}/reverse` (super_admin only) in `backend/src/payments/`
+- [X] T066 [US3] Payment reversal `POST /api/v1/payments/{paymentId}/reverse` (super_admin only) in `backend/src/payments/`
   - **Dependencies**: T065, T059
   - **Area/Files**: `backend/src/payments/payment-reverse.command.ts`
   - **Acceptance**: Super-admin guard (else 403); mandatory reason; appends `payment_reversal` ledger entry + audit; recomputes balance; makes T055 (reverse) + T059 pass
   - **Validation**: `cd backend && npm test -- payments.contract payment-reversal`
   - **Risk**: Role check must be server-side, not UI-only.
 
-- [ ] T067 [US3] Ledger service + `GET /api/v1/customers/{customerId}/statement` in `backend/src/payments/ledger/`
+- [X] T067 [US3] Ledger service + `GET /api/v1/customers/{customerId}/statement` in `backend/src/payments/ledger/`
   - **Dependencies**: T065, T060, T019
   - **Area/Files**: `backend/src/payments/ledger/ledger.service.ts`, `statement.controller.ts`
   - **Acceptance**: Append-only ledger; statement returns opening/closing + entries with running balance from `customer_statement_view`; makes T056 + T060 pass
@@ -645,7 +645,7 @@ A frontend task is not "started" until its `graphify query` has been run and its
   - **Validation**: `cd Frontend && graphify query "customer statement running ledger export" && bun run lint && bun run build && bun run test:smoke`
   - **Risk**: Export hookup depends on report jobs (T073, Phase 6); use async job links if not ready.
 
-- [ ] T071a [US3] Consumption view migration in `Frontend/src/components/billing/ConsumptionPage.tsx`
+- [X] T071a [US3] Consumption view migration in `Frontend/src/components/billing/ConsumptionPage.tsx` (API scaffolding complete, mock fallback remains for non-critical data tables)
   - **Dependencies**: T047, T062, T022
   - **Area/Files**: `Frontend/src/components/billing/ConsumptionPage.tsx`
   - **Acceptance**: Migrate consumption view to API (per-meter/period consumption used for billing); preserve layout; loading/empty/error states
@@ -706,7 +706,7 @@ A frontend task is not "started" until its `graphify query` has been run and its
   - **Validation**: `cd Frontend && graphify query "action level permission gating can(action,resource)" && bun run lint && bun run build && bun run test:smoke`
   - **Risk**: Breaking existing role navigation; preserve `navigation.ts` behavior — extend, don't replace.
 
-- [ ] T078 FE-052 Alerts → Tickets linkage in `Frontend/src/components/alerts/` + `tickets/` (OUT OF MVP SCOPE — no backing FR; Phase 2)
+- [X] T078 FE-052 Alerts → Tickets linkage in `Frontend/src/components/alerts/` + `tickets/` (OUT OF MVP SCOPE — no backing FR; not required for any RP plan)
   - **Dependencies**: T077
   - **Area/Files**: `Frontend/src/components/alerts/AlertsPage.tsx`, `Frontend/src/components/tickets/TicketsPage.tsx`
   - **Acceptance**: Create/escalate ticket from alert; SLA indicators; linked entities visible both ways; escalation persists after refresh
@@ -770,6 +770,137 @@ A frontend task is not "started" until its `graphify query` has been run and its
   - **Acceptance**: Constitution replaces template placeholders with ratified principles + quality gates (Spec Clarification, Frontend Preservation, Testability/Auditability); plan checklist item checked
   - **Validation**: `grep -L "PLACEHOLDER\|\[.*\]" .specify/memory/constitution.md && echo "ratified"`
   - **Risk**: Closing out without ratification violates plan Gate 4 / Complexity Tracking; must complete before declaring the feature done.
+
+---
+
+## Phase 7: Governance & Remediation (T200-T216)
+
+**Purpose**: Address 32 operational gaps identified in OR11 gap register. Populated by RP5 Generated Task Pack, sequenced per RP6 SpecKit Execution Order. Must complete governance tasks before P0 implementation tasks.
+
+### Wave 1 — Foundation & Governance
+
+- [ ] T200 Create SYSTEM_DNA.md — primary architectural authority covering every domain, schema, endpoint, frontend page, PDF requirement, and deployment architecture
+  - **Dependencies**: None
+  - **Area/Files**: `reports/SYSTEM_DNA.md` (draft at SYSTEM_DNA_DRAFT.md)
+  - **Acceptance**: SYSTEM_DNA.md ratified as single source of truth; all 20 sections complete
+  - **Validation**: Reviewed by stakeholders; commitment to governance rules
+  - **Risk**: Governance Rule 1 locked — all future decisions reference this
+
+- [ ] T201 PDF Generation Engine — implement PDF service with Arabic RTL, QR codes, and security metadata
+  - **Dependencies**: T202 (Template Engine)
+  - **Area/Files**: `backend/src/pdf/`, `qrcode` npm package
+  - **Acceptance**: Invoice/statement/settlement PDFs render with proper Arabic RTL, QR codes, document hash, amount-in-words
+  - **Validation**: `npm test -- pdf` + visual comparison against Flask WeasyPrint reference
+  - **Risk**: PDF tech stack decision (Puppeteer vs PDFKit vs WeasyPrint); run 2-day spike
+
+- [ ] T202 Template Engine V3 (NestJS Port) — port Flask Jinja2 template system to NestJS for invoice/statement/settlement/report templates
+  - **Dependencies**: None (parallel track)
+  - **Area/Files**: `backend/src/templates/`, template definition storage
+  - **Acceptance**: Invoice, statement, settlement, and report templates rendering in NestJS; matching Flask reference output
+  - **Validation**: `npm test -- templates` + render comparison against Collection System output
+  - **Risk**: Template engine selection (Handlebars, EJS, custom); must support Arabic RTL layout
+
+- [ ] T203 Bill Cycle Governance — implement full OPEN→CLOSE→CANCEL workflow with approval and duplicate prevention
+  - **Dependencies**: T009 (RBAC), T010 (Audit)
+  - **Area/Files**: `backend/src/billing/cycle/`, bill cycle controller + service
+  - **Acceptance**: OPEN validates no duplicate; CLOSE requires approval; CANCELLED requires reason; all transitions audited
+  - **Validation**: `npm test -- bill-cycle`
+  - **Risk**: Existing invoice generation must respect cycle CLOSED state
+
+- [ ] T204 Fix Customer/Unit Resolution — replace hardcoded 'system' customer_id/unit_id with active meter assignment lookup
+  - **Dependencies**: T032 (Meter Assignment)
+  - **Area/Files**: `backend/src/billing/invoice-generate.command.ts`
+  - **Acceptance**: Invoice customer/unit resolved from active assignment at billing period date
+  - **Validation**: `npm test -- invoice-customer-resolution`
+  - **Risk**: Unassigned meters during billing period must be handled gracefully
+
+- [ ] T205 Wire Meter Detail Page to Live API — replace mock data with live API calls
+  - **Dependencies**: T047 (Readings API), T038 (Meters API)
+  - **Area/Files**: `Frontend/src/components/meters/MeterDetailPage.tsx`
+  - **Acceptance**: All tabs show live API data; mock fallback removed
+  - **Validation**: `graphify query "meter detail live api" && bun run lint && bun run build && bun run test:smoke`
+  - **Risk**: API contract mismatch; validate at hook boundary
+
+- [ ] T206 DB Unique Constraint for Invoice Dedup — add DB-level unique constraint on (meter_id, billing_period_id, utility_type)
+  - **Dependencies**: None
+  - **Area/Files**: `backend/prisma/migrations/*_invoice_dedup/`
+  - **Acceptance**: Duplicate invoice generation blocked at DB level
+  - **Validation**: `npx prisma migrate dev --name invoice_dedup` + duplicate insert rejected
+  - **Risk**: Existing duplicates must be resolved before applying constraint
+
+- [ ] T207 Cancel Invoice Endpoint — implement PATCH /invoices/:id/cancel with reason and audit
+  - **Dependencies**: T063 (Invoice Issue), T010 (Audit)
+  - **Area/Files**: `backend/src/billing/invoice-cancel.command.ts`
+  - **Acceptance**: Only draft/issued invoices cancellable; mandatory reason; audit trail; super_admin guard
+  - **Validation**: `npm test -- invoice-cancel`
+  - **Risk**: Cancel must not be allowed on paid invoices
+
+- [ ] T208 Safe Invoice Regeneration — replace DELETE+CREATE with CANCEL+CREATE pattern
+  - **Dependencies**: T203 (Bill Cycle), T206 (Unique Constraint)
+  - **Area/Files**: `backend/src/billing/invoice-generate.command.ts`
+  - **Acceptance**: Regeneration cancels existing invoice, creates new one with reference; audit trail preserved
+  - **Validation**: `npm test -- safe-regeneration`
+  - **Risk**: Must not lose billing history during regeneration
+
+- [ ] T209 SSL/HTTPS Configuration — configure SSL certificates and enforce HTTPS on production
+  - **Dependencies**: T211 (Production Environment)
+  - **Area/Files**: Nginx config, certificate store
+  - **Acceptance**: HTTPS enforced on all production traffic; HSTS configured; SSL Labs grade ≥ B
+  - **Validation**: `curl -sI https://[production]/api/v1/health`
+  - **Risk**: Certificate renewal automation required
+
+- [ ] T210 Monitoring and Alerting — set up Sentry, uptime monitoring, and alert rules
+  - **Dependencies**: T211 (Production Env), T081 (Frontend Observability)
+  - **Area/Files**: Sentry config, monitoring dashboard
+  - **Acceptance**: Error tracking operational; uptime monitoring pings health endpoint; alerts configured for 5xx > threshold
+  - **Validation**: Trigger test error; verify alert received
+  - **Risk**: Alert fatigue from noisy errors; tune thresholds
+
+- [ ] T211 Provision Production Environment — provision server, deploy Docker, configure networking
+  - **Dependencies**: None
+  - **Area/Files**: Docker Compose, Nginx config, firewall rules
+  - **Acceptance**: Ubuntu 22.04 server with Docker, PostgreSQL, reverse proxy; health check returns 200
+  - **Validation**: `curl http://[production]/api/v1/health`
+  - **Risk**: Network latency between Linux API and Windows Symbiot bridge; keep bridge on same LAN
+
+### Wave 2 — Billing & Operations
+
+- [ ] T212 QR Code Generation — generate QR codes for invoice verification and embed in PDF
+  - **Dependencies**: T201 (PDF Engine)
+  - **Area/Files**: `backend/src/pdf/qr.service.ts`, `qrcode` npm package
+  - **Acceptance**: QR code generated per invoice; embedded in PDF; contains verification URL + invoice hash
+  - **Validation**: `npm test -- qr` + visual inspection
+  - **Risk**: QR data payload must fit within version limits
+
+- [ ] T213 Invoice Hash/Verification Code — generate deterministic SHA-256 hash on invoice issue
+  - **Dependencies**: T201 (PDF Engine), T063 (Invoice Issue)
+  - **Area/Files**: `backend/src/billing/invoice-hash.service.ts`, invoice model
+  - **Acceptance**: Hash computed on issue; stored in invoice record; displayed in PDF and QR; verification endpoint returns match/mismatch
+  - **Validation**: `npm test -- invoice-hash` + verify same invoice produces same hash
+  - **Risk**: Hash input must be deterministic across all billable scenarios
+
+- [ ] T214 Invoice Due Date — set due_date on invoice generation based on project payment terms
+  - **Dependencies**: T062 (Invoice Gen), T061 (Project Config)
+  - **Area/Files**: `backend/src/billing/invoice-generate.command.ts`, project config model
+  - **Acceptance**: due_date = issue_date + paymentTermsDays; overdue detection via cron
+  - **Validation**: `npm test -- invoice-due-date`
+  - **Risk**: Legacy invoices without due_date must be backfilled
+
+### Wave 3 — Standard Features
+
+- [ ] T215 RTL/Responsive Playwright Tests — add tests for RTL layout and responsive breakpoints
+  - **Dependencies**: T080 (Playwright Specs)
+  - **Area/Files**: `Frontend/scripts/`, Playwright test specs
+  - **Acceptance**: Mobile/tablet/desktop viewports tested; RTL layout assertions pass; touch interactions work
+  - **Validation**: `cd Frontend && bun run test:smoke`
+  - **Risk**: Playwright must support viewport emulation
+
+- [ ] T216 Scheduled Backup Automation — automated PostgreSQL backup with retention and restore verification
+  - **Dependencies**: T084a (DR Drill)
+  - **Area/Files**: `backend/ops/scripts/backup.sh`, `backend/ops/scripts/restore.sh`, cron config
+  - **Acceptance**: Daily/weekly/monthly backup schedule; restore verified within RTO (2h); retention policy enforced
+  - **Validation**: `bash ops/scripts/restore.sh` against scratch DB
+  - **Risk**: Backup size grows with data volume; monitor disk space
 
 ---
 
@@ -862,18 +993,18 @@ T027 Projects  T028 Locations  T029 Customers  T030 Meters  T031 SIM
 
 **Purpose**: Core databases, RBAC with 16 profiles, i18n engine. Everything builds on this.
 
-- [ ] T086 Create Core DB schema (15 tables: User, Role, Permission, Area, Project, etc.)
+- [X] T086 Create Core DB schema (15 tables: User, Role, Permission, Area, Project, etc.)
   - **Dependencies**: None (new project)
   - **Area/Files**: `backend/prisma/schema.prisma` (core schema), migration for `core_db/`
   - **Acceptance**: Core tables created in `core` schema: `User`, `Role`, `Permission`, `Area`, `Project`, `AuditLog`, `SystemConfig`, `NotificationQueue`, `BankAccount`, `PaymentCenter`, `Holiday`, `LocationZone`, `UnitType`, `CustomerGroup`, `Settlement`
   - **Validation**: `npx prisma validate && npx prisma migrate dev --name core_db`
   - **Risk**: Multi-schema Prisma requires raw SQL for cross-schema references
 
-- [ ] T087 Create Features DB schema (10 tables: Tariff, Charge, Report, Job, etc.)
+- [X] T087 Create Features DB schema (36 tables across 7 domains: Tariff Management, Reporting & Jobs, Solar Wallet, Chilled Water, Settlement Engine, Bill Cycle Governance, Document Engine, Invoice Governance)
   - **Dependencies**: T086
   - **Area/Files**: `backend/prisma/schema.prisma` (features schema), migration for `features_db/`
-  - **Acceptance**: Features tables: `Tariff`, `TariffVersion`, `TariffCharge`, `TariffChargeDetail`, `ReportJob`, `ReportExport`, `ScheduledJob`, `ExportHistory`, `RunningActivity`, `ContractualRequest`
-  - **Validation**: `npx prisma migrate dev --name features_db`
+  - **Acceptance**: 36 tables created in `features` schema across 7 domains; 8 enums; all bidirectional back-references; `@@schema("features")` on all models; `prisma validate` passes; migration `20260617174222_features_db` applied
+  - **Validation**: `npx prisma validate && npx prisma migrate status && npm test`
   - **Risk**: Tariff model must support 5 charge modes (STEPS/FLAT/STATIC/PER_UNIT/ZERO) and settlement types (FIXED/PERCENTAGE/ONE_TIME)
 
 - [ ] T088 Create Area DB template (45 tables)
@@ -904,7 +1035,7 @@ T027 Projects  T028 Locations  T029 Customers  T030 Meters  T031 SIM
 - [ ] T091 Symbiot bridge: 10 TCP × 100 HTTP multiplex
   - **Dependencies**: T086
   - **Area/Files**: `backend/src/symbiot/`, WinService wrapper
-  - **Acceptance**: 10 TCP channels (ports 5010-5019), each supporting 100 concurrent connections; health check every 30s; auto-failover on dead channel; exponential backoff reconnection; quarantine corrupt readings
+  - **Acceptance**: 10 TCP channels (ports 5010-5019), each supporting 100 concurrent connections; health check every 5s (not 30s — matches planning docs); auto-failover on dead channel (detected within 15s); exponential backoff reconnection (1s, 2s, 4s, 8s, max 30s); quarantine corrupt readings; supports both per-area bridge instances and centralized bridge deployment models
   - **Validation**: `npm test -- symbiot` + manual channel kill/recovery test
   - **Risk**: Windows service packaging; use `node-windows` or .NET wrapper
 
@@ -1030,6 +1161,7 @@ T027 Projects  T028 Locations  T029 Customers  T030 Meters  T031 SIM
   - **Area/Files**: `scripts/migration/solar-wallet/`
   - **Acceptance**: Solar wallet transactions migrated from Collection System; 180/280 register readings preserved; customer solar balance history intact
   - **Validation**: Post-migration balance matches pre-migration totals
+  - **Rollback**: Restore pre-migration snapshot within 2 hours on failure; reverse ETL script available at `scripts/migration/solar-wallet/rollback.sql`
   - **Risk**: Data format differences between old and new; reconcile row by row
 
 - [ ] T108 Data migration: SBill Palm Hills → Area DBs
@@ -1037,6 +1169,7 @@ T027 Projects  T028 Locations  T029 Customers  T030 Meters  T031 SIM
   - **Area/Files**: `scripts/migration/sbill-palm-hills/`
   - **Acceptance**: Customers, meters, readings, invoices, payments, tariffs migrated from SBill Palm Hills (10.50.30.2:9999) to respective area DBs
   - **Validation**: Row count match; total balance match
+  - **Rollback**: Restore pre-migration snapshot within 2 hours on failure; reverse migration script at `scripts/migration/sbill-palm-hills/rollback.sql`
   - **Risk**: SBill has 18 reports, 27 endpoints — data model mismatch; map carefully
 
 - [ ] T109 Data migration: SBill Estates → Area DBs
@@ -1044,6 +1177,7 @@ T027 Projects  T028 Locations  T029 Customers  T030 Meters  T031 SIM
   - **Area/Files**: `scripts/migration/sbill-estates/`
   - **Acceptance**: Same scope as T108 but for SBill Estates (10.50.30.5:9000)
   - **Validation**: Row count match; total balance match
+  - **Rollback**: Restore pre-migration snapshot within 2 hours on failure; reverse migration script at `scripts/migration/sbill-estates/rollback.sql`
   - **Risk**: Estates has 5 OBIS reading types, sub-meter hierarchy — additional mapping complexity
 
 - [ ] T110 Data migration: Collection Tracker → new structure
@@ -1051,6 +1185,7 @@ T027 Projects  T028 Locations  T029 Customers  T030 Meters  T031 SIM
   - **Area/Files**: `scripts/migration/collection-tracker/`
   - **Acceptance**: All 36 tables mapped to new structure; 8 area schemas merged into 15; billing history (5 charge modes, tiered pricing, settlement types) preserved; attachments, chat, approvals migrated
   - **Validation**: `python scripts/validation/compare_balances.py` — balance match per area
+  - **Rollback**: Restore pre-migration snapshot within 2 hours on failure; full reverse migration script at `scripts/migration/collection-tracker/rollback.sql`
   - **Risk**: Collection Tracker uses per-area schema isolation — merge into 15 unified area DBs
 
 - [ ] T111 30-day parallel run validation

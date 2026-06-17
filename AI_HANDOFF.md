@@ -1,8 +1,7 @@
-# AI Handoff — Meter Verse
-
+# AI Handoff — Meter Verse (v2.0.0)
 > **Purpose**: Single file containing EVERYTHING an AI agent needs to continue work on this project.
-> **Generated**: 2026-06-13 | **Last Updated**: 2026-06-13 (Meter Verse v2.0.0 Migration)
-> **Last Completed**: T001-T085 (original Meter Pulse tasks) | v2.0.0 File Migration
+> **Generated**: 2026-06-13 | **Last Updated**: 2026-06-13 (Meter Verse v2.0.0 — Planning Complete)
+> **Last Completed**: T001-T085 (original Meter Pulse) + Planning docs (12 files) + Specs/002-004 (9 files)
 > **Next Task**: T086 (Core DB schema — 15 tables)
 
 ---
@@ -49,8 +48,22 @@ D:\meter\Meter\          <-- The ACTUAL git repository root (was Meter-\)
 │   ├── energy-360/                      # Energy 360 mobile app
 │   └── all-last-update/                # Latest system updates
 ├── tools/playwright-mcp/               # Playwright MCP for E2E tests
-├── docs/architecture/                  # Architecture diagrams + specs
-├── docs/migration/                     # Migration guides
+├── docs/
+│   ├── architecture/                     # Architecture specs
+│   ├── migration/                        # Migration guides
+│   └── planning/                         # 12 planning docs with Mermaid diagrams
+│       ├── v2.0.0-planning-strategy.md
+│       ├── v2.0.0-implementation-roadmap.md
+│       ├── v2.0.0-tasks.md
+│       ├── v2.0.0-workflow.md
+│       ├── v2.0.0-stories.md
+│       ├── v2.0.0-data-model.md
+│       ├── v2.0.0-security.md
+│       ├── v2.0.0-migration-plan.md
+│       ├── v2.0.0-symbiot-integration.md
+│       ├── v2.0.0-test-plan.md
+│       ├── v2.0.0-deployment-guide.md
+│       └── v2.0.0-upcoming-updates.md
 ├── scripts/                            # Utility scripts
 ├── ci-cd/                              # CI/CD pipeline configs
 ├── documentation/                      # All docs (markdown, sql, text, excel, pdf)
@@ -202,7 +215,7 @@ npx prisma generate      # Generate Prisma client
 | T084a | Backup/restore drill | T002, T005, T084 |
 | T085 | Ratify constitution | T084, T084a |
 
-### Phase 7 — Meter Verse v2.0.0 (T086-T120) 🚀 NEW
+### Phase 7 — Meter Verse v2.0.0 (T086-T150) 🚀 PLANNED
 
 #### Phase 0: Foundation (T086-T090)
 | ID | Description | Depends On |
@@ -593,3 +606,30 @@ cd ../tools/playwright-mcp && npm install
 - T066: Payment reversal (`POST /payments/:id/reverse`)
 - T067: Ledger service + `GET /customers/:id/statement`
 - T068-T072: Frontend API migration
+
+---
+
+## 15. docs/planning/ — Quick Reference
+
+| File | Description | Size |
+|------|-------------|------|
+| v2.0.0-planning-strategy.md | 15+2 DB arch, 3 plans, 14 pages, 16 profiles, 15 areas | ~16 KB |
+| v2.0.0-implementation-roadmap.md | 12-phase plan with gantt chart | ~16 KB |
+| v2.0.0-tasks.md | T086-T150 (65 tasks with deps, acceptance, rollback) | ~33 KB |
+| v2.0.0-workflow.md | 9 Mermaid diagrams (meter lifecycle, invoice, payment, etc.) | ~22 KB |
+| v2.0.0-stories.md | 34 user stories across 14 pages | ~21 KB |
+| v2.0.0-data-model.md | Core DB (15), Features DB (10), Area DB template (45) | ~35 KB |
+| v2.0.0-security.md | 16-profile RBAC, RSA 2048, JWT, immutable invoices | ~12 KB |
+| v2.0.0-migration-plan.md | Zero-downtime migration, rollback per phase | ~17 KB |
+| v2.0.0-symbiot-integration.md | 10 TCP × 100 HTTP, per-area bridge model | ~7 KB |
+| v2.0.0-test-plan.md | 600+ test target, categories, coverage | ~5 KB |
+| v2.0.0-deployment-guide.md | Linux Core + Windows Symbiot dual deployment | ~7 KB |
+| v2.0.0-upcoming-updates.md | Reserved future features (mobile, AI, blockchain) | ~2 KB |
+
+### Specs Reference
+
+| Path | Description | Files |
+|------|-------------|-------|
+| specs/002-meter-verse-core/ | Core DB, RBAC, i18n, Availability | spec.md, plan.md, data-model.md |
+| specs/003-symbiot-integration/ | Symbiot bridge TCP/HTTP | spec.md, plan.md, data-model.md |
+| specs/004-migration-plans/ | Data migration plans | spec.md, plan.md, data-model.md |

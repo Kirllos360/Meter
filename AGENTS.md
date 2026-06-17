@@ -508,3 +508,56 @@ const source = getModuleSource('projects'); // returns 'mock' or 'api'
 - Path: `restore-point-20260531-094024/`
 - Start with: `AI_HANDOFF.md`
 - Next tasks: T049+ in `specs/001-metering-billing-platform/tasks.md`
+
+---
+
+## T086+ Memory Log (Meter Verse v2.0.0)
+
+**Status**: Planning Complete | Implementation: Pending
+**Date**: 2026-06-13
+**Branch**: `main` (new Meter repo)
+
+### Architecture Summary
+
+- **3 Plans**: Full (all modules), Safety (metering only), Failover (read-only)
+- **15 Areas**: october, new_cairo, sodic_ednc, sodic_estates, sodic_vye, badya_city, north_coast, uvines_mall, +7 future
+- **14 Pages**: Dashboard, Customers, Meters, Balances, Payments, Invoices, Readings, Meter Lifecycle, Tariffs, Workspace, Reports, Admin, Locations, Login
+- **16 Profiles**: super_admin, system_admin, admin, area_manager, team_leader, operator, technician, finance, support, customer, collector, meter_reader, inspector, supervisor, accountant, viewer
+- **Reference Systems** (7): collection-system, sbill, symbiot, ims, meter-department, energy-360, all-last-update
+
+### Task Progress
+
+| Phase | Tasks | Status |
+|-------|-------|--------|
+| 0: Foundation | T086-T090 | Pending |
+| 1: Infrastructure | T091-T092 | Pending |
+| 2: Core Pages | T093-T098 | Pending |
+| 3: Features | T099-T106 | Pending |
+| 4: Migration | T107-T111 | Pending |
+| 5: Quality | T112-T116 | Pending |
+| 6: Launch | T117-T120 | Pending |
+
+### Documentation Created
+
+- `docs/planning/` — 12 planning documents with Mermaid diagrams
+- `specs/002-meter-verse-core/` — Core DB, RBAC, i18n specs
+- `specs/003-symbiot-integration/` — Symbiot bridge specs
+- `specs/004-migration-plans/` — Migration plans
+
+### Next Action
+
+Start T086: Create Core DB schema (15 tables)
+
+### Key Files
+
+| Path | Purpose |
+|------|---------|
+| `docs/planning/v2.0.0-planning-strategy.md` | Overall strategy |
+| `docs/planning/v2.0.0-implementation-roadmap.md` | 12-phase roadmap |
+| `docs/planning/v2.0.0-tasks.md` | T086-T150 tasks |
+| `docs/planning/v2.0.0-data-model.md` | Full data model |
+| `docs/planning/v2.0.0-workflow.md` | 9 workflow diagrams |
+| `docs/planning/v2.0.0-security.md` | Security architecture |
+| `specs/002-meter-verse-core/spec.md` | Core spec |
+| `specs/002-meter-verse-core/plan.md` | Core implementation plan |
+| `specs/002-meter-verse-core/data-model.md` | Core data model |
