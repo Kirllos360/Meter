@@ -11,30 +11,36 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
 import { toast } from 'sonner';
-import { mockPayments, mockCustomers } from '@/lib/mock-data';
+import { mockCustomers } from '@/lib/mock-data';
+import { usePaymentsList } from '@/hooks/use-payments';
 import SmartTable from '@/components/smart-table/SmartTable';
 import { StatusBadge } from '@/components/shared/StatusBadge';
 import { PageHeader, formatCurrency, formatDate } from '@/components/shared/PageHelpers';
+import { useT } from '@/lib/i18n/context';
+import { ProtectedAction } from '@/components/shared/ProtectedAction';
 
 export default function PaymentsPage() {
+  const t = useT();
   const [dialogOpen, setDialogOpen] = useState(false);
+  const { data: apiPayments } = usePaymentsList();
+  const payments = apiPayments ?? [];
 
   const columns = [
     { key: 'paymentNumber', label: 'Payment #', sortable: true },
-    { key: 'customerName', label: 'Customer', sortable: true },
+    { key: 'customerName', label: t('billing.payments.customer'), sortable: true },
     { key: 'invoiceNumber', label: 'Invoice #', sortable: true },
-    { key: 'paymentDate', label: 'Date', sortable: true, width: '110px', render: (v: string) => formatDate(v) },
+    { key: 'paymentDate', label: t('billing.payments.date'), sortable: true, width: '110px', render: (v: string) => formatDate(v) },
     {
-      key: 'method', label: 'Method', width: '130px',
+      key: 'method', label: t('billing.payments.method'), width: '130px',
       render: (v: string) => <StatusBadge status={v} />,
     },
     {
-      key: 'amount', label: 'Amount', sortable: true, width: '110px',
+      key: 'amount', label: t('billing.payments.amount'), sortable: true, width: '110px',
       render: (v: number) => <span className="font-medium">{formatCurrency(v)}</span>,
     },
     { key: 'collectedBy', label: 'Collected By', width: '130px' },
     {
-      key: 'status', label: 'Status', width: '110px',
+      key: 'status', label: t('billing.payments.status'), width: '110px',
       render: (v: string) => <StatusBadge status={v} />,
     },
     { key: 'notes', label: 'Notes', render: (v: string) => v ? <span className="text-xs text-muted-foreground">{v}</span> : '-' },
@@ -47,8 +53,12 @@ export default function PaymentsPage() {
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuItem onClick={(e) => { e.stopPropagation(); toast.info('View payment'); }}><Eye className="h-4 w-4 mr-2" /> View</DropdownMenuItem>
-            <DropdownMenuItem onClick={(e) => { e.stopPropagation(); toast.info('Edit payment'); }}><Pencil className="h-4 w-4 mr-2" /> Edit</DropdownMenuItem>
-            <DropdownMenuItem onClick={(e) => { e.stopPropagation(); toast.info('Delete payment'); }} className="text-red-500"><Trash2 className="h-4 w-4 mr-2" /> Delete</DropdownMenuItem>
+            <ProtectedAction action="payment:edit">
+              <DropdownMenuItem onClick={(e) => { e.stopPropagation(); toast.info('Edit payment'); }}><Pencil className="h-4 w-4 mr-2" /> Edit</DropdownMenuItem>
+            </ProtectedAction>
+            <ProtectedAction action="payment:delete">
+              <DropdownMenuItem onClick={(e) => { e.stopPropagation(); toast.info('Delete payment'); }} className="text-red-500"><Trash2 className="h-4 w-4 mr-2" /> Delete</DropdownMenuItem>
+            </ProtectedAction>
           </DropdownMenuContent>
         </DropdownMenu>
       ),
@@ -58,18 +68,18 @@ export default function PaymentsPage() {
   return (
     <div>
       <PageHeader
-        title="Payments"
+        title={t('billing.payments.title')}
         subtitle="Track and manage payment collections"
         action={
           <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
             <DialogTrigger asChild>
-              <Button className="gap-2"><Plus className="h-4 w-4" /> Record Payment</Button>
+              <Button className="gap-2"><Plus className="h-4 w-4" /> {t('billing.payments.record')}</Button>
             </DialogTrigger>
             <DialogContent>
-              <DialogHeader><DialogTitle>Record Payment</DialogTitle></DialogHeader>
+              <DialogHeader><DialogTitle>{t('billing.payments.record')}</DialogTitle></DialogHeader>
               <div className="space-y-4 py-4">
                 <div>
-                  <label className="text-sm text-muted-foreground mb-1 block">Customer</label>
+                  <label className="text-sm text-muted-foreground mb-1 block">{t('billing.payments.customer')}</label>
                   <Select>
                     <SelectTrigger><SelectValue placeholder="Select customer" /></SelectTrigger>
                     <SelectContent>
@@ -78,20 +88,20 @@ export default function PaymentsPage() {
                   </Select>
                 </div>
                 <div>
-                  <label className="text-sm text-muted-foreground mb-1 block">Amount</label>
+                  <label className="text-sm text-muted-foreground mb-1 block">{t('billing.payments.amount')}</label>
                   <Input type="number" placeholder="0.00" />
                 </div>
                 <div>
-                  <label className="text-sm text-muted-foreground mb-1 block">Method</label>
+                  <label className="text-sm text-muted-foreground mb-1 block">{t('billing.payments.method')}</label>
                   <Select>
                     <SelectTrigger><SelectValue placeholder="Select method" /></SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="cash">Cash</SelectItem>
-                      <SelectItem value="bank_transfer">Bank Transfer</SelectItem>
-                      <SelectItem value="card">Card</SelectItem>
-                      <SelectItem value="online_payment">Online Payment</SelectItem>
-                      <SelectItem value="cheque">Cheque</SelectItem>
-                      <SelectItem value="mobile_wallet">Mobile Wallet</SelectItem>
+                      <SelectItem value="cash">{t('billing.payments.cash')}</SelectItem>
+                      <SelectItem value="bank_transfer">{t('billing.payments.bankTransfer')}</SelectItem>
+                      <SelectItem value="card">{t('billing.payments.card')}</SelectItem>
+                      <SelectItem value="online_payment">{t('billing.payments.online')}</SelectItem>
+                      <SelectItem value="cheque">{t('billing.payments.cheque')}</SelectItem>
+                      <SelectItem value="mobile_wallet">{t('billing.payments.mobileWallet')}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -100,7 +110,7 @@ export default function PaymentsPage() {
                   <Textarea placeholder="Optional notes..." rows={2} />
                 </div>
                 <Button className="w-full" onClick={() => { toast.success('Payment recorded!'); setDialogOpen(false); }}>
-                  Record Payment
+                  {t('billing.payments.record')}
                 </Button>
               </div>
             </DialogContent>
@@ -108,22 +118,22 @@ export default function PaymentsPage() {
         }
       />
       <SmartTable
-        data={mockPayments}
+        data={payments}
         columns={columns}
         filters={[
           {
-            key: 'method', label: 'Method', type: 'select',
+            key: 'method', label: t('billing.payments.method'), type: 'select',
             options: [
-              { label: 'Cash', value: 'cash' },
-              { label: 'Bank Transfer', value: 'bank_transfer' },
-              { label: 'Card', value: 'card' },
-              { label: 'Online Payment', value: 'online_payment' },
-              { label: 'Cheque', value: 'cheque' },
-              { label: 'Mobile Wallet', value: 'mobile_wallet' },
+              { label: t('billing.payments.cash'), value: 'cash' },
+              { label: t('billing.payments.bankTransfer'), value: 'bank_transfer' },
+              { label: t('billing.payments.card'), value: 'card' },
+              { label: t('billing.payments.online'), value: 'online_payment' },
+              { label: t('billing.payments.cheque'), value: 'cheque' },
+              { label: t('billing.payments.mobileWallet'), value: 'mobile_wallet' },
             ],
           },
           {
-            key: 'status', label: 'Status', type: 'select',
+            key: 'status', label: t('billing.payments.status'), type: 'select',
             options: [
               { label: 'Pending', value: 'pending' },
               { label: 'Confirmed', value: 'confirmed' },
@@ -133,7 +143,7 @@ export default function PaymentsPage() {
           },
         ]}
         searchKeys={['paymentNumber', 'customerName', 'invoiceNumber', 'collectedBy']}
-        searchPlaceholder="Search payments..."
+        searchPlaceholder={t('billing.payments.search')}
       />
     </div>
   );

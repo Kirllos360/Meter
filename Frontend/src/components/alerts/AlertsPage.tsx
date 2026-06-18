@@ -9,8 +9,10 @@ import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { Bell, AlertTriangle, AlertCircle, Info, Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useT } from '@/lib/i18n/context';
 
 export default function AlertsPage() {
+  const t = useT();
   const [alerts, setAlerts] = useState(mockAlerts);
 
   const total = alerts.length;
@@ -25,25 +27,25 @@ export default function AlertsPage() {
   };
 
   const columns = [
-    { key: 'title', label: 'Title', sortable: true },
+    { key: 'title', label: t('alerts.message'), sortable: true },
     {
       key: 'type', label: 'Type', width: '140px',
       render: (v: string) => <span className="text-xs font-mono">{v.replace(/_/g, ' ')}</span>,
     },
     {
-      key: 'severity', label: 'Severity', sortable: true, width: '100px',
+      key: 'severity', label: t('alerts.severity'), sortable: true, width: '100px',
       render: (v: string) => <StatusBadge status={v} />,
     },
     { key: 'description', label: 'Description', render: (v: string) => <span className="text-xs text-muted-foreground line-clamp-1">{v}</span> },
     { key: 'entityLabel', label: 'Entity', width: '150px', render: (v: string) => <span className="text-xs">{v}</span> },
-    { key: 'createdAt', label: 'Date', sortable: true, width: '130px', render: (v: string) => formatDateTime(v) },
+    { key: 'createdAt', label: t('alerts.date'), sortable: true, width: '130px', render: (v: string) => formatDateTime(v) },
     {
-      key: 'acknowledged', label: 'Ack', width: '60px',
+      key: 'acknowledged', label: t('alerts.status'), width: '60px',
       render: (v: boolean, row: { id: string }) => v ? (
         <Check className="h-4 w-4 text-emerald-500 mx-auto" />
       ) : (
         <Button variant="ghost" size="sm" className="h-7 text-xs" onClick={(e) => { e.stopPropagation(); handleAcknowledge(row.id); }}>
-          Ack
+          {t('alerts.acknowledge')}
         </Button>
       ),
     },
@@ -51,15 +53,15 @@ export default function AlertsPage() {
 
   return (
     <div>
-      <PageHeader title="System Alerts" subtitle="Monitor and manage system alerts" />
+      <PageHeader title={t('alerts.title')} subtitle="Monitor and manage system alerts" />
 
       {/* Summary Cards */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
-        <StatCard label="Total" value={total} icon={<Bell className="h-5 w-5" />} />
-        <StatCard label="Critical" value={critical} icon={<AlertCircle className="h-5 w-5" />} color="text-red-500" />
-        <StatCard label="High" value={high} icon={<AlertTriangle className="h-5 w-5" />} color="text-orange-500" />
-        <StatCard label="Medium" value={medium} color="text-amber-500" />
-        <StatCard label="Low" value={low} icon={<Info className="h-5 w-5" />} color="text-blue-500" />
+        <StatCard label={t('common.all')} value={total} icon={<Bell className="h-5 w-5" />} />
+        <StatCard label={t('alerts.critical')} value={critical} icon={<AlertCircle className="h-5 w-5" />} color="text-red-500" />
+        <StatCard label={t('alerts.high')} value={high} icon={<AlertTriangle className="h-5 w-5" />} color="text-orange-500" />
+        <StatCard label={t('alerts.medium')} value={medium} color="text-amber-500" />
+        <StatCard label={t('alerts.low')} value={low} icon={<Info className="h-5 w-5" />} color="text-blue-500" />
       </div>
 
       <SmartTable
@@ -67,23 +69,23 @@ export default function AlertsPage() {
         columns={columns}
         filters={[
           {
-            key: 'severity', label: 'Severity', type: 'select',
+            key: 'severity', label: t('alerts.severity'), type: 'select',
             options: [
-              { label: 'Critical', value: 'critical' },
-              { label: 'High', value: 'high' },
-              { label: 'Medium', value: 'medium' },
-              { label: 'Low', value: 'low' },
+              { label: t('alerts.critical'), value: 'critical' },
+              { label: t('alerts.high'), value: 'high' },
+              { label: t('alerts.medium'), value: 'medium' },
+              { label: t('alerts.low'), value: 'low' },
             ],
           },
           {
-            key: 'acknowledged', label: 'Acknowledged', type: 'select',
+            key: 'acknowledged', label: t('alerts.status'), type: 'select',
             options: [
-              { label: 'No', value: 'false' },
-              { label: 'Yes', value: 'true' },
+              { label: t('common.no'), value: 'false' },
+              { label: t('common.yes'), value: 'true' },
             ],
           },
           {
-            key: 'type', label: 'Type', type: 'select',
+            key: 'type', label: t('alerts.source'), type: 'select',
             options: [
               { label: 'Offline Meter', value: 'offline_meter' },
               { label: 'High Consumption', value: 'high_consumption' },
@@ -97,7 +99,7 @@ export default function AlertsPage() {
           },
         ]}
         searchKeys={['title', 'description', 'entityLabel']}
-        searchPlaceholder="Search alerts..."
+        searchPlaceholder={t('alerts.search')}
       />
     </div>
   );

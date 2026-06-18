@@ -5,6 +5,7 @@ import {
   Body,
   Get,
   Query,
+  Req,
   ParseUUIDPipe,
   HttpCode,
   HttpStatus,
@@ -329,6 +330,37 @@ export class BillingController {
     });
   }
 
+  @Post('tariffs')
+  @Roles(Role.OPERATOR, Role.PROJECT_ADMIN, Role.SUPER_ADMIN)
+  @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({ summary: 'Create tariff plan' })
+  async createTariff(
+    @Body() dto: {
+      projectId: string;
+      meterType: string;
+      ratePerUnit: number;
+      currency: string;
+      effectiveFrom: string;
+      effectiveTo?: string;
+      status?: string;
+      createdBy: string;
+    }
+  ) {
+    return this.prisma.tariffPlan.create({
+      data: {
+        projectId: dto.projectId,
+        meterType: dto.meterType as any,
+        ratePerUnit: dto.ratePerUnit,
+        currency: dto.currency,
+        effectiveFrom: new Date(dto.effectiveFrom),
+        effectiveTo: dto.effectiveTo ? new Date(dto.effectiveTo) : null,
+        status: (dto.status as any) ?? 'active',
+        createdBy: dto.createdBy,
+        updatedBy: dto.createdBy
+      }
+    });
+  }
+
   @Get('tariffs')
   @Roles(Role.OPERATOR, Role.PROJECT_ADMIN, Role.SUPER_ADMIN, Role.FINANCE, Role.SUPPORT)
   @ApiOperation({ summary: 'List tariffs' })
@@ -336,6 +368,23 @@ export class BillingController {
     const where: any = {};
     if (projectId) where.projectId = projectId;
     return this.prisma.tariffPlan.findMany({ where, orderBy: { effectiveFrom: 'desc' } });
+  }
+
+  @Post('periods')
+  @Roles(Role.OPERATOR, Role.PROJECT_ADMIN, Role.SUPER_ADMIN)
+  @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({ summary: 'Create billing period' })
+  async createPeriod(
+    @Body() dto: { projectId: string; periodCode: string; startDate: string; endDate: string },
+    @Req() req: any
+  ) {
+    return this.periodService.createPeriod({
+      projectId: dto.projectId,
+      periodCode: dto.periodCode,
+      startDate: new Date(dto.startDate),
+      endDate: new Date(dto.endDate),
+      createdBy: req.user?.userId ?? 'system'
+    });
   }
 
   @Get('periods')

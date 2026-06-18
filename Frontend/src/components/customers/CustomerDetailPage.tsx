@@ -1,40 +1,43 @@
 'use client';
 
 import { usePageStore } from '@/lib/router-store';
-import { mockCustomers, mockInvoices, mockMeters, mockUnits } from '@/lib/mock-data';
+import { mockInvoices, mockMeters, mockUnits } from '@/lib/mock-data';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { BackButton, StatCard, formatCurrency, formatDate } from '@/components/shared/PageHelpers';
 import { StatusBadge } from '@/components/shared/StatusBadge';
 import SmartTable from '@/components/smart-table/SmartTable';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Phone, Mail, MapPin, Gauge, CreditCard } from 'lucide-react';
+import { useT } from '@/lib/i18n/context';
 import { useProjectsList } from '@/hooks/use-projects';
+import { useCustomerDetail } from '@/hooks/use-customers';
 
 export default function CustomerDetailPage() {
+  const t = useT();
   const { pageParams } = usePageStore();
   const { data: apiProjects } = useProjectsList();
   const projects = apiProjects ?? [];
-  const customer = mockCustomers.find((c) => c.id === pageParams.id);
+  const projectId = pageParams.projectId ?? '';
+  const { data: apiCustomer } = useCustomerDetail(projectId, pageParams.id ?? '');
+  const customer = apiCustomer;
   const project = projects.find((p) => p.id === customer?.projectId);
-
   if (!customer) {
     return (
       <div>
         <BackButton fallback="customers" />
-        <p className="text-muted-foreground">Customer not found.</p>
+        <p className="text-muted-foreground">{t('customers.notFound')}</p>
       </div>
     );
   }
 
   const invoices = mockInvoices.filter((i) => i.customerId === customer.id);
   const meters = mockMeters.filter((m) => m.customerId === customer.id);
-  const customerUnits = mockUnits.filter((u) => customer.units.includes(u.id));
+  const customerUnits = mockUnits.filter((u) => customer.units?.includes(u.id));
 
   return (
     <div>
       <BackButton fallback="customers" />
 
-      {/* Header */}
       <div className="glass-card rounded-xl p-6 mb-6">
         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
           <div>
@@ -54,44 +57,42 @@ export default function CustomerDetailPage() {
         </div>
       </div>
 
-      {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
-        <StatCard label="Active Meters" value={customer.activeMeters} icon={<Gauge className="h-5 w-5" />} />
-        <StatCard label="Total Paid" value={formatCurrency(customer.totalPaid)} icon={<CreditCard className="h-5 w-5" />} color="text-emerald-500" />
+        <StatCard label={t('customers.activeMeters')} value={customer.activeMeters} icon={<Gauge className="h-5 w-5" />} />
+        <StatCard label={t('customers.totalPaid')} value={formatCurrency(customer.totalPaid)} icon={<CreditCard className="h-5 w-5" />} color="text-emerald-500" />
         <StatCard
-          label="Current Balance"
+          label={t('customers.currentBalance')}
           value={formatCurrency(customer.currentBalance)}
           icon={<CreditCard className="h-5 w-5" />}
           color={customer.currentBalance > 0 ? 'text-red-500' : customer.currentBalance < 0 ? 'text-blue-500' : 'text-emerald-500'}
         />
       </div>
 
-      {/* Tabs */}
       <Tabs defaultValue="overview">
         <TabsList className="mb-4 flex-wrap h-auto gap-1">
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="units">Units</TabsTrigger>
-          <TabsTrigger value="meters">Meters</TabsTrigger>
-          <TabsTrigger value="invoices">Invoices</TabsTrigger>
-          <TabsTrigger value="payments">Payments</TabsTrigger>
-          <TabsTrigger value="balance">Balance</TabsTrigger>
-          <TabsTrigger value="tickets">Tickets</TabsTrigger>
-          <TabsTrigger value="notes">Notes</TabsTrigger>
+          <TabsTrigger value="overview">{t('customers.overview')}</TabsTrigger>
+          <TabsTrigger value="units">{t('customers.units')}</TabsTrigger>
+          <TabsTrigger value="meters">{t('sidebar.meters')}</TabsTrigger>
+          <TabsTrigger value="invoices">{t('sidebar.invoices')}</TabsTrigger>
+          <TabsTrigger value="payments">{t('sidebar.payments')}</TabsTrigger>
+          <TabsTrigger value="balance">{t('customers.balance')}</TabsTrigger>
+          <TabsTrigger value="tickets">{t('sidebar.tickets')}</TabsTrigger>
+          <TabsTrigger value="notes">{t('customers.notes')}</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview">
           <div className="grid md:grid-cols-2 gap-4">
             <Card className="glass-card border-border/50">
-              <CardHeader className="pb-2"><CardTitle className="text-sm">Customer Info</CardTitle></CardHeader>
+              <CardHeader className="pb-2"><CardTitle className="text-sm">{t('customers.customerInfo')}</CardTitle></CardHeader>
               <CardContent className="text-sm space-y-2">
-                <div className="flex justify-between"><span className="text-muted-foreground">Code</span><span>{customer.code}</span></div>
-                <div className="flex justify-between"><span className="text-muted-foreground">Type</span><StatusBadge status={customer.customerType} /></div>
-                <div className="flex justify-between"><span className="text-muted-foreground">Project</span><span>{project?.name ?? customer.projectName}</span></div>
-                <div className="flex justify-between"><span className="text-muted-foreground">Created</span><span>{formatDate(customer.createdAt)}</span></div>
+                <div className="flex justify-between"><span className="text-muted-foreground">{t('customers.code')}</span><span>{customer.code}</span></div>
+                <div className="flex justify-between"><span className="text-muted-foreground">{t('customers.type')}</span><StatusBadge status={customer.customerType} /></div>
+                <div className="flex justify-between"><span className="text-muted-foreground">{t('customers.project')}</span><span>{project?.name ?? customer.projectName}</span></div>
+                <div className="flex justify-between"><span className="text-muted-foreground">{t('customers.created')}</span><span>{formatDate(customer.createdAt)}</span></div>
               </CardContent>
             </Card>
             <Card className="glass-card border-border/50">
-              <CardHeader className="pb-2"><CardTitle className="text-sm">Assigned Units</CardTitle></CardHeader>
+              <CardHeader className="pb-2"><CardTitle className="text-sm">{t('customers.assignedUnits')}</CardTitle></CardHeader>
               <CardContent>
                 {customerUnits.length > 0 ? (
                   <div className="space-y-2">
@@ -103,11 +104,11 @@ export default function CustomerDetailPage() {
                       </div>
                     ))}
                   </div>
-                ) : <p className="text-sm text-muted-foreground text-center py-4">No assigned units</p>}
+                ) : <p className="text-sm text-muted-foreground text-center py-4">{t('customers.noAssignedUnits')}</p>}
               </CardContent>
             </Card>
             <Card className="glass-card border-border/50 md:col-span-2">
-              <CardHeader className="pb-2"><CardTitle className="text-sm">Recent Invoices</CardTitle></CardHeader>
+              <CardHeader className="pb-2"><CardTitle className="text-sm">{t('customers.recentInvoices')}</CardTitle></CardHeader>
               <CardContent>
                 {invoices.length > 0 ? (
                   <div className="space-y-2">
@@ -124,7 +125,7 @@ export default function CustomerDetailPage() {
                       </div>
                     ))}
                   </div>
-                ) : <p className="text-sm text-muted-foreground text-center py-4">No invoices</p>}
+                ) : <p className="text-sm text-muted-foreground text-center py-4">{t('billing.invoices.noInvoices')}</p>}
               </CardContent>
             </Card>
           </div>
@@ -134,12 +135,12 @@ export default function CustomerDetailPage() {
           <SmartTable
             data={customerUnits}
             columns={[
-              { key: 'unitNumber', label: 'Unit', sortable: true },
-              { key: 'unitType', label: 'Type', render: (v: string) => <StatusBadge status={v} /> },
-              { key: 'floorNumber', label: 'Floor', width: '80px' },
-              { key: 'status', label: 'Status', width: '100px', render: (v: string) => <StatusBadge status={v} /> },
+              { key: 'unitNumber', label: t('locations.unit'), sortable: true },
+              { key: 'unitType', label: t('customers.type'), render: (v: string) => <StatusBadge status={v} /> },
+              { key: 'floorNumber', label: t('locations.floor'), width: '80px' },
+              { key: 'status', label: t('customers.status'), width: '100px', render: (v: string) => <StatusBadge status={v} /> },
             ]}
-            searchPlaceholder="Search units..."
+            searchPlaceholder={t('customers.search')}
           />
         </TabsContent>
 
@@ -147,13 +148,13 @@ export default function CustomerDetailPage() {
           <SmartTable
             data={meters}
             columns={[
-              { key: 'serialNumber', label: 'Serial', sortable: true },
-              { key: 'meterType', label: 'Type', width: '120px', render: (v: string) => <StatusBadge status={v} /> },
-              { key: 'brand', label: 'Brand' },
-              { key: 'lastReading', label: 'Last Reading', width: '120px', render: (v: number) => v ? v.toLocaleString() : '-' },
-              { key: 'status', label: 'Status', width: '100px', render: (v: string) => <StatusBadge status={v} /> },
+              { key: 'serialNumber', label: t('meters.serialNumber'), sortable: true },
+              { key: 'meterType', label: t('meters.type'), width: '120px', render: (v: string) => <StatusBadge status={v} /> },
+              { key: 'brand', label: t('meters.brand') },
+              { key: 'lastReading', label: t('meters.lastReading'), width: '120px', render: (v: number) => v ? v.toLocaleString() : '-' },
+              { key: 'status', label: t('meters.status'), width: '100px', render: (v: string) => <StatusBadge status={v} /> },
             ]}
-            searchPlaceholder="Search meters..."
+            searchPlaceholder={t('meters.search')}
             searchKeys={['serialNumber', 'brand']}
           />
         </TabsContent>
@@ -162,21 +163,21 @@ export default function CustomerDetailPage() {
           <SmartTable
             data={invoices}
             columns={[
-              { key: 'invoiceNumber', label: 'Invoice #', sortable: true },
-              { key: 'billingPeriodStart', label: 'Period', width: '180px', render: (v: string, row: { billingPeriodEnd: string }) => `${formatDate(v)} - ${formatDate(row.billingPeriodEnd)}` },
-              { key: 'consumption', label: 'Usage', width: '80px' },
-              { key: 'total', label: 'Total', width: '100px', render: (v: number) => formatCurrency(v) },
-              { key: 'paidAmount', label: 'Paid', width: '100px', render: (v: number) => formatCurrency(v) },
-              { key: 'status', label: 'Status', width: '120px', render: (v: string) => <StatusBadge status={v} /> },
+              { key: 'invoiceNumber', label: t('billing.invoices.invoiceNumber'), sortable: true },
+              { key: 'billingPeriodStart', label: t('billing.invoices.period'), width: '180px', render: (v: string, row: { billingPeriodEnd: string }) => `${formatDate(v)} - ${formatDate(row.billingPeriodEnd)}` },
+              { key: 'consumption', label: t('billing.consumption.consumption'), width: '80px' },
+              { key: 'total', label: t('billing.invoices.total'), width: '100px', render: (v: number) => formatCurrency(v) },
+              { key: 'paidAmount', label: t('billing.invoices.paid'), width: '100px', render: (v: number) => formatCurrency(v) },
+              { key: 'status', label: t('billing.invoices.status'), width: '120px', render: (v: string) => <StatusBadge status={v} /> },
             ]}
-            searchPlaceholder="Search invoices..."
+            searchPlaceholder={t('billing.invoices.search')}
           />
         </TabsContent>
 
-        <TabsContent value="payments"><div className="text-center py-12 text-muted-foreground">No payment records found.</div></TabsContent>
-        <TabsContent value="balance"><div className="text-center py-12 text-muted-foreground">No balance records found.</div></TabsContent>
-        <TabsContent value="tickets"><div className="text-center py-12 text-muted-foreground">No tickets found.</div></TabsContent>
-        <TabsContent value="notes"><div className="text-center py-12 text-muted-foreground">No notes found.</div></TabsContent>
+        <TabsContent value="payments"><div className="text-center py-12 text-muted-foreground">{t('billing.payments.noPayments')}</div></TabsContent>
+        <TabsContent value="balance"><div className="text-center py-12 text-muted-foreground">{t('customers.noBalanceRecords')}</div></TabsContent>
+        <TabsContent value="tickets"><div className="text-center py-12 text-muted-foreground">{t('tickets.noTickets')}</div></TabsContent>
+        <TabsContent value="notes"><div className="text-center py-12 text-muted-foreground">{t('customers.noNotes')}</div></TabsContent>
       </Tabs>
     </div>
   );

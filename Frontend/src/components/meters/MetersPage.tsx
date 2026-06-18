@@ -5,21 +5,24 @@ import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { toast } from 'sonner';
 import { usePageStore } from '@/lib/router-store';
-import { mockMeters, mockProjects } from '@/lib/mock-data';
 import { useMetersList } from '@/hooks/use-meters';
+import { useProjectsList } from '@/hooks/use-projects';
 import { QueryBoundary } from '@/components/shared/QueryBoundary';
 import SmartTable from '@/components/smart-table/SmartTable';
 import { StatusBadge } from '@/components/shared/StatusBadge';
 import { PageHeader, formatDate } from '@/components/shared/PageHelpers';
+import { useT } from '@/lib/i18n/context';
 
 export default function MetersPage() {
   const { navigate } = usePageStore();
+  const t = useT();
   const metersQuery = useMetersList();
-  const meters = metersQuery.data ?? mockMeters;
+  const meters = metersQuery.data ?? [];
+  const { data: apiProjects } = useProjectsList();
 
   const columns = [
     {
-      key: 'serialNumber', label: 'Serial', sortable: true,
+      key: 'serialNumber', label: t('meters.serialNumber'), sortable: true,
       render: (v: string, row: { meterType: string }) => (
         <div className="flex items-center gap-2">
           {row.meterType === 'electricity' ? <Zap className="h-3.5 w-3.5 text-amber-500" /> : <Droplets className="h-3.5 w-3.5 text-blue-500" />}
@@ -28,18 +31,18 @@ export default function MetersPage() {
       ),
     },
     {
-      key: 'meterType', label: 'Type', sortable: true, width: '120px',
+      key: 'meterType', label: t('meters.type'), sortable: true, width: '120px',
       render: (v: string) => <StatusBadge status={v} />,
     },
     { key: 'brand', label: 'Brand', sortable: true },
     { key: 'projectName', label: 'Project', sortable: true, render: (v: string) => v || '-' },
     { key: 'unitNumber', label: 'Building/Unit', width: '110px', render: (_v: unknown, row: { buildingName?: string; unitNumber?: string }) => row.buildingName && row.unitNumber ? `${row.buildingName} / ${row.unitNumber}` : '-' },
-    { key: 'customerName', label: 'Customer', render: (v: string) => v || '-' },
+    { key: 'customerName', label: t('meters.customer'), render: (v: string) => v || '-' },
     { key: 'simCardId', label: 'SIM', width: '80px', render: (v: string) => v || '-' },
     { key: 'ipAddress', label: 'IP', width: '110px', render: (v: string) => v || '-' },
-    { key: 'lastReading', label: 'Last Reading', width: '110px', render: (v: number) => v ? v.toLocaleString() : '-' },
+    { key: 'lastReading', label: t('meters.lastReading'), width: '110px', render: (v: number) => v ? v.toLocaleString() : '-' },
     {
-      key: 'status', label: 'Status', sortable: true, width: '110px',
+      key: 'status', label: t('meters.status'), sortable: true, width: '110px',
       render: (v: string) => <StatusBadge status={v} />,
     },
     {
@@ -53,13 +56,13 @@ export default function MetersPage() {
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuItem onClick={(e) => { e.stopPropagation(); navigate('meter-detail', { id: row.id }); }}>
-              <Eye className="h-4 w-4 mr-2" /> View
+              <Eye className="h-4 w-4 mr-2" /> {t('meters.actions.view')}
             </DropdownMenuItem>
             <DropdownMenuItem onClick={(e) => { e.stopPropagation(); toast.info('Edit meter: ' + row.serialNumber); }}>
-              <Pencil className="h-4 w-4 mr-2" /> Edit
+              <Pencil className="h-4 w-4 mr-2" /> {t('meters.actions.edit')}
             </DropdownMenuItem>
             <DropdownMenuItem onClick={(e) => { e.stopPropagation(); toast.info('Delete meter: ' + row.serialNumber); }} className="text-red-500">
-              <Trash2 className="h-4 w-4 mr-2" /> Delete
+              <Trash2 className="h-4 w-4 mr-2" /> {t('meters.actions.delete')}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -70,11 +73,11 @@ export default function MetersPage() {
   return (
     <div>
       <PageHeader
-        title="Meters"
+        title={t('meters.title')}
         subtitle="Manage water and electricity meters"
         action={
           <Button className="gap-2" onClick={() => toast.info('Add Meter dialog would open')}>
-            <Plus className="h-4 w-4" /> Add Meter
+            <Plus className="h-4 w-4" /> {t('meters.add')}
           </Button>
         }
       />
@@ -93,7 +96,7 @@ export default function MetersPage() {
           },
           {
             key: 'projectId', label: 'Project', type: 'select',
-            options: mockProjects.map((p) => ({ label: p.name, value: p.id })),
+            options: (apiProjects ?? []).map((p: { name: string; id: string }) => ({ label: p.name, value: p.id })),
           },
           {
             key: 'status', label: 'Status', type: 'select',
@@ -110,7 +113,7 @@ export default function MetersPage() {
           },
         ]}
         searchKeys={['serialNumber', 'brand', 'model', 'customerName', 'projectName']}
-        searchPlaceholder="Search meters..."
+        searchPlaceholder={t('meters.search')}
         onRowClick={(row) => navigate('meter-detail', { id: row.id })}
       />
       </QueryBoundary>

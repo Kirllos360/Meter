@@ -11,9 +11,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import { Building2, Users, Gauge, FileText, Zap } from 'lucide-react';
 import { formatDate } from '@/components/shared/PageHelpers';
+import { useT } from '@/lib/i18n/context';
 import { useProjectDetail } from '@/hooks/use-projects';
 
 export default function ProjectDetailPage() {
+  const t = useT();
   const { pageParams } = usePageStore();
   const { data: apiProject, isLoading, isError, error } = useProjectDetail(pageParams.id ?? '');
   const project = apiProject ?? mockProjects.find((p) => p.id === pageParams.id);
@@ -23,7 +25,7 @@ export default function ProjectDetailPage() {
       <div>
         <BackButton fallback="projects" />
         <QueryBoundary isLoading={isLoading} isError={isError} error={error}>
-          <p className="text-muted-foreground">Project not found.</p>
+          <p className="text-muted-foreground">{t('projects.notFound')}</p>
         </QueryBoundary>
       </div>
     );
@@ -62,39 +64,39 @@ export default function ProjectDetailPage() {
 
       {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-6">
-        <StatCard label="Buildings" value={project.buildings} icon={<Building2 className="h-5 w-5" />} />
-        <StatCard label="Units" value={project.units} icon={<FileText className="h-5 w-5" />} />
-        <StatCard label="Customers" value={project.customers} icon={<Users className="h-5 w-5" />} />
-        <StatCard label="Active Meters" value={project.activeMeters} icon={<Gauge className="h-5 w-5" />} />
-        <StatCard label="Tariff" value={project.tariff} icon={<Zap className="h-5 w-5" />} />
+        <StatCard label={t('projects.buildings')} value={project.buildings} icon={<Building2 className="h-5 w-5" />} />
+        <StatCard label={t('projects.units')} value={project.units} icon={<FileText className="h-5 w-5" />} />
+        <StatCard label={t('projects.customerCount')} value={project.customers} icon={<Users className="h-5 w-5" />} />
+        <StatCard label={t('projects.activeMeters')} value={project.activeMeters} icon={<Gauge className="h-5 w-5" />} />
+        <StatCard label={t('projects.tariff')} value={project.tariff} icon={<Zap className="h-5 w-5" />} />
       </div>
 
       {/* Tabs */}
       <Tabs defaultValue="overview">
         <TabsList className="mb-4">
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="locations">Locations</TabsTrigger>
-          <TabsTrigger value="customers">Customers</TabsTrigger>
-          <TabsTrigger value="meters">Meters</TabsTrigger>
-          <TabsTrigger value="invoices">Invoices</TabsTrigger>
+          <TabsTrigger value="overview">{t('projects.overview')}</TabsTrigger>
+          <TabsTrigger value="locations">{t('sidebar.locations')}</TabsTrigger>
+          <TabsTrigger value="customers">{t('sidebar.customers')}</TabsTrigger>
+          <TabsTrigger value="meters">{t('sidebar.meters')}</TabsTrigger>
+          <TabsTrigger value="invoices">{t('sidebar.invoices')}</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview">
           <div className="grid md:grid-cols-2 gap-4">
             <Card className="glass-card border-border/50">
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm">Project Info</CardTitle>
+                <CardTitle className="text-sm">{t('projects.projectInfo')}</CardTitle>
               </CardHeader>
               <CardContent className="text-sm space-y-2">
-                <div className="flex justify-between"><span className="text-muted-foreground">Location</span><span>{project.location}</span></div>
-                <div className="flex justify-between"><span className="text-muted-foreground">Area</span><span>{project.area}</span></div>
-                <div className="flex justify-between"><span className="text-muted-foreground">Created</span><span>{formatDate(project.createdAt)}</span></div>
-                <div className="flex justify-between"><span className="text-muted-foreground">Tariff</span><span>{project.tariff}</span></div>
+                <div className="flex justify-between"><span className="text-muted-foreground">{t('projects.location')}</span><span>{project.location}</span></div>
+                <div className="flex justify-between"><span className="text-muted-foreground">{t('projects.area')}</span><span>{project.area}</span></div>
+                <div className="flex justify-between"><span className="text-muted-foreground">{t('projects.created')}</span><span>{formatDate(project.createdAt)}</span></div>
+                <div className="flex justify-between"><span className="text-muted-foreground">{t('projects.tariff')}</span><span>{project.tariff}</span></div>
               </CardContent>
             </Card>
             <Card className="glass-card border-border/50">
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm">Consumption Trend</CardTitle>
+                <CardTitle className="text-sm">{t('projects.consumptionTrend')}</CardTitle>
               </CardHeader>
               <CardContent>
                 {chartData.length > 0 ? (
@@ -106,12 +108,12 @@ export default function ProjectDetailPage() {
                       <Line type="monotone" dataKey="consumption" stroke="hsl(var(--primary))" strokeWidth={2} dot={false} />
                     </LineChart>
                   </ResponsiveContainer>
-                ) : <p className="text-sm text-muted-foreground py-8 text-center">No data</p>}
+                ) : <p className="text-sm text-muted-foreground py-8 text-center">{t('common.noData')}</p>}
               </CardContent>
             </Card>
             <Card className="glass-card border-border/50 md:col-span-2">
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm">Recent Alerts</CardTitle>
+                <CardTitle className="text-sm">{t('projects.recentAlerts')}</CardTitle>
               </CardHeader>
               <CardContent>
                 {alerts.length > 0 ? (
@@ -126,7 +128,7 @@ export default function ProjectDetailPage() {
                       </div>
                     ))}
                   </div>
-                ) : <p className="text-sm text-muted-foreground text-center py-4">No alerts for this project</p>}
+                ) : <p className="text-sm text-muted-foreground text-center py-4">{t('projects.noAlerts')}</p>}
               </CardContent>
             </Card>
           </div>
@@ -136,12 +138,12 @@ export default function ProjectDetailPage() {
           <SmartTable
             data={buildings}
             columns={[
-              { key: 'name', label: 'Building', sortable: true },
-              { key: 'floors', label: 'Floors', sortable: true, width: '80px' },
-              { key: 'units', label: 'Units', sortable: true, width: '80px' },
-              { key: 'createdAt', label: 'Created', sortable: true, width: '110px', render: (v: string) => formatDate(v) },
+              { key: 'name', label: t('locations.building'), sortable: true },
+              { key: 'floors', label: t('locations.floor'), sortable: true, width: '80px' },
+              { key: 'units', label: t('locations.unit'), sortable: true, width: '80px' },
+              { key: 'createdAt', label: t('projects.created'), sortable: true, width: '110px', render: (v: string) => formatDate(v) },
             ]}
-            searchPlaceholder="Search buildings..."
+            searchPlaceholder={t('locations.search')}
             searchKeys={['name']}
           />
         </TabsContent>
@@ -150,14 +152,14 @@ export default function ProjectDetailPage() {
           <SmartTable
             data={customers}
             columns={[
-              { key: 'code', label: 'Code', sortable: true, width: '120px' },
-              { key: 'name', label: 'Name', sortable: true },
-              { key: 'customerType', label: 'Type', sortable: true, width: '120px', render: (v: string) => <StatusBadge status={v} /> },
-              { key: 'activeMeters', label: 'Meters', width: '80px' },
-              { key: 'currentBalance', label: 'Balance', sortable: true, width: '110px', render: (v: number) => <span className={v > 0 ? 'text-red-500' : v < 0 ? 'text-blue-500' : 'text-emerald-500'}>{v.toLocaleString()}</span> },
-              { key: 'status', label: 'Status', width: '90px', render: (v: string) => <StatusBadge status={v} /> },
+              { key: 'code', label: t('customers.code'), sortable: true, width: '120px' },
+              { key: 'name', label: t('customers.name'), sortable: true },
+              { key: 'customerType', label: t('customers.type'), sortable: true, width: '120px', render: (v: string) => <StatusBadge status={v} /> },
+              { key: 'activeMeters', label: t('customers.meterCount'), width: '80px' },
+              { key: 'currentBalance', label: t('customers.balance'), sortable: true, width: '110px', render: (v: number) => <span className={v > 0 ? 'text-red-500' : v < 0 ? 'text-blue-500' : 'text-emerald-500'}>{v.toLocaleString()}</span> },
+              { key: 'status', label: t('customers.status'), width: '90px', render: (v: string) => <StatusBadge status={v} /> },
             ]}
-            searchPlaceholder="Search customers..."
+            searchPlaceholder={t('customers.search')}
             searchKeys={['name', 'code']}
           />
         </TabsContent>
@@ -166,22 +168,22 @@ export default function ProjectDetailPage() {
           <SmartTable
             data={meters}
             columns={[
-              { key: 'serialNumber', label: 'Serial', sortable: true },
-              { key: 'meterType', label: 'Type', width: '120px', render: (v: string) => <StatusBadge status={v} /> },
-              { key: 'brand', label: 'Brand', sortable: true },
-              { key: 'unitNumber', label: 'Unit', width: '90px', render: (v: string) => v || '-' },
-              { key: 'customerName', label: 'Customer', render: (v: string) => v || '-' },
-              { key: 'lastReading', label: 'Last Reading', width: '110px', render: (v: number) => v ? v.toLocaleString() : '-' },
-              { key: 'status', label: 'Status', width: '100px', render: (v: string) => <StatusBadge status={v} /> },
+              { key: 'serialNumber', label: t('meters.serialNumber'), sortable: true },
+              { key: 'meterType', label: t('meters.type'), width: '120px', render: (v: string) => <StatusBadge status={v} /> },
+              { key: 'brand', label: t('meters.brand'), sortable: true },
+              { key: 'unitNumber', label: t('meters.unit'), width: '90px', render: (v: string) => v || '-' },
+              { key: 'customerName', label: t('meters.customer'), render: (v: string) => v || '-' },
+              { key: 'lastReading', label: t('meters.lastReading'), width: '110px', render: (v: number) => v ? v.toLocaleString() : '-' },
+              { key: 'status', label: t('meters.status'), width: '100px', render: (v: string) => <StatusBadge status={v} /> },
             ]}
-            searchPlaceholder="Search meters..."
+            searchPlaceholder={t('meters.search')}
             searchKeys={['serialNumber', 'brand', 'customerName']}
             filters={[
-              { key: 'status', label: 'Status', type: 'select', options: [
-                { label: 'Active', value: 'active' }, { label: 'Offline', value: 'offline' }, { label: 'Available', value: 'available' }, { label: 'Faulty', value: 'faulty' },
+              { key: 'status', label: t('meters.status'), type: 'select', options: [
+                { label: t('meters.lifecycle.active'), value: 'active' }, { label: t('meters.lifecycle.offline'), value: 'offline' }, { label: t('meters.lifecycle.available'), value: 'available' }, { label: t('meters.lifecycle.faulty'), value: 'faulty' },
               ]},
-              { key: 'meterType', label: 'Type', type: 'select', options: [
-                { label: 'Electricity', value: 'electricity' }, { label: 'Main Water', value: 'main_water' }, { label: 'Child Water', value: 'child_water' },
+              { key: 'meterType', label: t('meters.type'), type: 'select', options: [
+                { label: t('meters.electric'), value: 'electricity' }, { label: t('meters.water'), value: 'main_water' }, { label: t('meters.chilled'), value: 'child_water' },
               ]},
             ]}
           />
@@ -191,13 +193,13 @@ export default function ProjectDetailPage() {
           <SmartTable
             data={[]}
             columns={[
-              { key: 'invoiceNumber', label: 'Invoice #', sortable: true },
-              { key: 'customerName', label: 'Customer' },
-              { key: 'total', label: 'Total', width: '100px' },
-              { key: 'status', label: 'Status', width: '110px', render: (v: string) => <StatusBadge status={v} /> },
+              { key: 'invoiceNumber', label: t('billing.invoices.invoiceNumber'), sortable: true },
+              { key: 'customerName', label: t('billing.invoices.customer') },
+              { key: 'total', label: t('billing.invoices.total'), width: '100px' },
+              { key: 'status', label: t('billing.invoices.status'), width: '110px', render: (v: string) => <StatusBadge status={v} /> },
             ]}
-            searchPlaceholder="Search invoices..."
-            emptyMessage="No invoices for this project"
+            searchPlaceholder={t('billing.invoices.search')}
+            emptyMessage={t('billing.invoices.noInvoices')}
           />
         </TabsContent>
       </Tabs>

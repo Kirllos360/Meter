@@ -2,12 +2,14 @@ import {
   Controller,
   Post,
   Get,
+  Param,
   Body,
   Query,
   Req,
   HttpCode,
   HttpStatus,
-  UseGuards
+  UseGuards,
+  ParseUUIDPipe,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from '../auth/roles.guard';
@@ -30,10 +32,24 @@ export class ReadingsController {
     return this.readingsService.createReading(dto, req.user.userId);
   }
 
+  @Get()
+  @Roles(Role.OPERATOR, Role.TECHNICIAN, Role.PROJECT_ADMIN, Role.SUPER_ADMIN, Role.FINANCE, Role.SUPPORT)
+  @HttpCode(HttpStatus.OK)
+  async findAll(@Query('projectId') projectId?: string) {
+    return this.readingsService.findAll(projectId);
+  }
+
   @Get('review-queue')
   @Roles(Role.OPERATOR, Role.TECHNICIAN, Role.PROJECT_ADMIN, Role.SUPER_ADMIN)
   @HttpCode(HttpStatus.OK)
   async listReviewQueue(@Query('projectId') projectId?: string, @Query('status') status?: string) {
     return this.readingsService.listReviewQueue({ projectId, status });
+  }
+
+  @Get(':id')
+  @Roles(Role.OPERATOR, Role.TECHNICIAN, Role.PROJECT_ADMIN, Role.SUPER_ADMIN, Role.FINANCE, Role.SUPPORT)
+  @HttpCode(HttpStatus.OK)
+  async findOne(@Param('id', ParseUUIDPipe) id: string) {
+    return this.readingsService.findOne(id);
   }
 }

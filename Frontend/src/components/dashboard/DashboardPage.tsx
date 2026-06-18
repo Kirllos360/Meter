@@ -38,6 +38,7 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import { cn } from '@/lib/utils';
+import { useT } from '@/lib/i18n/context';
 import { useDashboardKpis, useConsumptionTrend, useRecentActivity } from '@/hooks/use-dashboard';
 import {
   mockKPIs,
@@ -334,22 +335,23 @@ function renderPieLabel({
 
 // ---- Format timestamp ----
 
-function formatTime(timestamp: string) {
+function formatTime(timestamp: string, t: (path: string, params?: Record<string, string | number>) => string) {
   const date = new Date(timestamp);
   const now = new Date();
   const diffMs = now.getTime() - date.getTime();
   const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
   const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
 
-  if (diffHours < 1) return 'Just now';
-  if (diffHours < 24) return `${diffHours}h ago`;
-  if (diffDays < 7) return `${diffDays}d ago`;
+  if (diffHours < 1) return t('common.justNow');
+  if (diffHours < 24) return t('common.hoursAgo', { count: diffHours });
+  if (diffDays < 7) return t('common.daysAgo', { count: diffDays });
   return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 }
 
 // ---- Main Dashboard ----
 
 export default function DashboardPage() {
+  const t = useT();
   const kpisQuery = useDashboardKpis();
   const consumptionQuery = useConsumptionTrend();
   const activityQuery = useRecentActivity();
@@ -380,9 +382,9 @@ export default function DashboardPage() {
     <div className="space-y-6">
       {/* Page Header */}
       <div>
-        <h1 className="text-2xl font-bold text-foreground">Dashboard</h1>
+        <h1 className="text-2xl font-bold text-foreground">{t('dashboard.title')}</h1>
         <p className="text-sm text-muted-foreground mt-1">
-          Overview of your utility metering operations
+          {t('dashboard.subtitle')}
         </p>
       </div>
 
@@ -400,20 +402,20 @@ export default function DashboardPage() {
           <div className="flex items-center justify-between mb-4">
             <div>
               <h3 className="text-sm font-semibold text-foreground">
-                Consumption Trends
+                {t('dashboard.consumptionTrends')}
               </h3>
               <p className="text-xs text-muted-foreground mt-0.5">
-                Monthly electricity &amp; water consumption
+                {t('dashboard.consumptionSubtitle')}
               </p>
             </div>
             <div className="flex items-center gap-3 text-xs">
               <div className="flex items-center gap-1.5">
                 <Zap className="h-3 w-3 text-primary" />
-                <span className="text-muted-foreground">Electricity</span>
+                <span className="text-muted-foreground">{t('dashboard.electricity')}</span>
               </div>
               <div className="flex items-center gap-1.5">
                 <Droplets className="h-3 w-3 text-emerald-400" />
-                <span className="text-muted-foreground">Water</span>
+                <span className="text-muted-foreground">{t('dashboard.water')}</span>
               </div>
             </div>
           </div>
@@ -463,7 +465,7 @@ export default function DashboardPage() {
                 <Area
                   type="monotone"
                   dataKey="electricity"
-                  name="Electricity (kWh)"
+                  name={t('dashboard.electricityKwh')}
                   stroke="#A3FF12"
                   strokeWidth={2}
                   fill="url(#elecGrad)"
@@ -471,7 +473,7 @@ export default function DashboardPage() {
                 <Area
                   type="monotone"
                   dataKey="water"
-                  name="Water (m³)"
+                  name={t('dashboard.waterM3')}
                   stroke="#12FFA3"
                   strokeWidth={2}
                   fill="url(#waterGrad)"
@@ -486,20 +488,20 @@ export default function DashboardPage() {
           <div className="flex items-center justify-between mb-4">
             <div>
               <h3 className="text-sm font-semibold text-foreground">
-                Revenue Overview
+                {t('dashboard.revenueOverview')}
               </h3>
               <p className="text-xs text-muted-foreground mt-0.5">
-                Invoices vs payments by month
+                {t('dashboard.revenueSubtitle')}
               </p>
             </div>
             <div className="flex items-center gap-3 text-xs">
               <div className="flex items-center gap-1.5">
                 <div className="h-2.5 w-2.5 rounded-sm bg-primary" />
-                <span className="text-muted-foreground">Invoices</span>
+                <span className="text-muted-foreground">{t('dashboard.invoices')}</span>
               </div>
               <div className="flex items-center gap-1.5">
                 <div className="h-2.5 w-2.5 rounded-sm bg-emerald-400" />
-                <span className="text-muted-foreground">Payments</span>
+                <span className="text-muted-foreground">{t('dashboard.payments')}</span>
               </div>
             </div>
           </div>
@@ -556,10 +558,10 @@ export default function DashboardPage() {
         <div className="glass-card rounded-xl p-4 sm:p-6">
           <div className="mb-4">
             <h3 className="text-sm font-semibold text-foreground">
-              Meter Status Distribution
+              {t('dashboard.meterStatusDistribution')}
             </h3>
             <p className="text-xs text-muted-foreground mt-0.5">
-              {mockMeters.length} total meters
+              {t('dashboard.totalMeters', { count: mockMeters.length })}
             </p>
           </div>
           <div className="h-[280px] flex items-center">
@@ -585,7 +587,7 @@ export default function DashboardPage() {
                 </Pie>
                 <Tooltip
                   content={
-                    <ChartTooltip formatter={(v: number) => `${v} meters`} />
+                    <ChartTooltip formatter={(v: number) => `${v} ${t('common.meters')}`} />
                   }
                 />
               </PieChart>
@@ -612,10 +614,10 @@ export default function DashboardPage() {
           <div className="flex items-center justify-between mb-5">
             <div>
               <h3 className="text-sm font-semibold text-foreground">
-                Alert Summary
+                {t('dashboard.alertsSummary')}
               </h3>
               <p className="text-xs text-muted-foreground mt-0.5">
-                {totalAlerts} unacknowledged alerts
+                {t('dashboard.unacknowledgedAlerts', { count: totalAlerts })}
               </p>
             </div>
             <div className="relative">
@@ -649,10 +651,10 @@ export default function DashboardPage() {
                       </div>
                       <div>
                         <p className="text-sm font-medium text-foreground">
-                          {config.label}
+                          {t('alerts.' + key)}
                         </p>
                         <p className="text-xs text-muted-foreground">
-                          {count} active alert{count !== 1 ? 's' : ''}
+                          {t('dashboard.activeAlert', { count })}
                         </p>
                       </div>
                     </div>
@@ -682,10 +684,10 @@ export default function DashboardPage() {
         <div className="flex items-center justify-between mb-5">
           <div>
             <h3 className="text-sm font-semibold text-foreground">
-              Recent Activity
+              {t('dashboard.recentActivity')}
             </h3>
             <p className="text-xs text-muted-foreground mt-0.5">
-              Latest system events and actions
+              {t('dashboard.recentActivitySubtitle')}
             </p>
           </div>
           <ArrowUpRight className="h-4 w-4 text-muted-foreground" />
@@ -722,7 +724,7 @@ export default function DashboardPage() {
                       {item.title}
                     </p>
                     <span className="text-[10px] text-muted-foreground/60 shrink-0">
-                      {formatTime(item.timestamp)}
+                      {formatTime(item.timestamp, t)}
                     </span>
                   </div>
                   <p className="text-xs text-muted-foreground mt-0.5 truncate">

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useT } from '@/lib/i18n/context';
 import { PageHeader } from '@/components/shared/PageHelpers';
 import { StatusBadge } from '@/components/shared/StatusBadge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -17,6 +18,7 @@ import { cn } from '@/lib/utils';
 import { useTheme } from 'next-themes';
 
 export default function SettingsPage() {
+  const t = useT();
   const { theme, setTheme } = useTheme();
   const [companyName, setCompanyName] = useState('Meter Verse');
   const [companyEmail, setCompanyEmail] = useState('info@meterpulse.com');
@@ -28,10 +30,10 @@ export default function SettingsPage() {
   const [alertNotif, setAlertNotif] = useState(true);
 
   const userColumns = [
-    { key: 'name', label: 'Name', sortable: true },
-    { key: 'email', label: 'Email' },
-    { key: 'role', label: 'Role', render: (v: string) => <StatusBadge status={v} /> },
-    { key: 'phone', label: 'Phone', render: (v: string) => v || '-' },
+    { key: 'name', label: t('customers.name'), sortable: true },
+    { key: 'email', label: t('login.email') },
+    { key: 'role', label: t('nav.role'), render: (v: string) => <StatusBadge status={v} /> },
+    { key: 'phone', label: t('customers.phone'), render: (v: string) => v || '-' },
   ];
 
   const tariffData = [
@@ -44,49 +46,49 @@ export default function SettingsPage() {
 
   return (
     <div>
-      <PageHeader title="Settings" subtitle="System configuration and preferences" />
+      <PageHeader title={t('settings.title')} subtitle={t('settings.system')} />
 
       <Tabs defaultValue="general">
         <TabsList className="mb-6 flex-wrap h-auto gap-1">
-          <TabsTrigger value="general">General</TabsTrigger>
-          <TabsTrigger value="roles">User Roles</TabsTrigger>
-          <TabsTrigger value="tariff">Tariff/Rates</TabsTrigger>
+          <TabsTrigger value="general">{t('settings.preferences')}</TabsTrigger>
+          <TabsTrigger value="roles">{t('settings.team')}</TabsTrigger>
+          <TabsTrigger value="tariff">{t('billing.tariffs.title')}</TabsTrigger>
           <TabsTrigger value="billing">Billing Period</TabsTrigger>
-          <TabsTrigger value="reading">Reading Validation</TabsTrigger>
+          <TabsTrigger value="reading">{t('readings.title')}</TabsTrigger>
           <TabsTrigger value="water">Water Thresholds</TabsTrigger>
-          <TabsTrigger value="notifications">Notifications</TabsTrigger>
-          <TabsTrigger value="theme">Theme</TabsTrigger>
+          <TabsTrigger value="notifications">{t('settings.notifications')}</TabsTrigger>
+          <TabsTrigger value="theme">{t('settings.theme')}</TabsTrigger>
         </TabsList>
 
         <TabsContent value="general">
           <Card className="glass-card border-border/50 max-w-lg">
-            <CardHeader><CardTitle className="text-sm">Company Information</CardTitle></CardHeader>
+            <CardHeader><CardTitle className="text-sm">{t('settings.system')}</CardTitle></CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <Label>Application Name</Label>
+                <Label>{t('settings.profile')}</Label>
                 <Input value={companyName} onChange={(e) => setCompanyName(e.target.value)} className="mt-1" />
               </div>
               <div>
-                <Label>Email</Label>
+                <Label>{t('login.email')}</Label>
                 <Input value={companyEmail} onChange={(e) => setCompanyEmail(e.target.value)} className="mt-1" />
               </div>
               <div>
-                <Label>Phone</Label>
+                <Label>{t('customers.phone')}</Label>
                 <Input value={companyPhone} onChange={(e) => setCompanyPhone(e.target.value)} className="mt-1" />
               </div>
-              <Button onClick={() => toast.success('Settings saved!')}>Save Changes</Button>
+              <Button onClick={() => toast.success(t('common.saving'))}>{t('common.save')}</Button>
             </CardContent>
           </Card>
         </TabsContent>
 
         <TabsContent value="roles">
           <Card className="glass-card border-border/50">
-            <CardHeader><CardTitle className="text-sm">System Users</CardTitle></CardHeader>
+            <CardHeader><CardTitle className="text-sm">{t('settings.team')}</CardTitle></CardHeader>
             <CardContent>
               <SmartTable
                 data={mockUsers}
                 columns={userColumns}
-                searchPlaceholder="Search users..."
+                searchPlaceholder={t('common.search')}
                 searchKeys={['name', 'email']}
               />
             </CardContent>
@@ -95,13 +97,13 @@ export default function SettingsPage() {
 
         <TabsContent value="tariff">
           <Card className="glass-card border-border/50">
-            <CardHeader><CardTitle className="text-sm">Tariff Configuration</CardTitle></CardHeader>
+            <CardHeader><CardTitle className="text-sm">{t('billing.tariffs.title')}</CardTitle></CardHeader>
             <CardContent>
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="border-b border-border/50 text-muted-foreground">
-                      <th className="text-left py-2 pr-4">Tariff Name</th>
+                      <th className="text-left py-2 pr-4">{t('billing.tariffs.name')}</th>
                       <th className="text-right py-2 px-4">Electricity (EGP/kWh)</th>
                       <th className="text-right py-2 pl-4">Water (EGP/m³)</th>
                     </tr>
@@ -137,7 +139,7 @@ export default function SettingsPage() {
 
         <TabsContent value="reading">
           <Card className="glass-card border-border/50 max-w-lg">
-            <CardHeader><CardTitle className="text-sm">Reading Validation</CardTitle></CardHeader>
+            <CardHeader><CardTitle className="text-sm">{t('readings.title')}</CardTitle></CardHeader>
             <CardContent className="space-y-4">
               <div>
                 <Label>Max Normal Consumption (units)</Label>
@@ -152,7 +154,7 @@ export default function SettingsPage() {
                 <span>Flag zero consumption</span>
                 <Switch defaultChecked />
               </div>
-              <Button onClick={() => toast.success('Validation settings saved!')}>Save</Button>
+              <Button onClick={() => toast.success(t('common.saving'))}>{t('common.save')}</Button>
             </CardContent>
           </Card>
         </TabsContent>
@@ -166,17 +168,17 @@ export default function SettingsPage() {
                 <Input type="number" value={waterThreshold} onChange={(e) => setWaterThreshold(e.target.value)} className="mt-1" />
                 <p className="text-xs text-muted-foreground mt-1">Alert if main vs child difference exceeds this percentage</p>
               </div>
-              <Button onClick={() => toast.success('Water settings saved!')}>Save</Button>
+              <Button onClick={() => toast.success(t('common.saving'))}>{t('common.save')}</Button>
             </CardContent>
           </Card>
         </TabsContent>
 
         <TabsContent value="notifications">
           <Card className="glass-card border-border/50 max-w-lg">
-            <CardHeader><CardTitle className="text-sm">Notification Preferences</CardTitle></CardHeader>
+            <CardHeader><CardTitle className="text-sm">{t('settings.notifications')}</CardTitle></CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between">
-                <div><p className="text-sm font-medium">Email Notifications</p><p className="text-xs text-muted-foreground">Receive alerts via email</p></div>
+                <div><p className="text-sm font-medium">{t('settings.notifications')}</p><p className="text-xs text-muted-foreground">Receive alerts via email</p></div>
                 <Switch checked={emailNotif} onCheckedChange={setEmailNotif} />
               </div>
               <div className="flex items-center justify-between">
@@ -184,30 +186,30 @@ export default function SettingsPage() {
                 <Switch checked={smsNotif} onCheckedChange={setSmsNotif} />
               </div>
               <div className="flex items-center justify-between">
-                <div><p className="text-sm font-medium">Critical Alerts</p><p className="text-xs text-muted-foreground">Immediate notification for critical alerts</p></div>
+                <div><p className="text-sm font-medium">{t('alerts.critical')}</p><p className="text-xs text-muted-foreground">Immediate notification for critical alerts</p></div>
                 <Switch checked={alertNotif} onCheckedChange={setAlertNotif} />
               </div>
-              <Button onClick={() => toast.success('Notification settings saved!')}>Save</Button>
+              <Button onClick={() => toast.success(t('common.saving'))}>{t('common.save')}</Button>
             </CardContent>
           </Card>
         </TabsContent>
 
         <TabsContent value="theme">
           <Card className="glass-card border-border/50 max-w-lg">
-            <CardHeader><CardTitle className="text-sm">Theme Selection</CardTitle></CardHeader>
+            <CardHeader><CardTitle className="text-sm">{t('settings.theme')}</CardTitle></CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-3 gap-3">
-                {['light', 'dark', 'system'].map((t) => (
+                {['light', 'dark', 'system'].map((themeVal) => (
                   <button
-                    key={t}
+                    key={themeVal}
                     className={cn(
                       'p-4 rounded-lg border-2 text-center text-sm font-medium transition-colors',
-                      theme === t ? 'border-primary bg-primary/10' : 'border-border/50 hover:border-primary/30'
+                      theme === themeVal ? 'border-primary bg-primary/10' : 'border-border/50 hover:border-primary/30'
                     )}
-                    onClick={() => setTheme(t)}
+                    onClick={() => setTheme(themeVal)}
                   >
-                    {t === 'light' ? '☀️' : t === 'dark' ? '🌙' : '💻'}
-                    <p className="mt-1 capitalize">{t}</p>
+                    {themeVal === 'light' ? '☀️' : themeVal === 'dark' ? '🌙' : '💻'}
+                    <p className="mt-1 capitalize">{themeVal === 'light' ? t('nav.theme.light') : themeVal === 'dark' ? t('nav.theme.dark') : t('common.all')}</p>
                   </button>
                 ))}
               </div>

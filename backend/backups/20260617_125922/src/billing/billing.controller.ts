@@ -1,0 +1,436 @@
+import {
+  Controller,
+  Post,
+  Param,
+  Body,
+  Get,
+  Query,
+  ParseUUIDPipe,
+  HttpCode,
+  HttpStatus,
+  UseGuards,
+  Logger
+} from '@nestjs/common';
+import { ApiTags, ApiOperation } from '@nestjs/swagger';
+import { AuthGuard } from '@nestjs/passport';
+import { RolesGuard } from '../auth/roles.guard';
+import { Roles } from '../auth/roles.decorator';
+import { Role } from '../auth/types/role.enum';
+import { PrismaService } from '../common/database/prisma.service';
+import { TariffService } from './tariffs/tariff.service';
+import { PeriodService } from './periods/period.service';
+import { LedgerService } from './ledger.service';
+import { WaterBalanceService } from '../readings/water-balance/water-balance.service';
+
+@ApiTags('Billing')
+@Controller()
+@UseGuards(AuthGuard('jwt'), RolesGuard)
+export class BillingController {
+  private readonly logger = new Logger(BillingController.name);
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly tariffService: TariffService,
+    private readonly periodService: PeriodService,
+    private readonly ledgerService: LedgerService,
+    private readonly waterBalanceService: WaterBalanceService
+  ) {}
+
+  @Post('invoices/generate')
+  @Roles(Role.OPERATOR, Role.PROJECT_ADMIN, Role.SUPER_ADMIN, Role.FINANCE)
+  @HttpCode(HttpStatus.ACCEPTED)
+  @ApiOperation({ summary: 'Generate invoices for billing period' })
+  async generateInvoices(
+    @Body() dto: { projectId: string; billingPeriodId: string; customerIds?: string[] }
+  ) {
+    const [period, project] = await Promise.all([
+      this.prisma.billingPeriod.findUnique({ where: { id: dto.billingPeriodId } }),
+      this.prisma.project.findUnique({ where: { id: dto.projectId } })
+    ]);
+    if (!period) return { batchId: 'no-period', generatedCount: 0 };
+    if (!project) return { batchId: 'no-project', generatedCount: 0 };
+
+    const taxRate = project.taxEnabled ? Number(project.taxRate ?? 0) / 100 : 0;
+    const waterDiffMode = project.waterDifferenceMode;
+    let count = 0;
+
+    const meters = await this.prisma.meter.findMany({
+      where: { projectId: dto.projectId, status: { not: 'retired' } }
+    });
+    const readings = await this.prisma.reading.findMany({
+      where: {
+        projectId: dto.projectId,
+        readingAt: { gte: period.startDate, lte: period.endDate },
+        status: 'valid'
+      },
+      orderBy: { readingAt: 'asc' }
+    });
+
+    for (const meter of meters) {
+      const tariff = await this.tariffService.getEffectiveTariff(
+        dto.projectId,
+        meter.meterType,
+        period.startDate
+      );
+      if (!tariff) continue;
+
+      const meterReadings = readings.filter((r) => r.meterId === meter.id);
+      const consumption = meterReadings.reduce((s, r) => s + Number(r.consumptionValue ?? 0), 0);
+      if (consumption <= 0) continue;
+
+      const utilityType = meter.meterType === 'electricity' ? 'electricity' : 'water';
+      const subtotal = Number(tariff.ratePerUnit) * consumption;
+      const tax = subtotal * taxRate;
+
+      const invoice = await this.prisma.invoice.create({
+        data: {
+          invoiceNumber: `INV-${period.periodCode}-${meter.id.substring(0, 8)}`,
+          projectId: dto.projectId,
+          customerId: dto.customerIds?.[0] ?? 'system',
+          unitId: 'system',
+          meterId: meter.id,
+          utilityType,
+          billingPeriodId: dto.billingPeriodId,
+          status: 'draft',
+          subtotalAmount: subtotal,
+          taxAmount: tax,
+          totalAmount: subtotal + tax,
+          remainingAmount: subtotal + tax,
+          paidAmount: 0
+        }
+      });
+
+      for (const r of meterReadings) {
+        await this.prisma.invoiceLine.create({
+          data: {
+            invoiceId: invoice.id,
+            readingId: r.id,
+            description: `Consumption ${r.readingAt.toISOString().slice(0, 10)}`,
+            quantity: Number(r.consumptionValue ?? 0),
+            unitPrice: Number(tariff.ratePerUnit),
+            lineAmount: Number(r.consumptionValue ?? 0) * Number(tariff.ratePerUnit)
+          }
+        });
+      }
+
+      if (
+        utilityType === 'water' &&
+        (meter.meterType as string) === 'water_main' &&
+        waterDiffMode === 'billable'
+      ) {
+        try {
+          const balance = await this.waterBalanceService.getWaterBalance(
+            dto.projectId,
+            period.startDate,
+            period.endDate
+          );
+          const variance = balance.variance;
+          if (variance !== 0) {
+            await this.prisma.invoiceLine.create({
+              data: {
+                invoiceId: invoice.id,
+                description: 'Water difference variance (billable)',
+                quantity: 1,
+                unitPrice: variance,
+                lineAmount: variance
+              }
+            });
+            const varianceTax = variance * taxRate;
+            await this.prisma.invoice.update({
+              where: { id: invoice.id },
+              data: {
+                subtotalAmount: { increment: variance },
+                taxAmount: { increment: varianceTax },
+                totalAmount: { increment: variance + varianceTax },
+                remainingAmount: { increment: variance + varianceTax }
+              }
+            });
+          }
+        } catch {
+          this.logger.warn(
+            `Water balance unavailable for period ${dto.billingPeriodId}, skipping variance`
+          );
+        }
+      }
+
+      count++;
+    }
+    return { batchId: `batch-${Date.now()}`, generatedCount: count };
+  }
+
+  @Post('invoices/:id/issue')
+  @Roles(Role.OPERATOR, Role.PROJECT_ADMIN, Role.SUPER_ADMIN, Role.FINANCE)
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Issue an invoice' })
+  async issueInvoice(@Param('id', ParseUUIDPipe) id: string) {
+    const invoice = await this.prisma.invoice.findUnique({ where: { id } });
+    if (!invoice) return { status: 'not_found' };
+    if (invoice.status !== 'draft') return { status: 'already_issued' };
+
+    const total = Number(invoice.totalAmount);
+    if (total > 10000) return { status: 'approval_required' };
+
+    const now = new Date();
+    await this.prisma.invoice.update({
+      where: { id },
+      data: { status: 'issued', issuedAt: now, immutableAt: now }
+    });
+
+    await this.ledgerService.addEntry({
+      customerId: invoice.customerId,
+      projectId: invoice.projectId,
+      entryType: 'invoice_charge',
+      referenceType: 'invoice',
+      referenceId: invoice.id,
+      amountDelta: total,
+      entryAt: now
+    });
+
+    return { status: 'issued', immutableAt: now.toISOString() };
+  }
+
+  @Post('invoices/:id/adjustments')
+  @Roles(Role.OPERATOR, Role.PROJECT_ADMIN, Role.SUPER_ADMIN, Role.FINANCE)
+  @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({ summary: 'Add adjustment to invoice' })
+  async addAdjustment(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: { adjustmentType: 'credit' | 'debit'; amount: number; reason: string }
+  ) {
+    const invoice = await this.prisma.invoice.findUnique({ where: { id } });
+    if (!invoice) return { status: 'not_found' };
+
+    const signedAmount = Number(dto.amount) * (dto.adjustmentType === 'credit' ? -1 : 1);
+
+    const [adjustment] = await this.prisma.$transaction([
+      this.prisma.invoiceAdjustment.create({
+        data: {
+          invoiceId: id,
+          adjustmentType: dto.adjustmentType,
+          amount: dto.amount,
+          reason: dto.reason,
+          createdBy: 'system'
+        }
+      }),
+      this.prisma.invoice.update({
+        where: { id },
+        data: {
+          totalAmount: { increment: signedAmount },
+          remainingAmount: { increment: signedAmount }
+        }
+      })
+    ]);
+
+    await this.ledgerService.addEntry({
+      customerId: invoice.customerId,
+      projectId: invoice.projectId,
+      entryType: dto.adjustmentType === 'credit' ? 'payment_credit' : 'invoice_charge',
+      referenceType: 'adjustment',
+      referenceId: adjustment.id,
+      amountDelta: signedAmount,
+      entryAt: new Date()
+    });
+
+    return { status: 'adjusted', adjustmentId: adjustment.id };
+  }
+
+  @Post('payments')
+  @Roles(Role.OPERATOR, Role.PROJECT_ADMIN, Role.SUPER_ADMIN, Role.FINANCE)
+  @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({ summary: 'Record payment with oldest-due-first allocation' })
+  async createPayment(
+    @Body()
+    dto: {
+      projectId: string;
+      customerId: string;
+      amount: number;
+      paymentDate: string;
+      method: string;
+      notes?: string;
+      allocationMode?: 'oldest_due_first' | 'explicit';
+      allocations?: Array<{ invoiceId: string; amount: number }>;
+    }
+  ) {
+    const allocMode = dto.allocationMode ?? 'oldest_due_first';
+    const amount = Number(dto.amount);
+
+    if (allocMode === 'explicit' && dto.allocations) {
+      const totalAllocated = dto.allocations.reduce((s, a) => s + Number(a.amount), 0);
+      if (Math.abs(totalAllocated - amount) > 0.001) {
+        return {
+          status: 'allocation_mismatch',
+          message: 'Allocation total must equal payment amount'
+        };
+      }
+    }
+
+    return this.prisma.$transaction(async (tx) => {
+      const payment = await tx.payment.create({
+        data: {
+          paymentNumber: `PAY-${Date.now()}`,
+          projectId: dto.projectId,
+          customerId: dto.customerId,
+          amount,
+          paymentDate: new Date(dto.paymentDate),
+          method: dto.method as any,
+          status: 'confirmed',
+          collectedBy: 'system',
+          notes: dto.notes
+        }
+      });
+
+      let remaining = amount;
+
+      if (allocMode === 'oldest_due_first') {
+        const dueInvoices = await tx.invoice.findMany({
+          where: {
+            customerId: dto.customerId,
+            projectId: dto.projectId,
+            status: 'issued',
+            remainingAmount: { gt: 0 }
+          },
+          orderBy: [{ dueAt: 'asc' }, { createdAt: 'asc' }]
+        });
+
+        let order = 1;
+        for (const inv of dueInvoices) {
+          if (remaining <= 0) break;
+          const invRemaining = Number(inv.remainingAmount);
+          const allocAmount = Math.min(remaining, invRemaining);
+
+          await tx.paymentAllocation.create({
+            data: {
+              paymentId: payment.id,
+              invoiceId: inv.id,
+              allocatedAmount: allocAmount,
+              allocationOrder: order++
+            }
+          });
+
+          await tx.invoice.update({
+            where: { id: inv.id },
+            data: {
+              paidAmount: { increment: allocAmount },
+              remainingAmount: { increment: -allocAmount }
+            }
+          });
+
+          remaining -= allocAmount;
+        }
+      } else if (dto.allocations) {
+        let order = 1;
+        for (const alloc of dto.allocations) {
+          await tx.paymentAllocation.create({
+            data: {
+              paymentId: payment.id,
+              invoiceId: alloc.invoiceId,
+              allocatedAmount: alloc.amount,
+              allocationOrder: order++
+            }
+          });
+
+          await tx.invoice.update({
+            where: { id: alloc.invoiceId },
+            data: {
+              paidAmount: { increment: alloc.amount },
+              remainingAmount: { increment: -alloc.amount }
+            }
+          });
+
+          remaining -= Number(alloc.amount);
+        }
+      }
+
+      if (amount - remaining > 0) {
+        await this.ledgerService.addEntry({
+          customerId: dto.customerId,
+          projectId: dto.projectId,
+          entryType: 'payment_credit',
+          referenceType: 'payment',
+          referenceId: payment.id,
+          amountDelta: -(amount - remaining),
+          entryAt: new Date(dto.paymentDate)
+        });
+      }
+
+      return payment;
+    });
+  }
+
+  @Get('tariffs')
+  @Roles(Role.OPERATOR, Role.PROJECT_ADMIN, Role.SUPER_ADMIN, Role.FINANCE, Role.SUPPORT)
+  @ApiOperation({ summary: 'List tariffs' })
+  async listTariffs(@Query('projectId') projectId?: string) {
+    const where: any = {};
+    if (projectId) where.projectId = projectId;
+    return this.prisma.tariffPlan.findMany({ where, orderBy: { effectiveFrom: 'desc' } });
+  }
+
+  @Get('periods')
+  @Roles(Role.OPERATOR, Role.PROJECT_ADMIN, Role.SUPER_ADMIN, Role.FINANCE, Role.SUPPORT)
+  @ApiOperation({ summary: 'List billing periods' })
+  async listPeriods(@Query('projectId') projectId?: string) {
+    const where: any = {};
+    if (projectId) where.projectId = projectId;
+    return this.prisma.billingPeriod.findMany({ where, orderBy: { startDate: 'desc' } });
+  }
+
+  @Get('invoices')
+  @Roles(Role.OPERATOR, Role.PROJECT_ADMIN, Role.SUPER_ADMIN, Role.FINANCE, Role.SUPPORT)
+  @ApiOperation({ summary: 'List invoices' })
+  async listInvoices(
+    @Query('projectId') projectId?: string,
+    @Query('customerId') customerId?: string,
+    @Query('status') status?: string
+  ) {
+    const where: any = {};
+    if (projectId) where.projectId = projectId;
+    if (customerId) where.customerId = customerId;
+    if (status) where.status = status;
+    const invoices = await this.prisma.invoice.findMany({
+      where,
+      orderBy: { createdAt: 'desc' }
+    });
+    const lines = await this.prisma.invoiceLine.findMany({
+      where: { invoiceId: { in: invoices.map((i) => i.id) } }
+    });
+    return invoices.map((inv) => ({
+      ...inv,
+      subtotalAmount: Number(inv.subtotalAmount),
+      taxAmount: Number(inv.taxAmount),
+      totalAmount: Number(inv.totalAmount),
+      paidAmount: Number(inv.paidAmount),
+      remainingAmount: Number(inv.remainingAmount),
+      lines: lines.filter((l) => l.invoiceId === inv.id).map((l) => ({
+        ...l,
+        quantity: Number(l.quantity),
+        unitPrice: Number(l.unitPrice),
+        lineAmount: Number(l.lineAmount)
+      }))
+    }));
+  }
+
+  @Get('invoices/:id')
+  @Roles(Role.OPERATOR, Role.PROJECT_ADMIN, Role.SUPER_ADMIN, Role.FINANCE, Role.SUPPORT)
+  @ApiOperation({ summary: 'Get invoice by ID' })
+  async getInvoice(@Param('id', ParseUUIDPipe) id: string) {
+    const invoice = await this.prisma.invoice.findUnique({ where: { id } });
+    if (!invoice) return { status: 'not_found' };
+    const lines = await this.prisma.invoiceLine.findMany({
+      where: { invoiceId: id }
+    });
+    return {
+      ...invoice,
+      subtotalAmount: Number(invoice.subtotalAmount),
+      taxAmount: Number(invoice.taxAmount),
+      totalAmount: Number(invoice.totalAmount),
+      paidAmount: Number(invoice.paidAmount),
+      remainingAmount: Number(invoice.remainingAmount),
+      lines: lines.map((l) => ({
+        ...l,
+        quantity: Number(l.quantity),
+        unitPrice: Number(l.unitPrice),
+        lineAmount: Number(l.lineAmount)
+      }))
+    };
+  }
+}

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
+import { useT } from '@/lib/i18n/context';
 import { mockCustomers, mockMeters, mockInvoices, mockPayments, mockTickets } from '@/lib/mock-data';
 import { PageHeader } from '@/components/shared/PageHelpers';
 import { StatusBadge } from '@/components/shared/StatusBadge';
@@ -14,6 +15,7 @@ import { Search, Phone, Mail, MapPin } from 'lucide-react';
 import { formatCurrency, formatDate } from '@/components/shared/PageHelpers';
 
 export default function SupportPage() {
+  const t = useT();
   const [search, setSearch] = useState('');
   const [selectedCustomerId, setSelectedCustomerId] = useState<string | null>(null);
 
@@ -36,13 +38,13 @@ export default function SupportPage() {
 
   return (
     <div>
-      <PageHeader title="Customer Support Workspace" subtitle="Quick customer lookup and support tools" />
+      <PageHeader title={t('support.title')} subtitle={t('support.quickLookup')} />
 
       {/* Search */}
       <div className="relative mb-6 max-w-md">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
         <Input
-          placeholder="Search customer by name, code, phone, or email..."
+          placeholder={t('support.searchCustomer')}
           value={search}
           onChange={(e) => { setSearch(e.target.value); setSelectedCustomerId(null); }}
           className="pl-9"
@@ -93,18 +95,18 @@ export default function SupportPage() {
               </div>
               <div className="mt-3 pt-3 border-t border-border/50 grid grid-cols-2 gap-2 text-xs">
                 <div>
-                  <p className="text-muted-foreground">Balance</p>
+                  <p className="text-muted-foreground">{t('support.balance')}</p>
                   <p className={selectedCustomer.currentBalance > 0 ? 'text-red-500' : 'text-emerald-500'}>
                     {formatCurrency(selectedCustomer.currentBalance)}
                   </p>
                 </div>
                 <div>
-                  <p className="text-muted-foreground">Meters</p>
+                  <p className="text-muted-foreground">{t('sidebar.meters')}</p>
                   <p>{selectedCustomer.activeMeters}</p>
                 </div>
               </div>
               <Button variant="outline" size="sm" className="w-full mt-3" onClick={() => { setSelectedCustomerId(null); setSearch(''); }}>
-                Clear
+                {t('common.clear')}
               </Button>
             </CardContent>
           </Card>
@@ -113,21 +115,21 @@ export default function SupportPage() {
           <div className="lg:col-span-3">
             <Tabs defaultValue="tickets">
               <TabsList className="mb-4">
-                <TabsTrigger value="meters">Meters</TabsTrigger>
-                <TabsTrigger value="invoices">Invoices</TabsTrigger>
-                <TabsTrigger value="payments">Payments</TabsTrigger>
-                <TabsTrigger value="tickets">Tickets</TabsTrigger>
+                <TabsTrigger value="meters">{t('sidebar.meters')}</TabsTrigger>
+                <TabsTrigger value="invoices">{t('support.invoices')}</TabsTrigger>
+                <TabsTrigger value="payments">{t('sidebar.payments')}</TabsTrigger>
+                <TabsTrigger value="tickets">{t('support.tickets')}</TabsTrigger>
               </TabsList>
 
               <TabsContent value="meters">
                 <SmartTable
                   data={customerMeters}
                   columns={[
-                    { key: 'serialNumber', label: 'Serial', render: (v: string) => <span className="font-mono text-xs">{v}</span> },
-                    { key: 'meterType', label: 'Type', render: (v: string) => <StatusBadge status={v} /> },
+                    { key: 'serialNumber', label: t('meters.serialNumber'), render: (v: string) => <span className="font-mono text-xs">{v}</span> },
+                    { key: 'meterType', label: t('meters.type'), render: (v: string) => <StatusBadge status={v} /> },
                     { key: 'brand', label: 'Brand' },
-                    { key: 'unitNumber', label: 'Unit', width: '80px', render: (v: string) => v || '-' },
-                    { key: 'status', label: 'Status', width: '100px', render: (v: string) => <StatusBadge status={v} /> },
+                    { key: 'unitNumber', label: t('locations.unit'), width: '80px', render: (v: string) => v || '-' },
+                    { key: 'status', label: t('projects.status'), width: '100px', render: (v: string) => <StatusBadge status={v} /> },
                   ]}
                   compact
                   searchable={false}
@@ -139,10 +141,10 @@ export default function SupportPage() {
                   data={customerInvoices}
                   columns={[
                     { key: 'invoiceNumber', label: '#', render: (v: string) => <span className="font-mono text-xs">{v}</span> },
-                    { key: 'total', label: 'Total', width: '100px', render: (v: number) => formatCurrency(v) },
-                    { key: 'remainingAmount', label: 'Remaining', width: '100px', render: (v: number) => <span className={v > 0 ? 'text-red-500' : ''}>{formatCurrency(v)}</span> },
-                    { key: 'status', label: 'Status', width: '120px', render: (v: string) => <StatusBadge status={v} /> },
-                    { key: 'invoiceDate', label: 'Date', width: '100px', render: (v: string) => formatDate(v) },
+                    { key: 'total', label: t('billing.invoices.total'), width: '100px', render: (v: number) => formatCurrency(v) },
+                    { key: 'remainingAmount', label: t('billing.invoices.outstanding'), width: '100px', render: (v: number) => <span className={v > 0 ? 'text-red-500' : ''}>{formatCurrency(v)}</span> },
+                    { key: 'status', label: t('billing.invoices.status'), width: '120px', render: (v: string) => <StatusBadge status={v} /> },
+                    { key: 'invoiceDate', label: t('billing.invoices.issueDate'), width: '100px', render: (v: string) => formatDate(v) },
                   ]}
                   compact
                   searchable={false}
@@ -154,9 +156,9 @@ export default function SupportPage() {
                   data={customerPayments}
                   columns={[
                     { key: 'paymentNumber', label: '#', render: (v: string) => <span className="font-mono text-xs">{v}</span> },
-                    { key: 'amount', label: 'Amount', width: '100px', render: (v: number) => formatCurrency(v) },
-                    { key: 'method', label: 'Method', width: '120px', render: (v: string) => <StatusBadge status={v} /> },
-                    { key: 'status', label: 'Status', width: '100px', render: (v: string) => <StatusBadge status={v} /> },
+                    { key: 'amount', label: t('billing.payments.amount'), width: '100px', render: (v: number) => formatCurrency(v) },
+                    { key: 'method', label: t('billing.payments.method'), width: '120px', render: (v: string) => <StatusBadge status={v} /> },
+                    { key: 'status', label: t('billing.payments.status'), width: '100px', render: (v: string) => <StatusBadge status={v} /> },
                   ]}
                   compact
                   searchable={false}
@@ -168,9 +170,9 @@ export default function SupportPage() {
                   data={customerTickets}
                   columns={[
                     { key: 'ticketNumber', label: '#', render: (v: string) => <span className="font-mono text-xs">{v}</span> },
-                    { key: 'subject', label: 'Subject' },
-                    { key: 'priority', label: 'Priority', width: '90px', render: (v: string) => <StatusBadge status={v} /> },
-                    { key: 'status', label: 'Status', width: '100px', render: (v: string) => <StatusBadge status={v} /> },
+                    { key: 'subject', label: t('tickets.subject') },
+                    { key: 'priority', label: t('tickets.priority'), width: '90px', render: (v: string) => <StatusBadge status={v} /> },
+                    { key: 'status', label: t('projects.status'), width: '100px', render: (v: string) => <StatusBadge status={v} /> },
                   ]}
                   compact
                   searchable={false}
@@ -183,7 +185,7 @@ export default function SupportPage() {
 
       {!search.trim() && !selectedCustomerId && (
         <div className="text-center py-16 text-muted-foreground">
-          <p>Search for a customer to get started</p>
+          <p>{t('support.quickLookup')}</p>
         </div>
       )}
     </div>

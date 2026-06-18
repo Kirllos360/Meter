@@ -23,7 +23,7 @@ async function bootstrap() {
     origin: process.env.CORS_ORIGIN?.split(',') ?? ['http://localhost:3000'],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'Idempotency-Key']
+    allowedHeaders: ['Content-Type', 'Authorization', 'Idempotency-Key', 'x-correlation-id', 'x-request-id']
   });
 
   app.useBodyParser('json', { limit: '1mb' });

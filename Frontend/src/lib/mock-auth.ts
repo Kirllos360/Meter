@@ -32,9 +32,23 @@ export const useAuthStore = create<AuthState>((set) => ({
   user: null,
   isAuthenticated: false,
 
-  login: (role: UserRole) => {
+  login: async (role: UserRole) => {
     const user = mockUsers.find((u) => u.role === role) ?? mockUsers[0];
-    setToken(`mock-token-${user.id}`);
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001/api/v1'}/auth/dev-login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: user.id, role: user.role, name: user.name }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setToken(data.accessToken);
+      } else {
+        setToken(`mock-token-${user.id}`);
+      }
+    } catch {
+      setToken(`mock-token-${user.id}`);
+    }
     set({ user, isAuthenticated: true });
   },
 
@@ -43,9 +57,23 @@ export const useAuthStore = create<AuthState>((set) => ({
     set({ user: null, isAuthenticated: false });
   },
 
-  switchRole: (role: UserRole) => {
+  switchRole: async (role: UserRole) => {
     const user = mockUsers.find((u) => u.role === role) ?? mockUsers[0];
-    setToken(`mock-token-${user.id}`);
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001/api/v1'}/auth/dev-login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: user.id, role: user.role, name: user.name }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setToken(data.accessToken);
+      } else {
+        setToken(`mock-token-${user.id}`);
+      }
+    } catch {
+      setToken(`mock-token-${user.id}`);
+    }
     set({ user, isAuthenticated: true });
   },
 }));

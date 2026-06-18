@@ -13,6 +13,7 @@ import SmartTable from '@/components/smart-table/SmartTable';
 import { cn } from '@/lib/utils';
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, ReferenceLine } from 'recharts';
 import { AlertTriangle, Droplets } from 'lucide-react';
+import { useT } from '@/lib/i18n/context';
 
 const childMeters = [
   { serial: 'CW-2024-0001', customer: 'Hassan Abdel-Rahim', unit: 'A-102', consumption: 600 },
@@ -25,6 +26,7 @@ const childMeters = [
 ];
 
 export default function WaterBalancePage() {
+  const t = useT();
   const [selectedProject, setSelectedProject] = useState('PRJ-001');
   const from = '2026-01-01';
   const to = '2026-01-31';
@@ -34,7 +36,7 @@ export default function WaterBalancePage() {
 
   return (
     <div>
-      <PageHeader title="Water Balance" subtitle="Track water balance between main and child meters" />
+      <PageHeader title={t('billing.waterBalance.title')} subtitle="Track water balance between main and child meters" />
 
       {/* Selector */}
       <div className="mb-6 flex items-center gap-4">
@@ -51,9 +53,9 @@ export default function WaterBalancePage() {
 
       {/* Summary Cards */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-6">
-        <StatCard label="Main Meter" value={latest.mainMeterConsumption.toLocaleString()} icon={<Droplets className="h-5 w-5" />} />
-        <StatCard label="Child Meters Total" value={latest.childMetersTotal.toLocaleString()} />
-        <StatCard label="Difference" value={latest.difference.toLocaleString()} color={exceedsThreshold ? 'text-red-500' : 'text-emerald-500'} />
+        <StatCard label={t('billing.waterBalance.mainMeter')} value={latest.mainMeterConsumption.toLocaleString()} icon={<Droplets className="h-5 w-5" />} />
+        <StatCard label={t('billing.waterBalance.subMeters')} value={latest.childMetersTotal.toLocaleString()} />
+        <StatCard label={t('billing.waterBalance.variance')} value={latest.difference.toLocaleString()} color={exceedsThreshold ? 'text-red-500' : 'text-emerald-500'} />
         <StatCard label="Difference %" value={`${latest.differencePercent}%`} color={exceedsThreshold ? 'text-red-500' : 'text-emerald-500'} />
         <StatCard label="Threshold" value={`${latest.threshold}%`} />
       </div>

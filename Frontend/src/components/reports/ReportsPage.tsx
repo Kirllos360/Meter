@@ -12,6 +12,7 @@ import {
   Scale, WifiOff, AlertTriangle, Shield, Filter, Download, Eye,
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { useT } from '@/lib/i18n/context';
 
 const iconMap: Record<string, React.ReactNode> = {
   FileText: <FileText className="h-6 w-6" />,
@@ -35,13 +36,14 @@ const categoryColors: Record<string, string> = {
 };
 
 export default function ReportsPage() {
+  const t = useT();
   const [activeCategory, setActiveCategory] = useState('all');
   const categories = ['all', ...new Set(mockReports.map((r) => r.category))];
   const filtered = activeCategory === 'all' ? mockReports : mockReports.filter((r) => r.category === activeCategory);
 
   return (
     <div>
-      <PageHeader title="Reports Center" subtitle="Generate, view, and export reports" />
+      <PageHeader title={t('reports.title')} subtitle="Generate, view, and export reports" />
 
       {/* Category Tabs */}
       <div className="flex gap-2 mb-6 flex-wrap">
@@ -52,7 +54,7 @@ export default function ReportsPage() {
             size="sm"
             onClick={() => setActiveCategory(cat)}
           >
-            {cat === 'all' ? 'All' : cat}
+            {cat === 'all' ? t('common.all') : cat}
           </Button>
         ))}
       </div>

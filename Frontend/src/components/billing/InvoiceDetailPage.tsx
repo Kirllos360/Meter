@@ -1,17 +1,20 @@
 'use client';
 
 import { usePageStore } from '@/lib/router-store';
-import { mockInvoices, mockPayments } from '@/lib/mock-data';
+import { useInvoiceDetail } from '@/hooks/use-invoices';
 import { BackButton, formatCurrency, formatDate } from '@/components/shared/PageHelpers';
 import { StatusBadge } from '@/components/shared/StatusBadge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from 'sonner';
 import { Download, Pencil, CreditCard, XCircle } from 'lucide-react';
+import { useT } from '@/lib/i18n/context';
 
 export default function InvoiceDetailPage() {
+  const t = useT();
   const { pageParams } = usePageStore();
-  const invoice = mockInvoices.find((i) => i.id === pageParams.id);
+  const { data: apiInvoice } = useInvoiceDetail(pageParams.id ?? '');
+  const invoice = apiInvoice ?? undefined;
 
   if (!invoice) {
     return (
@@ -22,7 +25,7 @@ export default function InvoiceDetailPage() {
     );
   }
 
-  const payments = mockPayments.filter((p) => p.invoiceId === invoice.id);
+  const payments: any[] = [];
 
   const activities = [
     { date: invoice.createdAt, action: 'Invoice created', user: 'System' },
@@ -54,7 +57,7 @@ export default function InvoiceDetailPage() {
               <Button size="sm" className="gap-1" onClick={() => toast.info('Invoice issued')}><CreditCard className="h-3.5 w-3.5" /> Issue</Button>
             )}
             <Button variant="outline" size="sm" className="gap-1" onClick={() => toast.info('Record payment')}><CreditCard className="h-3.5 w-3.5" /> Record Payment</Button>
-            <Button variant="outline" size="sm" className="gap-1" onClick={() => toast.info('Download PDF')}><Download className="h-3.5 w-3.5" /> PDF</Button>
+            <Button variant="outline" size="sm" className="gap-1" onClick={() => toast.info('Download PDF')}><Download className="h-3.5 w-3.5" /> {t('billing.invoices.download')}</Button>
             {invoice.status === 'draft' && (
               <Button variant="outline" size="sm" className="gap-1 text-red-500" onClick={() => toast.info('Cancel invoice')}><XCircle className="h-3.5 w-3.5" /> Cancel</Button>
             )}
@@ -65,7 +68,7 @@ export default function InvoiceDetailPage() {
       <div className="grid md:grid-cols-3 gap-6 mb-6">
         {/* Customer Info */}
         <Card className="glass-card border-border/50">
-          <CardHeader className="pb-2"><CardTitle className="text-sm">Customer</CardTitle></CardHeader>
+          <CardHeader className="pb-2"><CardTitle className="text-sm">{t('billing.invoices.customer')}</CardTitle></CardHeader>
           <CardContent className="text-sm space-y-1">
             <p className="font-medium">{invoice.customerName}</p>
             <p className="text-muted-foreground">{invoice.projectName}</p>
@@ -98,7 +101,7 @@ export default function InvoiceDetailPage() {
 
       {/* Line Items */}
       <Card className="glass-card border-border/50 mb-6">
-        <CardHeader className="pb-2"><CardTitle className="text-sm">Line Items</CardTitle></CardHeader>
+        <CardHeader className="pb-2"><CardTitle className="text-sm">{t('billing.invoices.lineItems')}</CardTitle></CardHeader>
         <CardContent>
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
@@ -126,7 +129,7 @@ export default function InvoiceDetailPage() {
       {/* Payment History & Activity */}
       <div className="grid md:grid-cols-2 gap-6">
         <Card className="glass-card border-border/50">
-          <CardHeader className="pb-2"><CardTitle className="text-sm">Payment History</CardTitle></CardHeader>
+          <CardHeader className="pb-2"><CardTitle className="text-sm">{t('billing.invoices.paymentHistory')}</CardTitle></CardHeader>
           <CardContent>
             {payments.length > 0 ? (
               <div className="space-y-2">
@@ -148,7 +151,7 @@ export default function InvoiceDetailPage() {
         </Card>
 
         <Card className="glass-card border-border/50">
-          <CardHeader className="pb-2"><CardTitle className="text-sm">Activity</CardTitle></CardHeader>
+          <CardHeader className="pb-2"><CardTitle className="text-sm">{t('billing.invoices.activityTimeline')}</CardTitle></CardHeader>
           <CardContent>
             <div className="space-y-2">
               {activities.map((a, i) => (

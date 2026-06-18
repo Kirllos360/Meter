@@ -14,13 +14,14 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 import { Check } from 'lucide-react';
-
-const STEPS = [
-  'Project', 'Building', 'Floor', 'Unit', 'Customer', 'Meter Type', 'Meter', 'SIM/IP', 'Confirm'
-];
+import { useT } from '@/lib/i18n/context';
 
 export default function MeterAssignPage() {
   const { goBack } = usePageStore();
+  const t = useT();
+  const STEPS = [
+    t('projects.title'), t('locations.building'), t('locations.floor'), t('locations.unit'), t('meters.assign.customer'), 'Meter Type', 'Meter', 'SIM/IP', t('common.confirm')
+  ];
   const [step, setStep] = useState(0);
   const [form, setForm] = useState<Record<string, string>>({});
   const [preserve, setPreserve] = useState(true);
@@ -51,7 +52,7 @@ export default function MeterAssignPage() {
   };
 
   const handleConfirm = () => {
-    toast.success('Meter assigned successfully!');
+    toast.success(t('meters.assign.success'));
     setStep(0);
     setForm({});
   };
@@ -63,7 +64,7 @@ export default function MeterAssignPage() {
 
   return (
     <div>
-      <PageHeader title="Assign Meter" subtitle="Follow the steps to assign a meter to a unit" />
+      <PageHeader title={t('meters.assign.title')} subtitle="Follow the steps to assign a meter to a unit" />
       <BackButton />
 
       {/* Step Indicator */}
@@ -191,12 +192,12 @@ export default function MeterAssignPage() {
             <div className="space-y-4">
               <h3 className="font-semibold">Review & Confirm</h3>
               <div className="text-sm space-y-2 p-4 rounded-lg bg-muted/30">
-                <div className="flex justify-between"><span className="text-muted-foreground">Project</span><span>{project?.name || '-'}</span></div>
-                <div className="flex justify-between"><span className="text-muted-foreground">Building</span><span>{selectedBuilding?.name || '-'}</span></div>
-                <div className="flex justify-between"><span className="text-muted-foreground">Floor</span><span>{form.floor || '-'}</span></div>
-                <div className="flex justify-between"><span className="text-muted-foreground">Unit</span><span>{selectedUnit?.unitNumber || '-'}</span></div>
-                <div className="flex justify-between"><span className="text-muted-foreground">Customer</span><span>{customer?.name || '-'}</span></div>
-                <div className="flex justify-between"><span className="text-muted-foreground">Meter</span><span className="font-mono">{meter?.serialNumber || '-'}</span></div>
+                <div className="flex justify-between"><span className="text-muted-foreground">{t('projects.title')}</span><span>{project?.name || '-'}</span></div>
+                <div className="flex justify-between"><span className="text-muted-foreground">{t('locations.building')}</span><span>{selectedBuilding?.name || '-'}</span></div>
+                <div className="flex justify-between"><span className="text-muted-foreground">{t('locations.floor')}</span><span>{form.floor || '-'}</span></div>
+                <div className="flex justify-between"><span className="text-muted-foreground">{t('locations.unit')}</span><span>{selectedUnit?.unitNumber || '-'}</span></div>
+                <div className="flex justify-between"><span className="text-muted-foreground">{t('meters.assign.customer')}</span><span>{customer?.name || '-'}</span></div>
+                <div className="flex justify-between"><span className="text-muted-foreground">{t('meters.serialNumber')}</span><span className="font-mono">{meter?.serialNumber || '-'}</span></div>
                 <div className="flex justify-between"><span className="text-muted-foreground">SIM</span><span>{sim?.msisdn || 'None'}</span></div>
               </div>
             </div>
@@ -205,12 +206,12 @@ export default function MeterAssignPage() {
           {/* Navigation */}
           <div className="flex justify-between mt-6">
             <Button variant="outline" onClick={() => { if (step === 0) goBack(); else setStep(step - 1); }}>
-              {step === 0 ? 'Cancel' : 'Previous'}
+              {step === 0 ? t('common.cancel') : t('common.previous')}
             </Button>
             {step < 8 ? (
-              <Button onClick={() => setStep(step + 1)} disabled={!canNext()}>Next</Button>
+              <Button onClick={() => setStep(step + 1)} disabled={!canNext()}>{t('common.next')}</Button>
             ) : (
-              <Button className="gap-2" onClick={handleConfirm}><Check className="h-4 w-4" /> Confirm Assignment</Button>
+              <Button className="gap-2" onClick={handleConfirm}><Check className="h-4 w-4" /> {t('meters.assign.submit')}</Button>
             )}
           </div>
         </CardContent>

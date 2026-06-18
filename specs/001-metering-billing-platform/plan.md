@@ -234,3 +234,54 @@ Graphify-first, and aligned with the backlog; no frontend rebuild is allowed.
 | Violation | Why Needed | Simpler Alternative Rejected Because |
 |-----------|------------|-------------------------------------|
 | Constitution file still template placeholders | Planning cannot block delivery prep | Waiting would stall API/data contract design despite complete feature spec clarifications |
+
+---
+
+## Meter Verse v2.0.0 — Post-MVP Extension
+
+**Branch**: `[002-meter-verse-core]` | **Date**: 2026-06-13
+
+After completing T001-T085 (original Meter Pulse MVP), the project evolved into **Meter Verse v2.0.0** — a unified utility metering & billing platform with:
+
+### Architecture (3-Plan, 15-Area)
+
+- **Plan 1 — Full** (all modules, production): Core DB + Features DB + 15 Area DBs
+- **Plan 2 — Safety** (metering only, minimal): Core DB + 15 Area DBs (no billing features)
+- **Plan 3 — Failover** (read-only, failover): Core DB + cached queries
+- **15 Area Databases**: Per-client isolation (october, new_cairo, sodic_ednc, sodic_estates, sodic_vye, badya_city, north_coast, uvines_mall, +7 future)
+- **Multi-schema**: `Core` (auth/shared) → `Features` (billing/reports) → `Area_N` (customer data per area)
+
+### Migration from Meter Pulse
+
+| Change | Details |
+|--------|---------|
+| Repository | `Meter-` → `Meter` (unified repo) |
+| Package name | `meter-pulse-workspace` → `meter-verse-workspace` |
+| Tasks | T001-T085 (original) + T086-T150 (v2.0.0) |
+| Frontend | Unchanged — incremental API migration continues |
+| Backend | NestJS + PostgreSQL + Prisma ORM (unchanged) |
+| Collection System | Added as reference at `reference/collection-system/` |
+| 6 other reference systems | Added at `reference/` for migration planning |
+
+### v2.0.0 Implementation Phases
+
+- **Phase 0** (T086-T090): Foundation — Core DB, Features DB, Area DB template, 16-profile RBAC, i18n
+- **Phase 1** (T091-T092): Infrastructure — Symbiot bridge, 3 availability plans
+- **Phase 2** (T093-T098): Core Pages — Customer, Meter, Balances, Payments, Invoices, Readings
+- **Phase 3** (T099-T106): Features — Meter Lifecycle, Tariffs, Workspace, Reports, Admin, Locations, Login, Dashboard
+- **Phase 4** (T107-T111): Migration — Solar wallet, SBill PH, SBill Estates, Collection Tracker, parallel run
+- **Phase 5** (T112-T116): Quality — Security, load test, Graphify, SpeckIt, CI/CD
+- **Phase 6** (T117-T120): Launch — Deploy, cutover, documentation, monitoring
+- **Reserved** (T121-T150): Bug fixes, enhancements, optimizations
+
+### New Spec Directories
+
+- `specs/002-meter-verse-core/` — T086-T092 spec, plan, data model
+- `specs/003-symbiot-integration/` — Symbiot bridge spec
+- `specs/004-migration-plans/` — Migration plans for all 4 data sources
+
+### New Documentation
+
+- `docs/planning/` — 12 comprehensive planning documents with Mermaid diagrams
+- `docs/architecture/` — Architecture diagrams
+- `docs/migration/` — Migration guides

@@ -1,11 +1,12 @@
 'use client';
 
 import { usePageStore } from '@/lib/router-store';
-import { mockMeters, mockReadings, mockSimCards, mockInvoices } from '@/lib/mock-data';
+import { mockReadings, mockSimCards, mockInvoices } from '@/lib/mock-data';
 import { useMeterDetail } from '@/hooks/use-meters';
 import { QueryBoundary } from '@/components/shared/QueryBoundary';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { BackButton, StatCard, formatDate, formatDateTime } from '@/components/shared/PageHelpers';
+import { useT } from '@/lib/i18n/context';
 import { StatusBadge } from '@/components/shared/StatusBadge';
 import SmartTable from '@/components/smart-table/SmartTable';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -14,14 +15,15 @@ import { Zap, Droplets, Wifi, MapPin, Building2, Home, User } from 'lucide-react
 
 export default function MeterDetailPage() {
   const { pageParams } = usePageStore();
+  const t = useT();
   const meterQuery = useMeterDetail(pageParams.id);
-  const meter = meterQuery.data ?? mockMeters.find((m) => m.id === pageParams.id);
+  const meter = meterQuery.data;
 
   if (!meter) {
     return (
       <div>
         <BackButton fallback="meters" />
-        <p className="text-muted-foreground">Meter not found.</p>
+        <p className="text-muted-foreground">{t('meters.noMeters')}</p>
       </div>
     );
   }
@@ -101,11 +103,11 @@ export default function MeterDetailPage() {
       <Tabs defaultValue="overview">
         <TabsList className="mb-4 flex-wrap h-auto gap-1">
           <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="readings">Readings</TabsTrigger>
+          <TabsTrigger value="readings">{t('meters.actions.readings')}</TabsTrigger>
           <TabsTrigger value="assignments">Assignments</TabsTrigger>
           <TabsTrigger value="sim">SIM/IP</TabsTrigger>
-          <TabsTrigger value="invoices">Invoices</TabsTrigger>
-          <TabsTrigger value="alerts">Alerts</TabsTrigger>
+          <TabsTrigger value="invoices">{t('billing.invoices.title')}</TabsTrigger>
+          <TabsTrigger value="alerts">{t('alerts.title')}</TabsTrigger>
           <TabsTrigger value="maintenance">Maintenance</TabsTrigger>
         </TabsList>
 
@@ -117,15 +119,15 @@ export default function MeterDetailPage() {
           <SmartTable
             data={readings}
             columns={[
-              { key: 'readingDate', label: 'Date', sortable: true, render: (v: string) => formatDateTime(v) },
+              { key: 'readingDate', label: t('readings.date'), sortable: true, render: (v: string) => formatDateTime(v) },
               { key: 'previousReading', label: 'Previous', width: '100px' },
               { key: 'currentReading', label: 'Current', width: '100px' },
-              { key: 'consumption', label: 'Consumption', width: '110px' },
+              { key: 'consumption', label: t('billing.consumption.consumption'), width: '110px' },
               { key: 'source', label: 'Source', width: '100px', render: (v: string) => <StatusBadge status={v} /> },
-              { key: 'status', label: 'Status', width: '120px', render: (v: string) => <StatusBadge status={v} /> },
+              { key: 'status', label: t('readings.status'), width: '120px', render: (v: string) => <StatusBadge status={v} /> },
               { key: 'enteredBy', label: 'Entered By', width: '110px' },
             ]}
-            searchPlaceholder="Search readings..."
+            searchPlaceholder={t('readings.search')}
           />
         </TabsContent>
 
@@ -134,14 +136,14 @@ export default function MeterDetailPage() {
           {sim ? (
             <Card className="glass-card border-border/50">
               <CardContent className="p-4 text-sm space-y-2">
-                <div className="flex justify-between"><span className="text-muted-foreground">ICCID</span><span className="font-mono text-xs">{sim.iccid.slice(0, 12)}...</span></div>
+                <div className="flex justify-between"><span className="text-muted-foreground">{t('simCards.iccid')}</span><span className="font-mono text-xs">{sim.iccid.slice(0, 12)}...</span></div>
                 <div className="flex justify-between"><span className="text-muted-foreground">MSISDN</span><span>{sim.msisdn}</span></div>
                 <div className="flex justify-between"><span className="text-muted-foreground">IP</span><span>{sim.ipAddress || '-'}</span></div>
-                <div className="flex justify-between"><span className="text-muted-foreground">Provider</span><span>{sim.provider}</span></div>
-                <div className="flex justify-between"><span className="text-muted-foreground">Status</span><StatusBadge status={sim.status} /></div>
+                <div className="flex justify-between"><span className="text-muted-foreground">{t('simCards.provider')}</span><span>{sim.provider}</span></div>
+                <div className="flex justify-between"><span className="text-muted-foreground">{t('simCards.status')}</span><StatusBadge status={sim.status} /></div>
               </CardContent>
             </Card>
-          ) : <div className="text-center py-8 text-muted-foreground text-sm">No SIM assigned.</div>}
+          ) : <div className="text-center py-8 text-muted-foreground text-sm">{t('simCards.noSims')}</div>}
         </TabsContent>
 
         <TabsContent value="invoices">
@@ -153,10 +155,10 @@ export default function MeterDetailPage() {
               { key: 'total', label: 'Total', width: '100px', render: (v: number) => `EGP ${v.toLocaleString()}` },
               { key: 'status', label: 'Status', width: '120px', render: (v: string) => <StatusBadge status={v} /> },
             ]}
-            emptyMessage="No invoices for this meter"
+            emptyMessage={t('billing.invoices.noInvoices')}
           />
         </TabsContent>
-        <TabsContent value="alerts"><div className="text-center py-8 text-muted-foreground text-sm">No alerts for this meter.</div></TabsContent>
+        <TabsContent value="alerts"><div className="text-center py-8 text-muted-foreground text-sm">{t('alerts.noAlerts')}</div></TabsContent>
         <TabsContent value="maintenance"><div className="text-center py-8 text-muted-foreground text-sm">No maintenance records.</div></TabsContent>
       </Tabs>
       </QueryBoundary>

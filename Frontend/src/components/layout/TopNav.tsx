@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { useAuthStore, getRoleLabel, getRoleColor } from '@/lib/mock-auth';
 import { useTheme } from '@/components/layout/ThemeProvider';
+import { useT, useLocale } from '@/lib/i18n/context';
 import { mockAlerts } from '@/lib/mock-data';
 import { RoleSwitcher } from './RoleSwitcher';
 import { Button } from '@/components/ui/button';
@@ -43,6 +44,8 @@ export function TopNav({ onMenuClick }: TopNavProps) {
   const user = useAuthStore((s) => s.user);
   const logout = useAuthStore((s) => s.logout);
   const { theme, setTheme, resolvedTheme } = useTheme();
+  const t = useT();
+  const { locale, toggleLocale } = useLocale();
 
   const unacknowledgedCount = mockAlerts.filter((a) => !a.acknowledged).length;
 
@@ -60,7 +63,7 @@ export function TopNav({ onMenuClick }: TopNavProps) {
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-40 h-16 glass-card border-b border-border">
+    <header className="fixed top-0 inset-x-0 z-40 h-16 glass-card border-b border-border">
       <div className="flex items-center justify-between h-full px-4 lg:px-6">
         {/* Left: Hamburger + Logo */}
         <div className="flex items-center gap-3">
@@ -74,10 +77,10 @@ export function TopNav({ onMenuClick }: TopNavProps) {
                   onClick={onMenuClick}
                 >
                   <Menu className="size-5" />
-                  <span className="sr-only">Toggle menu</span>
+                  <span className="sr-only">{t('nav.menu')}</span>
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>Toggle menu</TooltipContent>
+              <TooltipContent>{t('nav.menu')}</TooltipContent>
             </Tooltip>
           </TooltipProvider>
           <div className="flex items-center gap-2">
@@ -104,11 +107,11 @@ export function TopNav({ onMenuClick }: TopNavProps) {
         {/* Center: Search */}
         <div className="hidden md:flex flex-1 max-w-md mx-8">
           <div className="relative w-full">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+            <Search className="absolute start-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
             <Input
               type="search"
-              placeholder="Search meters, customers, readings..."
-              className="pl-9 h-9 bg-secondary/50 border-border/50 focus:bg-background"
+              placeholder={t('nav.search')}
+              className="ps-9 h-9 bg-secondary/50 border-border/50 focus:bg-background"
             />
           </div>
         </div>
@@ -128,16 +131,16 @@ export function TopNav({ onMenuClick }: TopNavProps) {
                   <Bell className="size-[18px]" />
                   {unacknowledgedCount > 0 && (
                     <Badge
-                      className="absolute -top-0.5 -right-0.5 size-4 p-0 flex items-center justify-center text-[10px] bg-destructive text-white border-0"
+                      className="absolute -top-0.5 -end-0.5 size-4 p-0 flex items-center justify-center text-[10px] bg-destructive text-white border-0"
                     >
                       {unacknowledgedCount > 9 ? '9+' : unacknowledgedCount}
                     </Badge>
                   )}
-                  <span className="sr-only">Notifications</span>
+                  <span className="sr-only">{t('nav.notifications')}</span>
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
-                {unacknowledgedCount} unread alert{unacknowledgedCount !== 1 ? 's' : ''}
+                {t('nav.unread', { count: unacknowledgedCount })}
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
@@ -157,11 +160,33 @@ export function TopNav({ onMenuClick }: TopNavProps) {
                   ) : (
                     <Moon className="size-[18px]" />
                   )}
-                  <span className="sr-only">Toggle theme</span>
+                  <span className="sr-only">{resolvedTheme === 'dark' ? t('nav.theme.light') : t('nav.theme.dark')}</span>
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
-                {resolvedTheme === 'dark' ? 'Light mode' : 'Dark mode'}
+                {resolvedTheme === 'dark' ? t('nav.theme.light') : t('nav.theme.dark')}
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+
+          {/* Language Toggle */}
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="size-9"
+                  onClick={toggleLocale}
+                >
+                  <span className="text-xs font-bold size-[18px] flex items-center justify-center">
+                    {locale === 'en' ? 'ع' : 'EN'}
+                  </span>
+                  <span className="sr-only">{t('nav.language')}</span>
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                {locale === 'en' ? t('common.arabic') : t('common.english')}
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
@@ -194,7 +219,7 @@ export function TopNav({ onMenuClick }: TopNavProps) {
               <DropdownMenuSeparator />
               <DropdownMenuItem className="gap-2">
                 <User className="size-4" />
-                <span>Profile</span>
+                <span>{t('nav.profile')}</span>
               </DropdownMenuItem>
               <DropdownMenuItem className="gap-2">
                 <span className={cn('text-xs rounded px-1.5 py-0.5', getRoleColor(user?.role ?? 'customer'))}>
@@ -207,7 +232,7 @@ export function TopNav({ onMenuClick }: TopNavProps) {
                 onClick={logout}
               >
                 <LogOut className="size-4" />
-                <span>Log out</span>
+                <span>{t('nav.logout')}</span>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

@@ -52,6 +52,7 @@ import AlertsPage from '@/components/alerts/AlertsPage';
 import TicketsPage from '@/components/tickets/TicketsPage';
 import SupportPage from '@/components/tickets/SupportPage';
 
+import { useT } from '@/lib/i18n/context';
 import { useIsMobile } from '@/hooks/use-mobile';
 
 export function AppShell() {
@@ -85,7 +86,7 @@ export function AppShell() {
   }
 
   // Compute main content margin based on sidebar state
-  const contentMarginLeft = isMobile ? 0 : sidebarCollapsed ? 64 : 256;
+  const contentMarginStart = isMobile ? 0 : sidebarCollapsed ? 64 : 256;
 
   // Map currentPage to the correct component
   const pageComponent = renderPage(currentPage);
@@ -101,7 +102,7 @@ export function AppShell() {
       />
       <main
         className="pt-16 min-h-screen transition-all duration-300 ease-in-out"
-        style={{ marginLeft: contentMarginLeft }}
+        style={{ marginInlineStart: contentMarginStart }}
       >
         <div className="p-4 sm:p-6 lg:p-8">
           {pageComponent}
@@ -198,10 +199,11 @@ function renderPage(page: PageKey): React.ReactNode {
 }
 
 function DefaultNotFound() {
+  const t = useT();
   return (
     <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
       <h1 className="text-4xl font-bold text-muted-foreground">404</h1>
-      <p className="text-muted-foreground">Page not found</p>
+      <p className="text-muted-foreground">{t('nav.pageNotFound')}</p>
     </div>
   );
 }

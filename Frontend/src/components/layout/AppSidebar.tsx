@@ -33,6 +33,7 @@ import {
 } from 'lucide-react';
 import { useAuthStore, getRoleColor, getRoleLabel } from '@/lib/mock-auth';
 import { getNavItemsForRole } from '@/lib/navigation';
+import { useLocale, useT } from '@/lib/i18n/context';
 import { usePageStore, type PageKey } from '@/lib/router-store';
 import { cn } from '@/lib/utils';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -139,7 +140,34 @@ interface SidebarItemProps {
   onClose?: () => void;
 }
 
+const titleToTKey: Record<string, string> = {
+  'Dashboard': 'sidebar.dashboard',
+  'Projects': 'sidebar.projects',
+  'Locations': 'sidebar.locations',
+  'Customers': 'sidebar.customers',
+  'Meters': 'sidebar.meters',
+  'SIM Cards': 'sidebar.simCards',
+  'Readings': 'sidebar.readings',
+  'Consumption': 'sidebar.consumption',
+  'Water Balance': 'sidebar.waterBalance',
+  'Invoices': 'sidebar.invoices',
+  'Payments': 'sidebar.payments',
+  'Balances': 'sidebar.balances',
+  'Reports': 'sidebar.reports',
+  'Alerts': 'sidebar.alerts',
+  'Tickets': 'sidebar.tickets',
+  'Support': 'sidebar.support',
+  'Settings': 'sidebar.settings',
+  'All Meters': 'sidebar.allMeters',
+  'Assign Meter': 'meters.assign.title',
+  'Replace Meter': 'meters.replace.title',
+  'Terminate Meter': 'meters.terminate.title',
+  'All Readings': 'sidebar.allReadings',
+  'New Reading': 'readings.newReading',
+};
+
 function SidebarItem({ item, isActive, isCollapsed, currentPage, navigate, onClose }: SidebarItemProps) {
+  const t = useT();
   const [expanded, setExpanded] = useState(false);
   const hasChildren = item.children && item.children.length > 0;
   const isParentActive = hasChildren && item.children!.some((c) => {
@@ -182,7 +210,7 @@ function SidebarItem({ item, isActive, isCollapsed, currentPage, navigate, onClo
             </button>
           </TooltipTrigger>
           <TooltipContent side="right">
-            {item.title}
+            {t(titleToTKey[item.title] || item.title)}
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>
@@ -201,7 +229,7 @@ function SidebarItem({ item, isActive, isCollapsed, currentPage, navigate, onClo
         )}
       >
         <Icon className="size-5 shrink-0" />
-        <span className="flex-1 text-left truncate">{item.title}</span>
+        <span className="flex-1 text-start truncate">{t(titleToTKey[item.title] || item.title)}</span>
         {item.badge && (
           <Badge className="bg-destructive/80 text-white border-0 text-[10px] px-1.5 py-0 h-4">
             {item.badge}
@@ -227,7 +255,7 @@ function SidebarItem({ item, isActive, isCollapsed, currentPage, navigate, onClo
             transition={{ duration: 0.2, ease: 'easeInOut' }}
             className="overflow-hidden"
           >
-            <div className="ml-5 pl-4 border-l border-border/50 space-y-0.5 mt-0.5 mb-1">
+            <div className="ms-5 ps-4 border-s border-border/50 space-y-0.5 mt-0.5 mb-1">
               {item.children!.map((child) => {
                 const childPageKey = hrefToPageKey[child.href];
                 const childActive = childPageKey === currentPage;
@@ -250,7 +278,7 @@ function SidebarItem({ item, isActive, isCollapsed, currentPage, navigate, onClo
                     )}
                   >
                     <ChildIcon className="size-4 shrink-0" />
-                    <span className="truncate">{child.title}</span>
+                    <span className="truncate">{t(titleToTKey[child.title] || child.title)}</span>
                   </button>
                 );
               })}
@@ -275,6 +303,8 @@ export function AppSidebar({ isOpen, onClose, isCollapsed, onToggleCollapse }: A
   const currentPage = usePageStore((s) => s.currentPage);
   const navigate = usePageStore((s) => s.navigate);
   const isMobile = useIsMobile();
+  const { dir } = useLocale();
+  const sidebarOffset = dir === 'rtl' ? 280 : -280;
 
   if (!user) return null;
 
@@ -304,11 +334,11 @@ export function AppSidebar({ isOpen, onClose, isCollapsed, onToggleCollapse }: A
             />
             {/* Sidebar drawer */}
             <motion.aside
-              initial={{ x: -280 }}
+              initial={{ x: sidebarOffset }}
               animate={{ x: 0 }}
-              exit={{ x: -280 }}
+              exit={{ x: sidebarOffset }}
               transition={{ type: 'spring', damping: 25, stiffness: 250 }}
-              className="fixed left-0 top-16 bottom-0 z-50 w-64 glass-card border-r border-border flex flex-col"
+              className="fixed inset-inline-start-0 top-16 bottom-0 z-50 w-64 glass-card border-e border-border flex flex-col"
             >
               <SidebarContent
                 navItems={navItems}
@@ -331,7 +361,7 @@ export function AppSidebar({ isOpen, onClose, isCollapsed, onToggleCollapse }: A
       initial={false}
       animate={{ width: isCollapsed ? 64 : 256 }}
       transition={{ type: 'spring', damping: 25, stiffness: 250 }}
-      className="fixed left-0 top-16 bottom-0 z-30 glass-card border-r border-border flex flex-col overflow-hidden"
+      className="fixed inset-inline-start-0 top-16 bottom-0 z-30 glass-card border-e border-border flex flex-col overflow-hidden"
     >
       <SidebarContent
         navItems={navItems}
@@ -367,6 +397,9 @@ function SidebarContent({
   isCollapsed = false,
   onToggleCollapse,
 }: SidebarContentProps) {
+  const { dir } = useLocale();
+  const ExpandIcon = dir === 'rtl' ? ChevronLeft : ChevronRight;
+  const CollapseIcon = dir === 'rtl' ? ChevronRight : ChevronLeft;
   if (isCollapsed) {
     return (
       <div className="flex flex-col items-center pt-4 gap-2 flex-1">
@@ -375,7 +408,7 @@ function SidebarContent({
           onClick={onToggleCollapse}
           className="flex items-center justify-center w-10 h-10 rounded-lg text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-colors mb-2"
         >
-          <ChevronRight className="size-4" />
+          <ExpandIcon className="size-4" />
         </button>
 
         <Separator className="w-8 mx-auto" />
@@ -415,7 +448,7 @@ function SidebarContent({
                 </Avatar>
               </div>
             </TooltipTrigger>
-            <TooltipContent side="right">
+            <TooltipContent side={dir === 'rtl' ? 'left' : 'right'}>
               <p className="font-medium">{user.name}</p>
               <p className="text-xs text-muted-foreground">{getRoleLabel(user.role)}</p>
             </TooltipContent>
@@ -427,26 +460,18 @@ function SidebarContent({
 
   return (
     <div className="flex flex-col h-full">
-      {/* Header with branding */}
-      <div className="flex items-center justify-between px-4 pt-4 pb-2">
-        <div className="flex items-center gap-2">
-          <div className="flex size-7 items-center justify-center rounded-md bg-primary text-primary-foreground">
-            <Zap className="size-4" />
-          </div>
-          <span className="font-bold text-sm tracking-tight">
-            Meter <span className="text-primary">Pulse</span>
-          </span>
-        </div>
+      {/* Spacer with collapse toggle */}
+      <div className="flex items-center justify-end px-4 pt-2 pb-1">
         {onToggleCollapse && (
           <button
             onClick={onToggleCollapse}
             className="flex items-center justify-center size-7 rounded-md text-muted-foreground hover:text-foreground hover:bg-secondary/50 transition-colors"
           >
-            <ChevronLeft className="size-4" />
+            <CollapseIcon className="size-4" />
           </button>
         )}
+        {!onToggleCollapse && <div className="h-7"></div>}
       </div>
-
       <Separator className="mx-3" />
 
       {/* Navigation items */}
