@@ -1,5 +1,6 @@
-import { useQuery } from '@tanstack/react-query';
-import { apiGet } from '@/lib/api';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { apiGet, apiPost } from '@/lib/api';
+import { toast } from 'sonner';
 import type { Payment, PaymentStatus, PaymentMethod } from '@/lib/types';
 
 interface ApiPaymentAllocation {
@@ -56,6 +57,24 @@ export function usePaymentsList(projectId?: string, customerId?: string) {
       return data.map(mapPayment);
     },
     staleTime: 30_000,
+  });
+}
+
+export interface PaymentFormData {
+  projectId: string;
+  customerId: string;
+  amount: number;
+  paymentDate: string;
+  method: string;
+  notes?: string;
+}
+
+export function useCreatePayment() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (data: PaymentFormData) => apiPost<any>('/payments', data),
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ['payments'] }); toast.success('Payment recorded'); },
+    onError: () => { toast.error('Failed to record payment'); },
   });
 }
 

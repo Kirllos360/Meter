@@ -4,15 +4,16 @@ import { useState } from 'react';
 import { Plus, MoreHorizontal, Eye, Pencil, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
 import { toast } from 'sonner';
-import { mockCustomers } from '@/lib/mock-data';
-import { usePaymentsList } from '@/hooks/use-payments';
+import { usePaymentsList, useCreatePayment } from '@/hooks/use-payments';
+import { useCustomersList } from '@/hooks/use-customers';
+import { useProjectsList } from '@/hooks/use-projects';
 import SmartTable from '@/components/smart-table/SmartTable';
 import { StatusBadge } from '@/components/shared/StatusBadge';
 import { PageHeader, formatCurrency, formatDate } from '@/components/shared/PageHelpers';
@@ -24,6 +25,12 @@ export default function PaymentsPage() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const { data: apiPayments } = usePaymentsList();
   const payments = apiPayments ?? [];
+  const { data: apiProjects } = useProjectsList();
+  const projects = apiProjects ?? [];
+  const { data: apiCustomers } = useCustomersList();
+  const customers = apiCustomers ?? [];
+  const createPayment = useCreatePayment();
+  const [formData, setFormData] = useState({ projectId: '', customerId: '', amount: 0, paymentDate: '', method: 'cash', notes: '' });
 
   const columns = [
     { key: 'paymentNumber', label: 'Payment #', sortable: true },
@@ -79,21 +86,30 @@ export default function PaymentsPage() {
               <DialogHeader><DialogTitle>{t('billing.payments.record')}</DialogTitle></DialogHeader>
               <div className="space-y-4 py-4">
                 <div>
+                  <label className="text-sm text-muted-foreground mb-1 block">Project</label>
+                  <Select value={formData.projectId} onValueChange={(v) => setFormData({...formData, projectId: v})}>
+                    <SelectTrigger><SelectValue placeholder="Select project" /></SelectTrigger>
+                    <SelectContent>
+                      {projects.map((p: any) => <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
                   <label className="text-sm text-muted-foreground mb-1 block">{t('billing.payments.customer')}</label>
-                  <Select>
+                  <Select value={formData.customerId} onValueChange={(v) => setFormData({...formData, customerId: v})}>
                     <SelectTrigger><SelectValue placeholder="Select customer" /></SelectTrigger>
                     <SelectContent>
-                      {mockCustomers.map((c) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+                      {customers.map((c: any) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
                     </SelectContent>
                   </Select>
                 </div>
                 <div>
                   <label className="text-sm text-muted-foreground mb-1 block">{t('billing.payments.amount')}</label>
-                  <Input type="number" placeholder="0.00" />
+                  <Input type="number" placeholder="0.00" value={formData.amount || ''} onChange={(e) => setFormData({...formData, amount: parseFloat(e.target.value) || 0})} />
                 </div>
                 <div>
                   <label className="text-sm text-muted-foreground mb-1 block">{t('billing.payments.method')}</label>
-                  <Select>
+                  <Select value={formData.method} onValueChange={(v) => setFormData({...formData, method: v})}>
                     <SelectTrigger><SelectValue placeholder="Select method" /></SelectTrigger>
                     <SelectContent>
                       <SelectItem value="cash">{t('billing.payments.cash')}</SelectItem>
@@ -106,11 +122,15 @@ export default function PaymentsPage() {
                   </Select>
                 </div>
                 <div>
-                  <label className="text-sm text-muted-foreground mb-1 block">Notes</label>
-                  <Textarea placeholder="Optional notes..." rows={2} />
+                  <label className="text-sm text-muted-foreground mb-1 block">Payment Date</label>
+                  <Input type="date" value={formData.paymentDate} onChange={(e) => setFormData({...formData, paymentDate: e.target.value})} />
                 </div>
-                <Button className="w-full" onClick={() => { toast.success('Payment recorded!'); setDialogOpen(false); }}>
-                  {t('billing.payments.record')}
+                <div>
+                  <label className="text-sm text-muted-foreground mb-1 block">Notes</label>
+                  <Textarea placeholder="Optional notes..." rows={2} value={formData.notes} onChange={(e) => setFormData({...formData, notes: e.target.value})} />
+                </div>
+                <Button className="w-full" disabled={!formData.projectId || !formData.customerId || formData.amount <= 0 || !formData.paymentDate || createPayment.isPending} onClick={() => createPayment.mutate({...formData, paymentDate: new Date(formData.paymentDate).toISOString()}, { onSuccess: () => setDialogOpen(false), onError: () => {} })}>
+                  {createPayment.isPending ? 'Recording...' : t('billing.payments.record')}
                 </Button>
               </div>
             </DialogContent>
