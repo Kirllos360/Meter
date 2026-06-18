@@ -1,7 +1,9 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { mockProjects, mockMeters, mockCustomers, mockUnits, mockReadings } from '@/lib/mock-data';
+import { useProjectsList } from '@/hooks/use-projects';
+import { useMetersList } from '@/hooks/use-meters';
+import { useCustomersList } from '@/hooks/use-customers';
 import { PageHeader, BackButton } from '@/components/shared/PageHelpers';
 import { StatusBadge } from '@/components/shared/StatusBadge';
 import { Button } from '@/components/ui/button';
@@ -37,18 +39,18 @@ export default function ReadingNewPage() {
   });
 
   const projectMeters = form.projectId
-    ? mockMeters.filter((m) => m.projectId === form.projectId && (m.status === 'active' || m.status === 'offline'))
+    ? (meters ?? []).filter((m) => m.projectId === form.projectId && (m.status === 'active' || m.status === 'offline'))
     : [];
 
-  const selectedMeter = mockMeters.find((m) => m.id === form.meterId);
+  const selectedMeter = (meters ?? []).find((m) => m.id === form.meterId);
   const meterReadings = selectedMeter
-    ? mockReadings.filter((r) => r.meterId === selectedMeter.id).sort((a, b) => new Date(b.readingDate).getTime() - new Date(a.readingDate).getTime())
+    ? (readings ?? []).filter((r) => r.meterId === selectedMeter.id).sort((a, b) => new Date(b.readingDate).getTime() - new Date(a.readingDate).getTime())
     : [];
   const lastReading = meterReadings.length > 0 ? meterReadings[0] : null;
   const currentReading = parseFloat(form.currentReading) || 0;
   const consumption = currentReading > 0 && lastReading ? currentReading - lastReading.currentReading : 0;
-  const unit = selectedMeter?.unitId ? mockUnits.find((u) => u.id === selectedMeter.unitId) : null;
-  const customer = selectedMeter?.customerId ? mockCustomers.find((c) => c.id === selectedMeter.customerId) : null;
+  const unit = selectedMeter?.unitId ? [].find((u) => u.id === selectedMeter.unitId) : null;
+  const customer = selectedMeter?.customerId ? (customers ?? []).find((c) => c.id === selectedMeter.customerId) : null;
 
   const warnings = useMemo(() => {
     const w: { type: 'error' | 'warning'; message: string }[] = [];
@@ -95,7 +97,7 @@ export default function ReadingNewPage() {
               <Select value={form.projectId} onValueChange={(v) => setForm({ ...form, projectId: v, meterId: '' })}>
                 <SelectTrigger><SelectValue placeholder="Select project" /></SelectTrigger>
                 <SelectContent>
-                  {mockProjects.map((p) => <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>)}
+                  {(projects ?? []).map((p) => <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>)}
                 </SelectContent>
               </Select>
             </div>

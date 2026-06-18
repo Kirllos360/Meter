@@ -1,7 +1,8 @@
 'use client';
 
 import { usePageStore } from '@/lib/router-store';
-import { mockInvoices, mockMeters, mockUnits } from '@/lib/mock-data';
+import { useInvoicesList } from '@/hooks/use-invoices';
+import { useMetersList } from '@/hooks/use-meters';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { BackButton, StatCard, formatCurrency, formatDate } from '@/components/shared/PageHelpers';
 import { StatusBadge } from '@/components/shared/StatusBadge';
@@ -30,9 +31,9 @@ export default function CustomerDetailPage() {
     );
   }
 
-  const invoices = mockInvoices.filter((i) => i.customerId === customer.id);
-  const meters = mockMeters.filter((m) => m.customerId === customer.id);
-  const customerUnits = mockUnits.filter((u) => customer.units?.includes(u.id));
+  const invoices = allInvoices.filter((i: any) => i.customerId === cid);
+  const meters = allMeters.filter((m: any) => m.customerId === cid);
+  const customerUnits: any[] = [];
 
   return (
     <div>

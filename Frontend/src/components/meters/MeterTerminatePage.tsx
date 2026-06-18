@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { mockSimCards, mockCustomers } from '@/lib/mock-data';
+import { useSimCardsList } from '@/hooks/use-sim-cards';import { useCustomersList } from '@/hooks/use-customers';
 import { useMetersList } from '@/hooks/use-meters';
 import { useTerminateMeter } from '@/hooks/use-terminate-meter';
 import { PageHeader } from '@/components/shared/PageHelpers';
@@ -31,8 +31,8 @@ export default function MeterTerminatePage() {
 
   const allMeters = metersQuery.data ?? [];
   const meter = allMeters.find((m) => m.id === meterId);
-  const sim = meter?.simCardId ? mockSimCards.find((s) => s.id === meter.simCardId) : null;
-  const customer = meter?.customerId ? mockCustomers.find((c) => c.id === meter.customerId) : null;
+  const sim = meter?.simCardId ? (sims ?? []).find((s) => s.id === meter.simCardId) : null;
+  const customer = meter?.customerId ? (customers ?? []).find((c) => c.id === meter.customerId) : null;
   const activeMeters = allMeters.filter((m) => m.status === 'active' || m.status === 'offline');
 
   const validate = () => {

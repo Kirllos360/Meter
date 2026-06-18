@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { mockWaterBalanceData, mockProjects, mockBuildings, mockMeters } from '@/lib/mock-data';
+import { useProjectsList } from '@/hooks/use-projects';
 import { useWaterBalance } from '@/hooks/use-water-balance';
 import { PageHeader, StatCard } from '@/components/shared/PageHelpers';
 import { StatusBadge } from '@/components/shared/StatusBadge';
@@ -31,7 +31,7 @@ export default function WaterBalancePage() {
   const from = '2026-01-01';
   const to = '2026-01-31';
   const { data: apiData } = useWaterBalance(selectedProject, from, to);
-  const latest = apiData ?? mockWaterBalanceData[mockWaterBalanceData.length - 1] as any;
+  const latest = apiData ?? null as any;
   const exceedsThreshold = latest.coveragePercentage !== undefined ? latest.coveragePercentage < 80 : latest.differencePercent > latest.threshold;
 
   return (
@@ -73,7 +73,7 @@ export default function WaterBalancePage() {
           <CardHeader className="pb-2"><CardTitle className="text-sm">Difference Trend</CardTitle></CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={250}>
-              <LineChart data={mockWaterBalanceData}>
+              <LineChart data={[]}>
                 <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                 <XAxis dataKey="date" tick={{ fontSize: 11 }} stroke="hsl(var(--muted-foreground))" />
                 <YAxis tick={{ fontSize: 11 }} stroke="hsl(var(--muted-foreground))" />

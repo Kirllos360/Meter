@@ -1,7 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import { mockConsumptionData } from '@/lib/mock-data';
 import { isFeatureEnabled } from '@/lib/feature-flags';
 import { useConsumptionTrend } from '@/hooks/use-consumption';
 import { PageHeader } from '@/components/shared/PageHelpers';
@@ -33,7 +32,7 @@ export default function ConsumptionPage() {
   const [period, setPeriod] = useState('monthly');
   const useApi = isFeatureEnabled('consumption');
   const { data: apiData } = useConsumptionTrend(useApi ? '00000000-0000-0000-0000-000000000001' : undefined);
-  const chartData = useApi && apiData ? apiData : mockConsumptionData;
+  const chartData = [];
 
   return (
     <div>
