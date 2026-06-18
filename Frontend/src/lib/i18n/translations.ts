@@ -5,7 +5,7 @@ export interface TranslationDict {
 }
 
 const en: TranslationDict = {
-  app: { name: 'Meter Verse', tagline: 'Utility Metering & Billing Management' },
+  app: { name: '???? ?????????', tagline: 'Utility Metering & Billing Management' },
   nav: {
     search: 'Search meters, customers, readings...',
     menu: 'Toggle menu',
@@ -57,7 +57,7 @@ const en: TranslationDict = {
     demoMode: 'Demo Mode',
     demoDescription: 'Select any role from the dropdown and click Sign In to explore the dashboard with different permission levels.',
     copyright: 'Meter Verse. All rights reserved.',
-    brand: 'Meter Verse',
+    brand: '???? ?????????',
   },
   dashboard: {
     title: 'Dashboard',

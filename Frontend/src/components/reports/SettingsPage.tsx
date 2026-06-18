@@ -20,7 +20,7 @@ import { useTheme } from 'next-themes';
 export default function SettingsPage() {
   const t = useT();
   const { theme, setTheme } = useTheme();
-  const [companyName, setCompanyName] = useState('Meter Verse');
+  const [companyName, setCompanyName] = useState('???? ?????????');
   const [companyEmail, setCompanyEmail] = useState('info@meterpulse.com');
   const [companyPhone, setCompanyPhone] = useState('+201012345670');
   const [readingThreshold, setReadingThreshold] = useState('500');

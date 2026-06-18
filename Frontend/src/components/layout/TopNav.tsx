@@ -109,7 +109,7 @@ export function TopNav({ onMenuClick }: TopNavProps) {
               </svg>
             </div>
             <span className="text-lg font-bold tracking-tight hidden sm:block">
-              Meter <span className="text-primary">Pulse</span>
+              نظام <span className="text-primary">التحصيلات</span>
             </span>
           </div>
         </div>
