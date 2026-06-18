@@ -1,29 +1,29 @@
 'use client';
 
-import { useState } from 'react';
-import { mockAlerts } from '@/lib/mock-data';
+import { useNotifications, useMarkRead, useUnreadCount } from '@/hooks/use-notifications';
 import { PageHeader, StatCard, formatDateTime } from '@/components/shared/PageHelpers';
 import { StatusBadge } from '@/components/shared/StatusBadge';
 import SmartTable from '@/components/smart-table/SmartTable';
 import { Button } from '@/components/ui/button';
-import { toast } from 'sonner';
 import { Bell, AlertTriangle, AlertCircle, Info, Check } from 'lucide-react';
-import { cn } from '@/lib/utils';
 import { useT } from '@/lib/i18n/context';
 
 export default function AlertsPage() {
   const t = useT();
-  const [alerts, setAlerts] = useState(mockAlerts);
+  const { data: notifData } = useNotifications();
+  const { data: unreadData } = useUnreadCount();
+  const markRead = useMarkRead();
+  const notifications = notifData?.items ?? [];
+  const mapped = notifications.map((n: any) => ({ id: n.id, title: n.title, type: n.type, severity: n.type === 'critical' ? 'critical' : 'medium', description: n.body ?? '', entityLabel: n.referenceId ?? '', createdAt: n.createdAt, acknowledged: n.isRead }));
 
-  const total = alerts.length;
-  const critical = alerts.filter((a) => a.severity === 'critical' && !a.acknowledged).length;
-  const high = alerts.filter((a) => a.severity === 'high' && !a.acknowledged).length;
-  const medium = alerts.filter((a) => a.severity === 'medium' && !a.acknowledged).length;
-  const low = alerts.filter((a) => a.severity === 'low' && !a.acknowledged).length;
+  const total = mapped.length;
+  const critical = mapped.filter((a: any) => a.severity === 'critical' && !a.acknowledged).length;
+  const high = mapped.filter((a: any) => a.severity === 'high' && !a.acknowledged).length;
+  const medium = mapped.filter((a: any) => a.severity !== 'critical' && a.severity !== 'high' && !a.acknowledged).length;
+  const low = 0;
 
   const handleAcknowledge = (id: string) => {
-    setAlerts((prev) => prev.map((a) => a.id === id ? { ...a, acknowledged: true } : a));
-    toast.success('Alert acknowledged');
+    markRead.mutate(id, { onSuccess: () => {} });
   };
 
   const columns = [
@@ -65,7 +65,7 @@ export default function AlertsPage() {
       </div>
 
       <SmartTable
-        data={alerts}
+        data={mapped}
         columns={columns}
         filters={[
           {

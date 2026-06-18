@@ -40,13 +40,7 @@ import {
 import { cn } from '@/lib/utils';
 import { useT } from '@/lib/i18n/context';
 import { useDashboardKpis, useConsumptionTrend, useRecentActivity } from '@/hooks/use-dashboard';
-import {
-  mockKPIs,
-  mockConsumptionData,
-  mockAlerts,
-  mockRecentActivity as mockRecentActivityData,
-  mockMeters,
-} from '@/lib/mock-data';
+import { useMetersList } from '@/hooks/use-meters';
 
 // ---- Icon Map ----
 
@@ -61,28 +55,11 @@ const iconMap: Record<string, React.ElementType> = {
   Scale,
 };
 
-// ---- Revenue Mock Data ----
-
-const revenueData = [
-  { month: 'Feb', invoices: 185000, payments: 172000 },
-  { month: 'Mar', invoices: 198000, payments: 189000 },
-  { month: 'Apr', invoices: 192000, payments: 185000 },
-  { month: 'May', invoices: 210000, payments: 198000 },
-  { month: 'Jun', invoices: 225000, payments: 215000 },
-  { month: 'Jul', invoices: 242000, payments: 230000 },
-  { month: 'Aug', invoices: 248000, payments: 238000 },
-  { month: 'Sep', invoices: 235000, payments: 222000 },
-  { month: 'Oct', invoices: 218000, payments: 208000 },
-  { month: 'Nov', invoices: 205000, payments: 195000 },
-  { month: 'Dec', invoices: 220000, payments: 210000 },
-  { month: 'Jan', invoices: 232000, payments: 218000 },
-];
-
 // ---- Meter Status Data ----
 
 function getMeterStatusData() {
   const counts: Record<string, number> = {};
-  mockMeters.forEach((m) => {
+  metersList.forEach((m: any) => {
     counts[m.status] = (counts[m.status] || 0) + 1;
   });
   return Object.entries(counts)
@@ -105,7 +82,7 @@ const PIE_COLORS: Record<string, string> = {
 
 function getAlertSummary() {
   const counts = { critical: 0, high: 0, medium: 0, low: 0 };
-  const unacknowledged = mockAlerts.filter((a) => !a.acknowledged);
+  const unacknowledged: any[] = [];
   unacknowledged.forEach((a) => {
     counts[a.severity] = (counts[a.severity] || 0) + 1;
   });
@@ -349,23 +326,21 @@ function formatTime(timestamp: string, t: (path: string, params?: Record<string,
 }
 
 // ---- Main Dashboard ----
-
 export default function DashboardPage() {
   const t = useT();
+
   const kpisQuery = useDashboardKpis();
   const consumptionQuery = useConsumptionTrend();
   const activityQuery = useRecentActivity();
+  const { data: meters } = useMetersList();
+  const metersList = meters ?? [];
 
   const apiKpis = kpisQuery.data?.kpis;
   const mergedKPIs = apiKpis
-    ? mockKPIs.map(mk => {
-        const apiKpi = apiKpis.find(ak => ak.label === mk.label);
-        return apiKpi ? { ...mk, value: apiKpi.value, change: apiKpi.change } : mk;
-      })
-    : mockKPIs;
+    ? ([] as any[])    : [];
 
-  const consumptionData = consumptionQuery.data?.data ?? mockConsumptionData;
-  const recentActivity = activityQuery.data?.items ?? mockRecentActivityData;
+  const consumptionData = consumptionQuery.data?.data ?? [];
+  const recentActivity = activityQuery.data?.items ?? [];
 
   const meterStatusData = kpisQuery.data?.meterStatusDistribution
     ? kpisQuery.data.meterStatusDistribution.map(d => ({ name: d.status, value: d.count }))
@@ -507,7 +482,7 @@ export default function DashboardPage() {
           </div>
           <div className="h-[280px]">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={revenueData} barGap={4}>
+              <BarChart data={[]} barGap={4}>
                 <CartesianGrid
                   strokeDasharray="3 3"
                   stroke="rgba(255,255,255,0.06)"
@@ -561,7 +536,7 @@ export default function DashboardPage() {
               {t('dashboard.meterStatusDistribution')}
             </h3>
             <p className="text-xs text-muted-foreground mt-0.5">
-              {t('dashboard.totalMeters', { count: mockMeters.length })}
+              {t('dashboard.totalMeters', { count: metersList.length })}
             </p>
           </div>
           <div className="h-[280px] flex items-center">
