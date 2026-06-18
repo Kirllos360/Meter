@@ -48,6 +48,21 @@ export function useUpdateMeter() {
   });
 }
 
+export function useAssignMeter() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (data: { meterId: string; customerId: string; unitId: string; projectId: string; startAt: string }) =>
+      apiPost<any>(`/meters/${data.meterId}/assign`, {
+        customerId: data.customerId,
+        unitId: data.unitId,
+        projectId: data.projectId,
+        startAt: data.startAt,
+      }),
+    onSuccess: () => { qc.invalidateQueries({ queryKey: [METERS_KEY] }); toast.success('Meter assigned successfully'); },
+    onError: () => { toast.error('Failed to assign meter'); },
+  });
+}
+
 export function useDeleteMeter() {
   const qc = useQueryClient();
   return useMutation({
