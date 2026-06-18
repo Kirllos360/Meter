@@ -23,6 +23,10 @@ import { BillingModule } from './billing/billing.module';
 import { PaymentsModule } from './payments/payments.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { DownloadsModule } from './downloads/downloads.module';
+import { ReportsModule } from './reports/reports.module';
+import { TicketsModule } from './tickets/tickets.module';
+import { SupportModule } from './support/support.module';
+import { SettingsModule } from './settings/settings.module';
 import { CorrelationMiddleware } from './common/http/correlation.middleware';
 
 @Module({
@@ -44,7 +48,11 @@ import { CorrelationMiddleware } from './common/http/correlation.middleware';
     BillingModule,
     PaymentsModule,
     NotificationsModule,
-    DownloadsModule
+    DownloadsModule,
+    ReportsModule,
+    TicketsModule,
+    SupportModule,
+    SettingsModule
   ],
   controllers: [AppController],
   providers: [

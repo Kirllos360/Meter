@@ -684,6 +684,77 @@ model Notification {
   @@schema("sim_system")
 }
 
+model ReportTemplate {
+  id          String   @id @default(uuid()) @map("id")
+  name        String   @map("name")
+  category    String   @map("category")
+  description String?  @map("description")
+  config      String?  @map("config")
+  createdBy   String   @map("created_by")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("report_templates")
+  @@schema("sim_system")
+}
+
+model Ticket {
+  id          String   @id @default(uuid()) @map("id")
+  title       String   @map("title")
+  description String?  @map("description")
+  status      String   @default("open") @map("status")
+  priority    String   @default("medium") @map("priority")
+  category    String?  @map("category")
+  assignedTo  String?  @map("assigned_to")
+  createdBy   String   @map("created_by")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+  resolvedAt  DateTime? @map("resolved_at")
+
+  @@index([status])
+  @@index([assignedTo])
+  @@map("tickets")
+  @@schema("sim_system")
+}
+
+model TicketComment {
+  id        String   @id @default(uuid()) @map("id")
+  ticketId  String   @map("ticket_id")
+  body      String   @map("body")
+  authorId  String   @map("author_id")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("ticket_comments")
+  @@schema("sim_system")
+}
+
+model SupportRequest {
+  id          String   @id @default(uuid()) @map("id")
+  subject     String   @map("subject")
+  description String?  @map("description")
+  status      String   @default("open") @map("status")
+  priority    String   @default("medium") @map("priority")
+  customerId  String?  @map("customer_id")
+  assignedTo  String?  @map("assigned_to")
+  createdBy   String   @map("created_by")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+  resolvedAt  DateTime? @map("resolved_at")
+
+  @@index([status])
+  @@map("support_requests")
+  @@schema("sim_system")
+}
+
+model SystemSetting {
+  id    String @id @default(uuid()) @map("id")
+  key   String @unique @map("key")
+  value String @map("value")
+
+  @@map("system_settings")
+  @@schema("sim_system")
+}
+
 // ===== Core Schema Enums (v2.0.0) =====
 
 enum UserStatus {
