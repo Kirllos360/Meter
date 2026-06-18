@@ -1,11 +1,14 @@
 'use client';
 
+import { useState } from 'react';
 import { Plus, MoreHorizontal, Eye, Pencil, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { toast } from 'sonner';
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { usePageStore } from '@/lib/router-store';
 import SmartTable from '@/components/smart-table/SmartTable';
 import { StatusBadge } from '@/components/shared/StatusBadge';
@@ -13,7 +16,8 @@ import { PageHeader } from '@/components/shared/PageHelpers';
 import { formatDate } from '@/components/shared/PageHelpers';
 import { QueryBoundary } from '@/components/shared/QueryBoundary';
 import { useT } from '@/lib/i18n/context';
-import { useProjectsList } from '@/hooks/use-projects';
+import { useProjectsList, useDeleteProject } from '@/hooks/use-projects';
+import ProjectFormDialog from '@/components/projects/ProjectFormDialog';
 
 export default function ProjectsPage() {
   const t = useT();
@@ -21,6 +25,11 @@ export default function ProjectsPage() {
   const { data: apiProjects, isLoading, isError, error } = useProjectsList();
   const projects = apiProjects ?? [];
   const areas = [...new Set(projects.map((p) => p.area))];
+  const deleteMutation = useDeleteProject();
+
+  const [formOpen, setFormOpen] = useState(false);
+  const [editProject, setEditProject] = useState<any>(null);
+  const [deleteTarget, setDeleteTarget] = useState<any>(null);
 
   const columns = [
     { key: 'code', label: t('projects.code'), sortable: true, width: '100px' },
@@ -52,10 +61,10 @@ export default function ProjectsPage() {
             <DropdownMenuItem onClick={(e) => { e.stopPropagation(); navigate('project-detail', { id: row.id }); }}>
               <Eye className="h-4 w-4 mr-2" /> {t('common.view')}
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={(e) => { e.stopPropagation(); toast.info(t('common.edit') + ': ' + row.name); }}>
+            <DropdownMenuItem onClick={(e) => { e.stopPropagation(); setEditProject(row); setFormOpen(true); }}>
               <Pencil className="h-4 w-4 mr-2" /> {t('common.edit')}
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={(e) => { e.stopPropagation(); toast.info(t('common.delete') + ': ' + row.name); }} className="text-red-500">
+            <DropdownMenuItem onClick={(e) => { e.stopPropagation(); setDeleteTarget(row); }} className="text-red-500">
               <Trash2 className="h-4 w-4 mr-2" /> {t('common.delete')}
             </DropdownMenuItem>
           </DropdownMenuContent>
@@ -70,7 +79,7 @@ export default function ProjectsPage() {
         title={t('projects.title')}
         subtitle={t('projects.subtitle')}
         action={
-          <Button className="gap-2" onClick={() => toast.info(t('projects.create') + ' ' + t('common.dialog'))}>
+          <Button className="gap-2" onClick={() => { setEditProject(null); setFormOpen(true); }}>
             <Plus className="h-4 w-4" /> {t('projects.create')}
           </Button>
         }
@@ -99,6 +108,33 @@ export default function ProjectsPage() {
         searchPlaceholder={t('projects.search')}
       />
       </QueryBoundary>
+
+      <ProjectFormDialog key={formOpen ? (editProject?.id ?? 'create') : 'closed'} open={formOpen} onOpenChange={setFormOpen} editProject={editProject} />
+
+      <AlertDialog open={!!deleteTarget} onOpenChange={() => setDeleteTarget(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t('common.confirmDelete')}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {t('common.deleteWarning')} <strong>{deleteTarget?.name}</strong>?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-red-500 hover:bg-red-600"
+              onClick={() => {
+                if (deleteTarget) {
+                  deleteMutation.mutate(deleteTarget.id);
+                  setDeleteTarget(null);
+                }
+              }}
+            >
+              {deleteMutation.isPending ? 'Deleting...' : t('common.delete')}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
