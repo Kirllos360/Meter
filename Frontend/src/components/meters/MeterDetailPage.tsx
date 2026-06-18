@@ -1,8 +1,10 @@
 'use client';
 
 import { usePageStore } from '@/lib/router-store';
-import { mockReadings, mockSimCards, mockInvoices } from '@/lib/mock-data';
 import { useMeterDetail } from '@/hooks/use-meters';
+import { useReadingsList } from '@/hooks/use-readings';
+import { useSimCardsList } from '@/hooks/use-sim-cards';
+import { useInvoicesList } from '@/hooks/use-invoices';
 import { QueryBoundary } from '@/components/shared/QueryBoundary';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { BackButton, StatCard, formatDate, formatDateTime } from '@/components/shared/PageHelpers';
@@ -18,6 +20,13 @@ export default function MeterDetailPage() {
   const t = useT();
   const meterQuery = useMeterDetail(pageParams.id);
   const meter = meterQuery.data;
+  const meterId = meter?.id ?? '';
+  const { data: readingsData } = useReadingsList();
+  const { data: simsData } = useSimCardsList();
+  const { data: invoicesData } = useInvoicesList();
+  const allReadings = readingsData ?? [];
+  const allSims = simsData ?? [];
+  const allInvoices = invoicesData ?? [];
 
   if (!meter) {
     return (
@@ -28,9 +37,9 @@ export default function MeterDetailPage() {
     );
   }
 
-  const readings = mockReadings.filter((r) => r.meterId === meter.id).sort((a, b) => new Date(a.readingDate).getTime() - new Date(b.readingDate).getTime());
-  const sim = meter.simCardId ? mockSimCards.find((s) => s.id === meter.simCardId) : null;
-  const invoices = mockInvoices.filter((i) => i.meterSerial === meter.serialNumber);
+  const readings = allReadings.filter((r: any) => r.meterId === meterId);
+  const sim = meter.simCardId ? allSims.find((s: any) => s.id === meter.simCardId) : null;
+  const invoices = allInvoices.filter((i: any) => i.meterId === meterId);
 
   const chartData = readings.slice(-6).map((r) => ({
     date: new Date(r.readingDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
