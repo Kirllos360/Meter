@@ -19,7 +19,7 @@ import { PasswordPolicyService } from './password-policy.service';
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (config: ConfigService) => ({
-        secret: config.get<string>('JWT_SECRET', 'change-me-in-production'),
+        secret: (() => { const s = config.get<string>('JWT_SECRET'); if (!s) throw new Error('JWT_SECRET environment variable is required'); return s; })(),
         signOptions: {
           expiresIn: Number(config.get<string>('JWT_EXPIRES_IN', '3600'))
         }

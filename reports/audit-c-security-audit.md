@@ -1,195 +1,56 @@
-# AUDIT-C — Security Audit
+# AUDIT-C — Security Audit (Independent)
 
 **Date**: 2026-06-18
-**Auditor**: Penetration Testing Reviewer
-**Scope**: Authentication, Authorization, Input Validation, CSRF, Rate Limiting, IDOR, Secrets
-
----
-
-## Executive Summary
-
-| Severity | Count |
-|----------|-------|
-| CRITICAL | 3 |
-| HIGH | 4 |
-| MEDIUM | 5 |
-| LOW | 3 |
-
----
-
-## ❌ CRITICAL VULNERABILITIES
-
-### C-01: Unrestricted Dev-Login Backdoor (CRITICAL, CVSS 10.0)
-
-**Root Cause**: `AuthController.devLogin()` at line 37-43 accepts any `userId`, `role`, `name` and signs a valid JWT with zero authentication, guards, environment checks, or rate limiting.
-
-```typescript
-@Post('dev-login')
-@HttpCode(HttpStatus.OK)
-async devLogin(@Body() dto: DevLoginDto) {
-  const payload = { sub: dto.userId, userId: dto.userId, role: dto.role };
-  const accessToken = this.jwtService.sign(payload);
-  return { accessToken, user: { id: dto.userId, name: dto.name ?? dto.userId, role: dto.role } };
-}
-```
-
-**Risk**: Anyone who discovers this endpoint can forge a JWT as `super_admin`, gaining full system access. No production toggle exists.
-
-**Severity**: CRITICAL
-
-**Affected**: `backend/src/auth/auth.controller.ts:37-43`
-
-**Fix**: Gate behind `NODE_ENV !== 'production'` or remove entirely.
-
-### C-02: Two Controllers Have Zero Authentication (CRITICAL, CVSS 9.1)
-
-**Root Cause**: `WaterBalanceController` (entire class) and `SimCardsController.getEligibility()` have no `@UseGuards()` decorators.
-
-**Risk**: Water balance data and SIM eligibility data publicly accessible without any token.
-
-**Severity**: CRITICAL
-
-**Affected**: 
-- `backend/src/readings/water-balance/water-balance.controller.ts:7-19`
-- `backend/src/sim-cards/sim-cards.controller.ts:89`
-
-**Fix**: Add `@UseGuards(AuthGuard('jwt'), RolesGuard)` to both.
-
-### C-03: RBAC Guards Not Global (CRITICAL, CVSS 8.6)
-
-**Root Cause**: RolesGuard and PermissionsGuard are NOT registered as global `APP_GUARD`. Each controller must manually apply them — and two already missed.
-
-**Risk**: Any new controller or endpoint that omits guards has zero authorization.
-
-**Severity**: CRITICAL
-
-**Affected**: `backend/src/auth/auth.module.ts:30-35`
-
-**Fix**: Register RolesGuard as `APP_GUARD` in `app.module.ts`.
-
----
-
-## ❌ HIGH VULNERABILITIES
-
-### H-01: Pervasive IDOR — No Resource Ownership (HIGH, CVSS 8.1)
-
-**Root Cause**: Every controller accepts UUID params without verifying the authenticated user owns or is scoped to that resource. An operator can access ANY project, meter, customer, invoice.
-
-**Risk**: Complete lack of tenancy isolation. Cross-tenant data access.
-
-**Severity**: HIGH
-
-**Affected**: Every controller file — all endpoints that take UUID params.
-
-**Fix**: Add `projectScope`/`areas` validation in service layer.
-
-### H-02: Weak JWT Secret with Fallback (HIGH, CVSS 7.5)
-
-**Root Cause**: `JWT_SECRET=dev-jwt-secret-do-not-use-in-production` in `.env`. Fallback `'change-me-in-production'` in `jwt.strategy.ts`.
-
-**Risk**: Anyone with access to `.env` or who guesses the fallback can forge arbitrary JWTs.
-
-**Severity**: HIGH
-
-**Affected**: `backend/.env:9`, `backend/src/auth/jwt.strategy.ts:14`
-
-**Fix**: Generate strong secret, validate at startup, remove fallback.
-
-### H-03: CSRF Guard Dead Code (HIGH, CVSS 7.0)
-
-**Root Cause**: `CsrfGuard` exists but is never imported, provided, or applied anywhere.
-
-**Risk**: No CSRF protection if cookie-based auth is ever used.
-
-**Severity**: HIGH
-
-**Affected**: `backend/src/common/http/csrf.guard.ts` (entire file)
-
-**Fix**: Either register globally or remove dead code.
-
-### H-04: SQL Injection Risk (HIGH, CVSS 7.3)
-
-**Root Cause**: `CustomersController.getStatement()` uses `$queryRawUnsafe` instead of Prisma's type-safe query API.
-
-**Risk**: SQL injection if raw SQL is modified with string concatenation in the future.
-
-**Severity**: HIGH
-
-**Affected**: `backend/src/customers/customers.controller.ts:110-119`
-
-**Fix**: Replace with Prisma type-safe query or `$queryRaw` (without "Unsafe").
-
----
-
-## ❌ MEDIUM VULNERABILITIES
-
-### M-01: Refresh Token Generates Invalid Access Tokens (MEDIUM)
-
-**Root Cause**: `RefreshTokenService.generateAccessToken()` signs JWT without `role` claim. `JwtStrategy.validate()` requires `role` and throws if missing.
-
-**Fix**: Include `role` in refresh-generated tokens.
-
-### M-02: Idempotency Uses In-Memory Storage (MEDIUM)
-
-**Fix**: Replace `Map` with database-backed store for multi-instance support.
-
-### M-03: Weak Global Rate Limiting (MEDIUM)
-
-**Fix**: Add per-endpoint limits. Reduce global limit from 100/min.
-
-### M-04: Weak Password Policy (MEDIUM)
-
-**Fix**: Increase minimum from 8 to 12 characters.
-
-### M-05: JWT Algorithm Not Specified (MEDIUM)
-
-**Fix**: Use RS256 with key pair instead of default HS256.
-
----
-
-## ❌ LOW VULNERABILITIES
-
-### L-01: Dev Secrets in .env (gitignored)
-### L-02: `areas` Field Dropped in JWT Validate Return
-### L-03: `$queryRawUnsafe` Code Smell
-
----
-
-## Additional Observations
-
-- **Helmet**: ✅ Applied in `main.ts`
-- **ThrottlerGuard**: ✅ Global but limits too lenient (100/min)
-- **ValidationPipe**: ✅ Global with whitelist, forbidNonWhitelisted, transform
-- **ParseUUIDPipe**: ✅ Used on UUID params
-- **AuditInterceptor**: ✅ Global APP_INTERCEPTOR
-- **Audit decorators**: ✅ Applied on most CUD endpoints
-- **Swagger/OpenAPI**: `/api/v1/docs` exposed — should be disabled in production
-
----
+**Verdict**: FAIL (2 CRITICAL, 5 HIGH, 1 MEDIUM)
+
+## ❌ CRITICAL
+
+### F-C1: Refresh Token Demotes All Users to `customer` Role (CRITICAL)
+- **Root cause**: `refresh-token.service.ts` line 62-64 hard-codes `role = 'customer'` and is never called with a real role
+- **Risk**: Any user who refreshes token is downgraded to customer — RBAC breaks after first refresh
+- **Affected**: `backend/src/auth/refresh-token.service.ts:62-64`
+
+### F-C2: Weak Default JWT Secret (CRITICAL)
+- **Root cause**: `jwt.strategy.ts:14` and `auth.module.ts:22` fall back to `'change-me-in-production'`
+- **Risk**: Anyone knowing the default can forge valid JWTs
+- **Affected**: `jwt.strategy.ts:14`, `auth.module.ts:22`
+
+## ❌ HIGH
+
+### F-C3: Dev-Login Uses Soft NODE_ENV Gate (HIGH)
+- **Root cause**: `auth.controller.ts:44-51` checks `NODE_ENV === 'production'` — easy to bypass
+- **Risk**: In staging/QA/demo, dev-login is fully available
+
+### F-C4: Widespread IDOR (HIGH)
+- **Root cause**: No controller validates user's authorization to access requested resource UUIDs
+- **Risk**: Any authenticated user can access any project, meter, customer, invoice, payment
+- **Affected**: Every data-access controller (10+ controllers, all accepting UUIDs)
+
+### F-C5: CSRF Guard Dead Code (HIGH)
+- **Root cause**: `CsrfGuard` defined but never imported, registered, or applied
+- **Risk**: No CSRF protection if cookie-based auth is used
+
+### F-C6: Unsafe Raw SQL Pattern (HIGH)
+- **Root cause**: `customers.controller.ts:110-119` uses `$queryRawUnsafe`
+- **Risk**: SQL injection if query is modified with string concatenation
+
+### F-C7: JWT Algorithm Not Explicitly Specified (HIGH)
+- **Root cause**: Neither `auth.module.ts` nor `jwt.strategy.ts` specify `algorithms`
+- **Risk**: Algorithm confusion attack, library default changes
+
+## ❌ MEDIUM
+
+### F-C8: Rate Limiting Too Generous (MEDIUM)
+- **Root cause**: Global 100 req/60s with no per-route differentiation
+- **Risk**: Auth endpoints are not properly throttled
+
+## ✅ PASSES
+- Helmet, CORS, ValidationPipe correctly configured
+- No stack trace leakage
+- All business controllers have authentication guards
+- `@Public()` decorator works correctly
+- Password policy (8 chars + complexity) adequate
+- Lockout policy (5 attempts / 15 min) reasonable
 
 ## Conclusion
-
-| Criterion | Result |
-|-----------|--------|
-| JWT authentication | ✅ Implemented (but dev-login bypass) |
-| Role-based authorization | ✅ RolesGuard exists |
-| Permission-based authorization | ✅ PermissionsGuard exists (unused) |
-| CSRF protection | ❌ Dead code — never applied |
-| Rate limiting | ⚠️ Present but too lenient |
-| Input validation | ✅ Global ValidationPipe |
-| Audit logging | ✅ Global interceptor |
-| IDOR protection | ❌ None — pervasive across all controllers |
-| Resource ownership checks | ❌ None |
-| Secrets management | ⚠️ Dev secrets + fallback |
-| Helmet/security headers | ✅ Applied |
-| SQL injection risk | ⚠️ One raw query (bound params) |
-
 **SECURITY_CERTIFIED = NO**
-
-**Blockers**:
-1. C-01 (CRITICAL): Dev-login backdoor — anyone can get super_admin JWT
-2. C-02 (CRITICAL): 2 controllers unprotected
-3. C-03 (CRITICAL): Guards not global — pattern failure
-4. H-01 (HIGH): Pervasive IDOR — no resource ownership
-5. H-02 (HIGH): Weak JWT secret with fallback
-6. H-03 (HIGH): CSRF dead code

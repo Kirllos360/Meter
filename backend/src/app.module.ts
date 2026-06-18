@@ -7,7 +7,7 @@ import { AppConfigModule } from './common/config/config.module';
 import { DatabaseModule } from './common/database/database.module';
 import { AuthModule } from './auth/auth.module';
 import { GlobalAuthGuard } from './auth/global-auth.guard';
-import { AreaMiddleware } from './auth/area.middleware';
+import { AreaGuard } from './auth/area.guard';
 import { AuditModule } from './audit/audit.module';
 import { AuditInterceptor } from './audit/audit.interceptor';
 import { IdempotencyModule } from './idempotency/idempotency.module';
@@ -55,12 +55,15 @@ import { CorrelationMiddleware } from './common/http/correlation.middleware';
     {
       provide: APP_GUARD,
       useClass: GlobalAuthGuard
+    },
+    {
+      provide: APP_GUARD,
+      useClass: AreaGuard
     }
   ]
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer): void {
     consumer.apply(CorrelationMiddleware).forRoutes('*');
-    consumer.apply(AreaMiddleware).forRoutes('/api/v1/*');
   }
 }

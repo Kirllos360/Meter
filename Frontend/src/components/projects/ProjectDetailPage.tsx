@@ -20,12 +20,12 @@ export default function ProjectDetailPage() {
   const { data: apiProject, isLoading, isError, error } = useProjectDetail(pageParams.id ?? '');
   const project = apiProject ?? mockProjects.find((p) => p.id === pageParams.id);
 
-  if (!project && !isLoading) {
+  if (!project) {
     return (
       <div>
         <BackButton fallback="projects" />
         <QueryBoundary isLoading={isLoading} isError={isError} error={error}>
-          <p className="text-muted-foreground">{t('projects.notFound')}</p>
+          {!isLoading && <p className="text-muted-foreground">{t('projects.notFound')}</p>}
         </QueryBoundary>
       </div>
     );

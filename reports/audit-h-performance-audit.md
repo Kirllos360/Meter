@@ -1,94 +1,43 @@
-# AUDIT-H — Performance Audit
+# AUDIT-H — Performance Audit (Independent)
 
 **Date**: 2026-06-18
-**Auditor**: Independent Performance Reviewer
-**Scope**: Query patterns, pagination, indexes, payload size, bundle size
+**Verdict**: FAIL
 
----
+## ❌ CRITICAL
 
-## Findings Summary
+### F-H1: N+1 in Invoice Generation (CRITICAL)
+- File: `billing.controller.ts` lines 77-136
+- Per-meter `tariffService.getEffectiveTariff()` + per-reading `invoiceLine.create()` in nested loops
+- Risk: Thousands of queries for large projects — timeout or crash
 
-| Severity | Count |
-|----------|-------|
-| CRITICAL | 3 |
-| HIGH | 4 |
-| MEDIUM | 4 |
-| LOW | 2 |
+### F-H2: No Pagination on 11/12 List Endpoints (CRITICAL)
+- Only `GET /dashboard/activity` has pagination (`?limit=`)
+- All other list endpoints return unbounded results
+- Risk: OOM or slow response as data grows
 
----
+## ❌ HIGH
 
-## ❌ CRITICAL FINDINGS
+### F-H3: N+1 in ReadingsService (HIGH)
+- File: `readings.service.ts` lines 18, 57-63, 82-86
+- Per-reading `meter.findUnique()` in `toDto()` called from findAll/listReviewQueue
+- Up to 500 extra queries (mitigated by `take: 500` on findAll; listReviewQueue has no limit)
 
-### H-C1: N+1 in ReadingsService.toDto() (CRITICAL)
-**File**: `backend/src/readings/readings.service.ts` (lines 14-51)
-**Issue**: Every reading returned by `findAll()` or `listReviewQueue()` triggers an individual `meter.findUnique()` query via `toDto()`. With 500 readings = 501 database queries.
-**Fix**: Batch-fetch all meter IDs with a single `findMany`, build a lookup map.
+### F-H4: N+1 in WaterBalanceService (HIGH)
+- File: `water-balance.service.ts` lines 45-65
+- Per-child `reading.aggregate()` in for loop
+- Scales with child meter count
 
-### H-C2: N+1 in WaterBalanceService (CRITICAL)
-**File**: `backend/src/readings/water-balance/water-balance.service.ts` (lines 45-65)
-**Issue**: Per-child-meter aggregate queries in a loop. 50 child meters = 50 aggregate queries.
-**Fix**: Use `groupBy` or batch with `meterId: { in: childIds }`.
+### F-H5: @prisma/client in Frontend (HIGH)
+- `Frontend/package.json` line 22 — Prisma ORM bundled in frontend
+- Adds 5-8MB unnecessary bundle weight
+- Security concern — DB client code exposed to browser
 
-### H-C3: No Pagination on ANY List Endpoint (CRITICAL)
-**Issue**: ALL list endpoints (13 identified) return unbounded result sets. No `page`/`skip`/`limit` query params. As data grows, these queries will consume increasing memory and time.
-**Fix**: Add pagination to every `@Get()` list endpoint.
+### F-H6: Missing Indexes on Active Models (HIGH)
+- `Reading`, `Invoice`, `Payment`, `InvoiceLine`, `Project` have zero indexes
 
----
-
-## ❌ HIGH FINDINGS
-
-### H-H1: N+1 in Invoice Generation (HIGH)
-**File**: `backend/src/billing/billing.controller.ts` (lines 71-130)
-**Issue**: Per-meter tariff lookup + per-reading invoice line insert in loops.
-**Fix**: Batch tariff lookups, use `createMany`.
-
-### H-H2: Missing Indexes on 10+ Foreign Keys (HIGH)
-**Affected**: Meter (projectId, status), Reading (meterId, status), Invoice (projectId, customerId), Payment (projectId, customerId), Customer (projectId), and 5+ more.
-**Fix**: Add `@@index([column])` on every foreign key and frequently-filtered column.
-
-### H-H3: PaymentService Manual Join (HIGH)
-**File**: `backend/src/payments/payments.service.ts` (lines 21-22)
-**Issue**: Separate `paymentAllocation.findMany` instead of `include: { allocations: true }`.
-**Fix**: Use Prisma `include`.
-
-### H-H4: @prisma/client in Frontend Dependencies (HIGH)
-**File**: `Frontend/package.json` (line 22)
-**Issue**: Prisma ORM (~5-8MB) is bundled into frontend despite being a backend-only concern.
-**Fix**: Remove `@prisma/client` and `prisma` from frontend deps.
-
----
-
-## ❌ MEDIUM FINDINGS
-
-### H-M1: Dead Fields in ReadingResponseDto
-### H-M2: rawPayload (JSON) Returned in List Queries
-### H-M3: Raw SQL via $queryRawUnsafe in Customer Statement
-### H-M4: Per-Row Invoice Line Inserts Instead of createMany
-
----
-
-## ❌ LOW FINDINGS
-
-### H-L1: No Prisma Query Logging/Monitoring
-### H-L2: No Date Filter on Consumption Trend Query
-
----
+## ✅ PASSES
+- Dashboard service well-structured (Promise.all, batch meter queries)
+- 130 total `@@index` directives across all schemas
 
 ## Conclusion
-
-| Criterion | Result |
-|-----------|--------|
-| N+1 query patterns analyzed | ✅ 3 found |
-| Pagination on list endpoints | ✅ 13 missing |
-| Database indexes reviewed | ✅ 10+ missing |
-| Bundle size analyzed | ✅ 5-8MB frontend bloat found |
-| Prisma query patterns | ✅ N+1 in services, missing include |
-
 **PERFORMANCE_CERTIFIED = NO**
-
-**Blockers**:
-1. H-C1: N+1 in ReadingsService — scales with reading count
-2. H-C2: N+1 in WaterBalanceService — scales with child meter count
-3. H-C3: No pagination — O(n) unbounded queries
-4. H-H2: Missing indexes — full table scans
-5. H-H4: Frontend bundle bloat — 5-8MB unnecessary
