@@ -643,6 +643,7 @@ model RefreshToken {
   id        String   @id @default(uuid()) @map("id")
   token     String   @unique @map("token")
   userId    String   @map("user_id")
+  role      String   @default("customer") @map("role")
   expiresAt DateTime @map("expires_at")
   createdAt DateTime @default(now()) @map("created_at")
   revokedAt DateTime? @map("revoked_at")
