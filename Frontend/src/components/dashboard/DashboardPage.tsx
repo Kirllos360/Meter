@@ -57,7 +57,7 @@ const iconMap: Record<string, React.ElementType> = {
 
 // ---- Meter Status Data ----
 
-function getMeterStatusData() {
+function getMeterStatusData(metersList: any[]) {
   const counts: Record<string, number> = {};
   metersList.forEach((m: any) => {
     counts[m.status] = (counts[m.status] || 0) + 1;
@@ -344,7 +344,7 @@ export default function DashboardPage() {
 
   const meterStatusData = kpisQuery.data?.meterStatusDistribution
     ? kpisQuery.data.meterStatusDistribution.map(d => ({ name: d.status, value: d.count }))
-    : getMeterStatusData();
+    : getMeterStatusData(metersList);
 
   const apiAlertCounts = kpisQuery.data?.alertSeverityCounts;
   const alertSummary = apiAlertCounts
