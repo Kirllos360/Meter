@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Param, Body, ParseUUIDPipe, UseGuards, Query, HttpCode, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Delete, Param, Body, ParseUUIDPipe, UseGuards, Query, HttpCode, HttpStatus } from '@nestjs/common';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from '../auth/roles.guard';
@@ -7,12 +7,16 @@ import { Role } from '../auth/types/role.enum';
 import { Audit } from '../audit/audit.decorator';
 import { PaymentsService } from './payments.service';
 import { ReversePaymentDto } from './dto/reverse-payment.dto';
+import { PrismaService } from '../common/database/prisma.service';
 
 @ApiTags('Payments')
 @Controller('payments')
 @UseGuards(AuthGuard('jwt'), RolesGuard)
 export class PaymentsController {
-  constructor(private readonly paymentsService: PaymentsService) {}
+  constructor(
+    private readonly paymentsService: PaymentsService,
+    private readonly prisma: PrismaService,
+  ) {}
 
   @Get()
   @Roles(Role.OPERATOR, Role.ADMIN, Role.SUPER_ADMIN, Role.FINANCE, Role.SUPPORT)
@@ -29,6 +33,31 @@ export class PaymentsController {
   @ApiOperation({ summary: 'Get payment by ID' })
   async findOne(@Param('id', ParseUUIDPipe) id: string) {
     return this.paymentsService.findOne(id);
+  }
+
+  @Patch(':id')
+  @Roles(Role.OPERATOR, Role.ADMIN, Role.SUPER_ADMIN)
+  @ApiOperation({ summary: 'Update payment notes' })
+  @HttpCode(HttpStatus.OK)
+  async update(@Param('id', ParseUUIDPipe) id: string, @Body() dto: { notes?: string; status?: string }) {
+    const data: any = {};
+    if (dto.notes !== undefined) data.notes = dto.notes;
+    if (dto.status) data.status = dto.status;
+    await this.prisma.payment.update({ where: { id }, data });
+    return { status: 'updated' };
+  }
+
+  @Delete(':id')
+  @Roles(Role.ADMIN, Role.SUPER_ADMIN)
+  @Audit('payment', 'delete')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Delete a pending payment' })
+  async remove(@Param('id', ParseUUIDPipe) id: string) {
+    const payment = await this.prisma.payment.findUnique({ where: { id } });
+    if (!payment) return { status: 'not_found' };
+    if (payment.status !== 'pending') return { status: 'cannot_delete' };
+    await this.prisma.payment.delete({ where: { id } });
+    return { status: 'deleted' };
   }
 
   @Post(':id/reverse')
