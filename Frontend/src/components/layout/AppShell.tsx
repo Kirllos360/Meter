@@ -14,6 +14,7 @@ import ExecutiveDashboard from '@/components/dashboard/ExecutiveDashboard';
 // Projects
 import ProjectsPage from '@/components/projects/ProjectsPage';
 import ProjectDetailPage from '@/components/projects/ProjectDetailPage';
+import Project360Page from '@/components/projects/Project360Page';
 import LocationsPage from '@/components/projects/LocationsPage';
 
 // Customers
@@ -139,6 +140,8 @@ function renderPage(page: PageKey): React.ReactNode {
 
     case 'project-detail':
       return <ProjectDetailPage />;
+    case 'project-360':
+      return <Project360Page />;
 
     case 'locations':
       return <LocationsPage />;

@@ -8,6 +8,7 @@ export type PageKey =
   | 'executive-dashboard'
   | 'projects'
   | 'project-detail'
+  | 'project-360'
   | 'locations'
   | 'customers'
   | 'customer-detail'
