@@ -29,6 +29,7 @@ import { TicketsModule } from './tickets/tickets.module';
 import { SupportModule } from './support/support.module';
 import { CollectionsModule } from './collections/collections.module';
 import { SearchModule } from './search/search.module';
+import { UploadModule } from './upload/upload.module';
 import { SettingsModule } from './settings/settings.module';
 import { CorrelationMiddleware } from './common/http/correlation.middleware';
 
@@ -59,6 +60,7 @@ import { CorrelationMiddleware } from './common/http/correlation.middleware';
     SettingsModule,
     CollectionsModule,
     SearchModule,
+    UploadModule,
   ],
   controllers: [AppController],
   providers: [
