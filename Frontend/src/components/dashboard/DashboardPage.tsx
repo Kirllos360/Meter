@@ -41,6 +41,8 @@ import { cn } from '@/lib/utils';
 import { useT } from '@/lib/i18n/context';
 import { useDashboardKpis, useConsumptionTrend, useRecentActivity } from '@/hooks/use-dashboard';
 import { useMetersList } from '@/hooks/use-meters';
+import { useQuery } from '@tanstack/react-query';
+import { apiGet } from '@/lib/api';
 
 // ---- Icon Map ----
 
@@ -334,6 +336,10 @@ export default function DashboardPage() {
   const activityQuery = useRecentActivity();
   const { data: meters } = useMetersList();
   const metersList = meters ?? [];
+  const { data: collData } = useQuery({ queryKey: ['coll-dash'], queryFn: () => apiGet<any>('/collections/dashboard') });
+  const { data: agingData } = useQuery({ queryKey: ['coll-aging'], queryFn: () => apiGet<any>('/collections/aging') });
+  const collections = collData ?? {};
+  const aging = agingData ?? {};
 
   const apiKpis = kpisQuery.data?.kpis;
   const mergedKPIs = apiKpis
