@@ -31,7 +31,8 @@ export type PageKey =
   | 'alerts'
   | 'tickets'
   | 'support'
-  | 'settings';
+  | 'settings'
+  | 'upload-center';
 
 interface RouterState {
   currentPage: PageKey;

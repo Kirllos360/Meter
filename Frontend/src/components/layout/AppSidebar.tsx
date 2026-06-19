@@ -82,6 +82,7 @@ const hrefToPageKey: Record<string, PageKey> = {
   '/executive-dashboard': 'executive-dashboard',
   '/project-360': 'project-360',
   '/customer-360': 'customer-360',
+  '/upload-center': 'upload-center',
   '/projects': 'projects',
   '/locations': 'locations',
   '/customers': 'customers',

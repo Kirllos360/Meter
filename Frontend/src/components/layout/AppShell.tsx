@@ -58,6 +58,7 @@ import SupportPage from '@/components/tickets/SupportPage';
 import { useT } from '@/lib/i18n/context';
 import { useIsMobile } from '@/hooks/use-mobile';
 import GlobalSearchDialog from '@/components/shared/GlobalSearchDialog';
+import UploadCenterPage from '@/components/upload/UploadCenterPage';
 
 export function AppShell() {
   const currentPage = usePageStore((s) => s.currentPage);
@@ -210,6 +211,8 @@ function renderPage(page: PageKey): React.ReactNode {
 
     case 'settings':
       return <SettingsPage />;
+    case 'upload-center':
+      return <UploadCenterPage />;
 
     default:
       return <DefaultNotFound />;
