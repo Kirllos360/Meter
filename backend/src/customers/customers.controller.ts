@@ -20,6 +20,7 @@ import { Role } from '../auth/types/role.enum';
 import { Audit } from '../audit/audit.decorator';
 import { ApiOperation } from '@nestjs/swagger';
 import { CustomersService } from './customers.service';
+import { Customer360Service } from './customer-360.service';
 import { PrismaService } from '../common/database/prisma.service';
 import { NotificationsService } from '../notifications/notifications.service';
 import { CreateCustomerDto } from './dto/create-customer.dto';
@@ -32,6 +33,7 @@ export class CustomersController {
     private readonly customersService: CustomersService,
     private readonly prisma: PrismaService,
     private readonly notificationsService: NotificationsService,
+    private readonly customer360Service: Customer360Service,
   ) {}
 
   @Post()
@@ -99,6 +101,13 @@ export class CustomersController {
     @Req() req: { user: { userId: string } }
   ) {
     await this.customersService.remove(projectId, id, req.user.userId);
+  }
+
+  @Get(':id/360')
+  @Roles(Role.OPERATOR, Role.ADMIN, Role.SUPER_ADMIN, Role.FINANCE, Role.SUPPORT)
+  @ApiOperation({ summary: 'Customer 360 aggregated view' })
+  async getCustomer360(@Param('id', ParseUUIDPipe) id: string) {
+    return this.customer360Service.getCustomer360(id);
   }
 
   @Get(':id/statement')
