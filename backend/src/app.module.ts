@@ -28,6 +28,7 @@ import { ReportsModule } from './reports/reports.module';
 import { TicketsModule } from './tickets/tickets.module';
 import { SupportModule } from './support/support.module';
 import { CollectionsModule } from './collections/collections.module';
+import { SearchModule } from './search/search.module';
 import { SettingsModule } from './settings/settings.module';
 import { CorrelationMiddleware } from './common/http/correlation.middleware';
 
@@ -57,6 +58,7 @@ import { CorrelationMiddleware } from './common/http/correlation.middleware';
     SupportModule,
     SettingsModule,
     CollectionsModule,
+    SearchModule,
   ],
   controllers: [AppController],
   providers: [

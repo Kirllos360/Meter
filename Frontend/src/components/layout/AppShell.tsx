@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { usePageStore, type PageKey } from '@/lib/router-store';
 import { useAuthStore } from '@/lib/mock-auth';
 import { TopNav } from './TopNav';
@@ -55,13 +55,21 @@ import SupportPage from '@/components/tickets/SupportPage';
 
 import { useT } from '@/lib/i18n/context';
 import { useIsMobile } from '@/hooks/use-mobile';
+import GlobalSearchDialog from '@/components/shared/GlobalSearchDialog';
 
 export function AppShell() {
   const currentPage = usePageStore((s) => s.currentPage);
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
   const isMobile = useIsMobile();
+
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => { if ((e.ctrlKey || e.metaKey) && e.key === 'k') { e.preventDefault(); setSearchOpen(true); } };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, []);
 
   // Close mobile sidebar on page change
   const [prevPage, setPrevPage] = useState(currentPage);
@@ -94,6 +102,7 @@ export function AppShell() {
 
   return (
     <div className="min-h-screen bg-background">
+      <GlobalSearchDialog open={searchOpen} onClose={() => setSearchOpen(false)} />
       <TopNav onMenuClick={() => setSidebarOpen(true)} />
       <AppSidebar
         isOpen={sidebarOpen}
