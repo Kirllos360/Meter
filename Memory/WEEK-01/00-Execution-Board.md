@@ -10,9 +10,9 @@
 | ID | Task | Status | Est. | Owner |
 |----|------|--------|------|-------|
 | P0-001 | Wire TOU Pricing to Billing Engine | ✅ DONE | 5d | — |
-| P0-002 | Implement Demand Charge Calculation | PENDING | 3d | — |
-| P0-003 | Implement Penalty Engine | PENDING | 3d | — |
-| P0-004 | Add Credit/Debit Note Workflows | PENDING | 2d | — |
+| P0-002 | Implement Demand Charge Calculation | ✅ DONE | 3d | — |
+| P0-003 | Implement Penalty Engine | ✅ DONE | 3d | — |
+| P0-004 | Add Credit/Debit Note Workflows | ✅ DONE (already existed) | 0d | — |
 
 ## This Week's Goal
 Complete P0-001 through P0-004 (billing parity). sBill parity target: 68% → 82%.
