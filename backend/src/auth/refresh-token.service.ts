@@ -64,6 +64,13 @@ export class RefreshTokenService {
     return this.jwtService.sign({ sub: userId, userId, role });
   }
 
+  async store(userId: string, token: string, role = 'customer'): Promise<void> {
+    const expiresInMs = Number(this.config.get<string>('REFRESH_TOKEN_EXPIRES_IN_MS', '604800000'));
+    await this.prisma.refreshToken.create({
+      data: { token: this.hashToken(token), userId, role, expiresAt: new Date(Date.now() + expiresInMs) }
+    });
+  }
+
   private hashToken(token: string): string {
     return crypto.createHash('sha256').update(token).digest('hex');
   }

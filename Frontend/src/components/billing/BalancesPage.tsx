@@ -61,7 +61,7 @@ export default function BalancesPage() {
 
   return (
     <div>
-      <PageHeader title={t('billing.balances.title')} subtitle="View outstanding balances and aging analysis" />
+      <PageHeader title={t('billing.balances.title')} subtitle={t('billing.balances.subtitle')} />
 
       {/* KPI Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">

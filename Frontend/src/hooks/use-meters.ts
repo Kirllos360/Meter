@@ -5,10 +5,15 @@ import type { Meter } from '@/lib/types';
 
 const METERS_KEY = 'meters';
 
-export function useMetersList() {
+export function useMetersList(projectId?: string) {
   return useQuery({
-    queryKey: [METERS_KEY],
-    queryFn: () => apiGet<Meter[]>('/meters'),
+    queryKey: [METERS_KEY, projectId],
+    queryFn: () => {
+      const params: Record<string, string> = {};
+      if (projectId && projectId !== '__all_projects__') params.projectId = projectId;
+      const qs = new URLSearchParams(params).toString();
+      return apiGet<Meter[]>(`/meters${qs ? '?' + qs : ''}`);
+    },
   });
 }
 
@@ -22,9 +27,12 @@ export function useMeterDetail(id: string) {
 
 export interface MeterFormData {
   serialNumber: string;
-  meterType: 'electricity' | 'water_main' | 'water_child';
+  meterType: 'electricity' | 'water_main' | 'water_child' | 'solar' | 'gas' | 'chilled_water' | 'outdoor_unit';
   brand: string;
   model: string;
+  phaseType?: string;
+  ampRating?: string;
+  diameter?: string;
   installationDate: string;
   activationDate: string;
   projectId: string;

@@ -11,15 +11,13 @@
 ## Key commands (run from `Frontend/`)
 ```bash
 bun run dev              # dev server on :3000
-bun run build            # standalone output + static cp
 bun run lint             # ESLint
-bun run test:smoke       # build + Playwright smoke traversal
-bun run db:push          # Prisma push (SQLite for dev)
-bun run db:migrate       # Prisma migrate dev
-bun run db:generate      # Prisma generate
 ```
+Backend (`backend/`): `npm run build`, `npm run start:dev`
 
-Backend (`backend/`): `npm run start:dev`, `npm test`, `npm run build`
+## Playwright Tests
+Tests are in `draft/tests/` — create test via Python generator script (gen_*.py) to avoid encoding issues.
+Run: `node draft/tests/pw-<name>.cjs` (requires frontend + backend running).
 
 ## Architecture (3-Plan, 15-Area)
 - **Plan 1 — Full** (all modules, production): Core DB + Features DB + 15 Area DBs
@@ -31,9 +29,14 @@ Backend (`backend/`): `npm run start:dev`, `npm test`, `npm run build`
 ## Architecture constraints
 - **Never rebuild the frontend shell, routes, or design system.** All work is incremental.
 - Frontend currently uses mock data (`src/lib/mock-*.ts`). Migration to live APIs sprint-by-sprint.
-- Backend modules implemented per T086+ tasks.
-- Prisma schema targets PostgreSQL with multi-schema (`sim_system`).
+- Backend modules implemented per task list.
+- Prisma schema targets PostgreSQL with multi-schema (`sim_system` → `core` + `features` + `area_{n}`).
 - Next config: `output: "standalone"`, `ignoreBuildErrors: true`, `reactStrictMode: false`.
+
+## Main Plan (Live)
+All planning is now in `docs/main-plan/` (single source of truth).
+Old plans moved to `docs/previous-plans/` and `draft/`.
+Task list: `docs/main-plan/06-tasks.md` (40 tasks, 37 TODO).
 
 ## Repository Structure
 ```

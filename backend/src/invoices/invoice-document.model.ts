@@ -29,12 +29,14 @@ export interface InvoiceDocument {
   // Customer
   customerId: string;
   customerName: string;
+  customerCode?: string;
   customerNameAr?: string;
   customerTenant?: string;
   customerPhone?: string;
 
   // Property
   projectName: string;
+  areaName?: string;
   unitNumber?: string;
   address?: string;
 

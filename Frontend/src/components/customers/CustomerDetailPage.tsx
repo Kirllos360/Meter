@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { usePageStore } from '@/lib/router-store';
 import { useInvoicesList } from '@/hooks/use-invoices';
 import { useMetersList } from '@/hooks/use-meters';
@@ -8,20 +9,123 @@ import { BackButton, StatCard, formatCurrency, formatDate } from '@/components/s
 import { StatusBadge } from '@/components/shared/StatusBadge';
 import SmartTable from '@/components/smart-table/SmartTable';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Phone, Mail, MapPin, Gauge, CreditCard } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Phone, Mail, MapPin, Gauge, CreditCard, Pencil, Trash2 } from 'lucide-react';
 import { useT } from '@/lib/i18n/context';
 import { useProjectsList } from '@/hooks/use-projects';
 import { useCustomerDetail } from '@/hooks/use-customers';
+import { apiPost, apiPut, apiDelete } from '@/lib/api';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
+import { useQueryClient } from '@tanstack/react-query';
+import OwnershipTab from './OwnershipTab';
+import WalletTab from './WalletTab';
 
 export default function CustomerDetailPage() {
   const t = useT();
-  const { pageParams } = usePageStore();
+  const { pageParams, navigate } = usePageStore();
   const { data: apiProjects } = useProjectsList();
   const projects = apiProjects ?? [];
   const projectId = pageParams.projectId ?? '';
-  const { data: apiCustomer } = useCustomerDetail(projectId, pageParams.id ?? '');
-  const customer = apiCustomer;
+  const customerId = pageParams.id ?? '';
+  const isNew = customerId === 'new';
+  const { data: apiCustomer } = useCustomerDetail(projectId, customerId);
+  const customer = isNew ? null : apiCustomer;
   const project = projects.find((p) => p.id === customer?.projectId);
+  const { data: apiInvoices } = useInvoicesList();
+  const { data: apiMeters } = useMetersList();
+  const allInvoices = apiInvoices ?? [];
+  const allMeters = apiMeters ?? [];
+  const [formData, setFormData] = useState({ customerCode: '', name: '', nameAr: '', phone: '', email: '', customerType: 'individual', nationalOrCommercialId: '', projectId: '' });
+  const [creating, setCreating] = useState(false);
+  const [createError, setCreateError] = useState('');
+  const [editOpen, setEditOpen] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [editData, setEditData] = useState({ name: '', email: '', phone: '' });
+  const [saving, setSaving] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const queryClient = useQueryClient();
+
+  const handleCreate = async () => {
+    setCreating(true); setCreateError('');
+    try {
+      const pid = formData.projectId || projectId || projects[0]?.id;
+      if (!pid) { setCreateError('Select a project first'); setCreating(false); return; }
+      const res = await apiPost(`/projects/${pid}/customers`, formData);
+      navigate('customer-detail', { id: (res as any).id, projectId: pid });
+    } catch (e: any) { setCreateError(e?.message || 'Failed to create customer'); }
+    setCreating(false);
+  };
+
+  const handleEditOpen = () => {
+    setEditData({ name: customer?.name || '', email: customer?.email || '', phone: customer?.phone || '' });
+    setEditOpen(true);
+  };
+
+  const handleEditSave = async () => {
+    setSaving(true);
+    try {
+      await apiPut(`/projects/${projectId}/customers/${customerId}`, editData);
+      queryClient.invalidateQueries({ queryKey: ['projects', projectId, 'customers', customerId] });
+      queryClient.invalidateQueries({ queryKey: ['projects', projectId, 'customers'] });
+      setEditOpen(false);
+    } catch (e: any) {
+      console.error('Failed to update customer', e);
+    }
+    setSaving(false);
+  };
+
+  const handleDelete = async () => {
+    setDeleting(true);
+    try {
+      await apiDelete(`/projects/${projectId}/customers/${customerId}`);
+      setDeleteOpen(false);
+      navigate('customers', { projectId });
+    } catch (e: any) {
+      console.error('Failed to delete customer', e);
+    }
+    setDeleting(false);
+  };
+
+  if (isNew) {
+    return (
+      <div>
+        <BackButton fallback="customers" />
+        <Card className="max-w-2xl mx-auto mt-6">
+          <CardHeader><CardTitle>Create Customer</CardTitle></CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div><label className="text-xs font-medium">Customer Code *</label><Input value={formData.customerCode} onChange={e => setFormData({ ...formData, customerCode: e.target.value })} /></div>
+              <div><label className="text-xs font-medium">English Name *</label><Input value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} /></div>
+              <div><label className="text-xs font-medium">Arabic Name</label><Input value={formData.nameAr} onChange={e => setFormData({ ...formData, nameAr: e.target.value })} /></div>
+              <div><label className="text-xs font-medium">Phone *</label><Input value={formData.phone} onChange={e => setFormData({ ...formData, phone: e.target.value })} /></div>
+              <div><label className="text-xs font-medium">Email</label><Input value={formData.email} onChange={e => setFormData({ ...formData, email: e.target.value })} /></div>
+              <div><label className="text-xs font-medium">National ID</label><Input value={formData.nationalOrCommercialId} onChange={e => setFormData({ ...formData, nationalOrCommercialId: e.target.value })} /></div>
+              <div><label className="text-xs font-medium">Type</label>
+                <select className="w-full h-9 rounded-md border px-3 text-sm" value={formData.customerType} onChange={e => setFormData({ ...formData, customerType: e.target.value })}>
+                  <option value="individual">Individual</option><option value="company">Company</option><option value="tenant">Tenant</option><option value="owner">Owner</option>
+                </select>
+              </div>
+              <div><label className="text-xs font-medium">Project</label>
+                <select className="w-full h-9 rounded-md border px-3 text-sm" value={formData.projectId || projectId} onChange={e => setFormData({ ...formData, projectId: e.target.value })}>
+                  <option value="">Select project</option>
+                  {projects.map((p: any) => <option key={p.id} value={p.id}>{p.name}</option>)}
+                </select>
+              </div>
+            </div>
+            {createError && <p className="text-red-500 text-sm">{createError}</p>}
+            <Button onClick={handleCreate} disabled={creating || !formData.customerCode || !formData.name || !formData.phone}>
+              {creating ? 'Creating...' : 'Create Customer'}
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   if (!customer) {
     return (
       <div>
@@ -31,8 +135,8 @@ export default function CustomerDetailPage() {
     );
   }
 
-  const invoices = allInvoices.filter((i: any) => i.customerId === cid);
-  const meters = allMeters.filter((m: any) => m.customerId === cid);
+  const invoices = allInvoices.filter((i: any) => i.customerId === customerId);
+  const meters = allMeters.filter((m: any) => m.customerId === customerId);
   const customerUnits: any[] = [];
 
   return (
@@ -55,6 +159,14 @@ export default function CustomerDetailPage() {
             </div>
             {customer.address && <p className="text-xs text-muted-foreground mt-1">{customer.address}</p>}
           </div>
+          <div className="flex gap-2 shrink-0">
+            <Button variant="outline" size="sm" className="gap-2" onClick={handleEditOpen}>
+              <Pencil className="h-4 w-4" /> Edit
+            </Button>
+            <Button variant="destructive" size="sm" className="gap-2" onClick={() => setDeleteOpen(true)}>
+              <Trash2 className="h-4 w-4" /> Delete
+            </Button>
+          </div>
         </div>
       </div>
 
@@ -76,8 +188,13 @@ export default function CustomerDetailPage() {
           <TabsTrigger value="meters">{t('sidebar.meters')}</TabsTrigger>
           <TabsTrigger value="invoices">{t('sidebar.invoices')}</TabsTrigger>
           <TabsTrigger value="payments">{t('sidebar.payments')}</TabsTrigger>
+          <TabsTrigger value="ledger">Ledger</TabsTrigger>
+          <TabsTrigger value="wallet">Wallet</TabsTrigger>
+          <TabsTrigger value="solar-wallet">Solar</TabsTrigger>
+          <TabsTrigger value="settlements">{t('sidebar.settlements')}</TabsTrigger>
           <TabsTrigger value="balance">{t('customers.balance')}</TabsTrigger>
           <TabsTrigger value="tickets">{t('sidebar.tickets')}</TabsTrigger>
+          <TabsTrigger value="ownership">Ownership</TabsTrigger>
           <TabsTrigger value="notes">{t('customers.notes')}</TabsTrigger>
         </TabsList>
 
@@ -176,10 +293,58 @@ export default function CustomerDetailPage() {
         </TabsContent>
 
         <TabsContent value="payments"><div className="text-center py-12 text-muted-foreground">{t('billing.payments.noPayments')}</div></TabsContent>
+        <TabsContent value="ledger">
+          <Card className="glass-card border-border/50">
+            <CardHeader><CardTitle className="text-sm">Ledger History</CardTitle></CardHeader>
+            <CardContent className="text-sm text-muted-foreground">Ledger entries appear after invoice posting and payment processing.</CardContent>
+          </Card>
+        </TabsContent>
+        <TabsContent value="wallet">
+          <WalletTab customerId={customerId} projectId={projectId} />
+        </TabsContent>
+        <TabsContent value="solar-wallet">
+          <WalletTab customerId={customerId} projectId={projectId} />
+        </TabsContent>
+        <TabsContent value="settlements"><div className="text-center py-12 text-muted-foreground">No settlements found.</div></TabsContent>
+        <TabsContent value="ownership">
+          <OwnershipTab customer={customer} projectId={projectId} />
+        </TabsContent>
         <TabsContent value="balance"><div className="text-center py-12 text-muted-foreground">{t('customers.noBalanceRecords')}</div></TabsContent>
         <TabsContent value="tickets"><div className="text-center py-12 text-muted-foreground">{t('tickets.noTickets')}</div></TabsContent>
         <TabsContent value="notes"><div className="text-center py-12 text-muted-foreground">{t('customers.noNotes')}</div></TabsContent>
       </Tabs>
+
+      <Dialog open={editOpen} onOpenChange={setEditOpen}>
+        <DialogContent>
+          <DialogHeader><DialogTitle>Edit Customer</DialogTitle></DialogHeader>
+          <div className="space-y-4 py-2">
+            <div><label className="text-xs font-medium">Name</label><Input value={editData.name} onChange={e => setEditData({ ...editData, name: e.target.value })} /></div>
+            <div><label className="text-xs font-medium">Email</label><Input value={editData.email} onChange={e => setEditData({ ...editData, email: e.target.value })} /></div>
+            <div><label className="text-xs font-medium">Phone</label><Input value={editData.phone} onChange={e => setEditData({ ...editData, phone: e.target.value })} /></div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setEditOpen(false)}>Cancel</Button>
+            <Button onClick={handleEditSave} disabled={saving}>{saving ? 'Saving...' : 'Save'}</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <AlertDialog open={deleteOpen} onOpenChange={setDeleteOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Customer</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete <strong>{customer.name}</strong>? This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={deleting}>Cancel</AlertDialogCancel>
+            <AlertDialogAction className="bg-red-500 hover:bg-red-600" disabled={deleting} onClick={handleDelete}>
+              {deleting ? 'Deleting...' : 'Delete'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

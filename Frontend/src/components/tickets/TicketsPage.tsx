@@ -38,7 +38,7 @@ export default function TicketsPage() {
 
   return (
     <div>
-      <PageHeader title={t('tickets.title')} subtitle="Manage support tickets" action={
+      <PageHeader title={t('tickets.title')} subtitle={t('tickets.subtitle')} action={
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogTrigger asChild><Button className="gap-2"><Plus className="h-4 w-4" /> Create Ticket</Button></DialogTrigger>
           <DialogContent>

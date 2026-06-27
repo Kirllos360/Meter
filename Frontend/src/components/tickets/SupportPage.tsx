@@ -32,7 +32,7 @@ export default function SupportPage() {
 
   return (
     <div>
-      <PageHeader title={t('tickets.support')} subtitle="Customer support center" />
+      <PageHeader title={t('tickets.support')} subtitle={t('support.subtitle')} />
       <div className="grid md:grid-cols-3 gap-6">
         <div className="md:col-span-1 space-y-4">
           <div className="relative">

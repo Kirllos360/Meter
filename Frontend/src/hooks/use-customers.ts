@@ -7,6 +7,7 @@ export interface CustomerApiResponse {
   projectId: string;
   customerCode: string;
   name: string;
+  nameAr?: string;
   phone: string;
   email: string;
   customerType: string;
@@ -19,6 +20,7 @@ export interface CustomerApiResponse {
 export interface CreateCustomerPayload {
   customerCode: string;
   name: string;
+  nameAr?: string;
   phone: string;
   email: string;
   customerType: string;
@@ -28,6 +30,7 @@ export interface CreateCustomerPayload {
 export interface UpdateCustomerPayload {
   customerCode?: string;
   name?: string;
+  nameAr?: string;
   phone?: string;
   email?: string;
   customerType?: string;
@@ -40,8 +43,10 @@ function mapCustomer(api: CustomerApiResponse): Customer {
     id: api.id,
     code: api.customerCode,
     name: api.name,
+    nameAr: api.nameAr,
     phone: api.phone,
     email: api.email,
+    nationalOrCommercialId: api.nationalOrCommercialId,
     customerType: api.customerType as Customer['customerType'],
     projectId: api.projectId,
     projectName: undefined,

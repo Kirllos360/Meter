@@ -14,7 +14,7 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
 import { toast } from 'sonner';
-import { useCreateReading } from '@/hooks/use-readings';
+import { useReadingsList, useCreateReading } from '@/hooks/use-readings';
 import { z } from 'zod';
 
 const readingSchema = z.object({
@@ -37,6 +37,10 @@ export default function ReadingNewPage() {
     source: 'manual',
     notes: '',
   });
+  const { data: projects = [] } = useProjectsList();
+  const { data: meters = [] } = useMetersList();
+  const { data: customers = [] } = useCustomersList(form.projectId);
+  const { data: readings = [] } = useReadingsList();
 
   const projectMeters = form.projectId
     ? (meters ?? []).filter((m) => m.projectId === form.projectId && (m.status === 'active' || m.status === 'offline'))
@@ -49,7 +53,7 @@ export default function ReadingNewPage() {
   const lastReading = meterReadings.length > 0 ? meterReadings[0] : null;
   const currentReading = parseFloat(form.currentReading) || 0;
   const consumption = currentReading > 0 && lastReading ? currentReading - lastReading.currentReading : 0;
-  const unit = selectedMeter?.unitId ? [].find((u) => u.id === selectedMeter.unitId) : null;
+  const unit = selectedMeter?.unitId ? ([] as { id: string; unitNumber: string }[]).find((u) => u.id === selectedMeter.unitId) : null;
   const customer = selectedMeter?.customerId ? (customers ?? []).find((c) => c.id === selectedMeter.customerId) : null;
 
   const warnings = useMemo(() => {
@@ -86,7 +90,7 @@ export default function ReadingNewPage() {
 
   return (
     <div>
-      <PageHeader title={t('readings.newReading')} subtitle="Submit a new manual meter reading" />
+      <PageHeader title={t('readings.newReading')} subtitle={t('readings.newReadingSubtitle')} />
       <BackButton fallback="readings" />
 
       <div className="max-w-2xl space-y-6">

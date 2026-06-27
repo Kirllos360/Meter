@@ -1,8 +1,12 @@
 'use client';
 
+import { useState } from 'react';
 import { Plus, MoreHorizontal, Eye, Pencil, CreditCard, Download, XCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 import { usePageStore } from '@/lib/router-store';
 import { useInvoicesList, useIssueInvoice } from '@/hooks/use-invoices';
@@ -14,14 +18,49 @@ import { cn } from '@/lib/utils';
 import { useT } from '@/lib/i18n/context';
 import { ProtectedAction } from '@/components/shared/ProtectedAction';
 import { downloadFile } from '@/lib/download';
+import { apiPatch, apiPost } from '@/lib/api';
 
 export default function InvoicesPage() {
   const t = useT();
   const { navigate } = usePageStore();
-  const { data: apiInvoices } = useInvoicesList();
+  const { data: apiInvoices, refetch } = useInvoicesList();
   const invoices = apiInvoices ?? [];
   const { data: apiProjects } = useProjectsList();
   const issueMutation = useIssueInvoice();
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
+  const [selectedInvoice, setSelectedInvoice] = useState<any>(null);
+  const [editDueAt, setEditDueAt] = useState('');
+
+  const handleEditInvoice = (row: any) => {
+    setSelectedInvoice(row);
+    setEditDueAt(row.dueDate ? row.dueDate.split('T')[0] : '');
+    setEditDialogOpen(true);
+  };
+
+  const handleSaveEdit = async () => {
+    if (!selectedInvoice) return;
+    try {
+      await apiPatch(`/invoices/${selectedInvoice.id}`, { dueAt: editDueAt });
+      toast.success('Invoice updated');
+      setEditDialogOpen(false);
+      refetch();
+    } catch { toast.error('Failed to update invoice'); }
+  };
+
+  const handleCancelInvoice = async () => {
+    if (!selectedInvoice) return;
+    try {
+      await apiPost(`/invoices/${selectedInvoice.id}/cancel`);
+      toast.success('Invoice cancelled');
+      setCancelDialogOpen(false);
+      refetch();
+    } catch { toast.error('Failed to cancel invoice'); }
+  };
+
+  const handleRecordPayment = (row: any) => {
+    navigate('payments', { invoiceId: row.id, customerId: row.customerId, amount: row.remainingAmount });
+  };
 
   const columns = [
     { key: 'invoiceNumber', label: t('billing.invoices.invoiceNumber'), sortable: true },
@@ -69,17 +108,17 @@ export default function InvoicesPage() {
           <DropdownMenuContent align="end">
             <DropdownMenuItem onClick={(e) => { e.stopPropagation(); navigate('invoice-detail', { id: row.id }); }}><Eye className="h-4 w-4 mr-2" /> View</DropdownMenuItem>
             <ProtectedAction action="invoice:edit">
-              {row.status === 'draft' && <DropdownMenuItem onClick={(e) => { e.stopPropagation(); toast.info('Edit invoice'); }}><Pencil className="h-4 w-4 mr-2" /> Edit</DropdownMenuItem>}
+              {row.status === 'draft' && <DropdownMenuItem onClick={(e) => { e.stopPropagation(); handleEditInvoice(row); }}><Pencil className="h-4 w-4 mr-2" /> Edit</DropdownMenuItem>}
             </ProtectedAction>
             <ProtectedAction action="invoice:issue">
               {row.status === 'draft' && <DropdownMenuItem onClick={(e) => { e.stopPropagation(); issueMutation.mutate(row.id, { onSuccess: () => toast.success('Invoice issued'), onError: () => toast.error('Failed to issue invoice') }); }}><CreditCard className="h-4 w-4 mr-2" /> Issue</DropdownMenuItem>}
             </ProtectedAction>
             <ProtectedAction action="payment:record">
-              <DropdownMenuItem onClick={(e) => { e.stopPropagation(); toast.info('Record payment'); }}><CreditCard className="h-4 w-4 mr-2" /> Record Payment</DropdownMenuItem>
+              <DropdownMenuItem onClick={(e) => { e.stopPropagation(); handleRecordPayment(row); }}><CreditCard className="h-4 w-4 mr-2" /> Record Payment</DropdownMenuItem>
             </ProtectedAction>
             <DropdownMenuItem onClick={(e) => { e.stopPropagation(); downloadFile(`http://localhost:3001/api/v1/downloads/invoices/${row.id}/pdf`, `invoice-${row.invoiceNumber}.pdf`); }}><Download className="h-4 w-4 mr-2" /> {t('billing.invoices.download')}</DropdownMenuItem>
             <ProtectedAction action="invoice:cancel">
-              {row.status === 'draft' && <DropdownMenuItem onClick={(e) => { e.stopPropagation(); toast.info('Invoice cancelled'); }} className="text-red-500"><XCircle className="h-4 w-4 mr-2" /> Cancel</DropdownMenuItem>}
+              {row.status === 'draft' && <DropdownMenuItem onClick={(e) => { e.stopPropagation(); setSelectedInvoice(row); setCancelDialogOpen(true); }} className="text-red-500"><XCircle className="h-4 w-4 mr-2" /> Cancel</DropdownMenuItem>}
             </ProtectedAction>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -91,9 +130,9 @@ export default function InvoicesPage() {
     <div>
       <PageHeader
         title={t('billing.invoices.title')}
-        subtitle="Manage billing invoices and payments"
+        subtitle={t('billing.invoices.subtitle')}
         action={
-          <Button className="gap-2" onClick={() => toast.info('Create Invoice dialog would open')}>
+          <Button className="gap-2" onClick={async () => { try { await apiPost('/invoices/generate', { projectId: '', billingPeriodCode: new Date().toISOString().slice(0,7) }); toast.success('Invoice generated'); refetch(); } catch { toast.error('Failed to generate invoice'); } }}>
             <Plus className="h-4 w-4" /> {t('billing.invoices.generate')}
           </Button>
         }
@@ -136,6 +175,35 @@ export default function InvoicesPage() {
         searchPlaceholder={t('billing.invoices.search')}
         onRowClick={(row) => navigate('invoice-detail', { id: row.id })}
       />
+
+      {/* Edit Invoice Dialog */}
+      <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
+        <DialogContent>
+          <DialogHeader><DialogTitle>Edit Invoice — {selectedInvoice?.invoiceNumber}</DialogTitle></DialogHeader>
+          <div className="space-y-4 py-4">
+            <div>
+              <Label>Due Date</Label>
+              <Input type="date" value={editDueAt} onChange={e => setEditDueAt(e.target.value)} />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setEditDialogOpen(false)}>Cancel</Button>
+            <Button onClick={handleSaveEdit}>Save</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Cancel Invoice Confirm */}
+      <Dialog open={cancelDialogOpen} onOpenChange={setCancelDialogOpen}>
+        <DialogContent>
+          <DialogHeader><DialogTitle>Cancel Invoice</DialogTitle></DialogHeader>
+          <p className="py-4 text-sm text-muted-foreground">Are you sure you want to cancel invoice <strong>{selectedInvoice?.invoiceNumber}</strong>? This action cannot be undone.</p>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setCancelDialogOpen(false)}>No, keep it</Button>
+            <Button variant="destructive" onClick={handleCancelInvoice}>Yes, cancel invoice</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

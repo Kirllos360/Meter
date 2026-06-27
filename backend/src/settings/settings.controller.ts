@@ -1,11 +1,14 @@
-import { Controller, Get, Patch, Param, Body, Req } from '@nestjs/common';
+import { Controller, Get, Patch, Param, Body, Req, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
+import { GlobalAuthGuard } from '../auth/global-auth.guard';
+import { RolesGuard } from '../auth/roles.guard';
 import { Roles } from '../auth/roles.decorator';
 import { Role } from '../auth/types/role.enum';
 import { SettingsService } from './settings.service';
 
 @ApiTags('Settings')
 @Controller('settings')
+@UseGuards(GlobalAuthGuard, RolesGuard)
 export class SettingsController {
   constructor(private readonly service: SettingsService) {}
 

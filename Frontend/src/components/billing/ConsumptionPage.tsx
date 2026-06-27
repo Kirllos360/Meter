@@ -36,7 +36,7 @@ export default function ConsumptionPage() {
 
   return (
     <div>
-      <PageHeader title={t('billing.consumption.title')} subtitle="Monitor and analyze consumption trends" />
+      <PageHeader title={t('billing.consumption.title')} subtitle={t('billing.consumption.subtitle')} />
 
       <div className="flex gap-2 mb-6">
         {['daily', 'monthly', 'custom'].map((p) => (

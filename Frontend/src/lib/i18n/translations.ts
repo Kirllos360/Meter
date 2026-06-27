@@ -76,6 +76,8 @@ const en: TranslationDict = {
     alertsSummary: 'Alert Summary',
     recentActivity: 'Recent Activity',
     recentActivitySubtitle: 'Latest system events and actions',
+    solarTitle: 'Solar Dashboard',
+    solarSubtitle: 'Solar energy production, consumption, credits, and billing overview',
     vsLastMonth: 'vs last month',
     noData: 'No dashboard data available',
     consumptionTrends: 'Consumption Trends',
@@ -164,6 +166,7 @@ const en: TranslationDict = {
   },
   meters: {
     title: 'Meters',
+    subtitle: 'Manage water and electricity meters',
     search: 'Search meters...',
     add: 'Add Meter',
     edit: 'Edit Meter',
@@ -209,6 +212,7 @@ const en: TranslationDict = {
     },
     assign: {
       title: 'Assign Meter',
+      subtitle: 'Follow the steps to assign a meter to a unit',
       customer: 'Customer',
       location: 'Location',
       notes: 'Notes',
@@ -217,6 +221,7 @@ const en: TranslationDict = {
     },
     replace: {
       title: 'Replace Meter',
+      subtitle: 'Replace an existing meter with a new one',
       newMeter: 'New Meter',
       reason: 'Reason',
       submit: 'Replace',
@@ -224,6 +229,7 @@ const en: TranslationDict = {
     },
     terminate: {
       title: 'Terminate Meter',
+      subtitle: 'Permanently deactivate a meter connection',
       reason: 'Reason',
       finalReading: 'Final Reading',
       submit: 'Terminate',
@@ -233,6 +239,7 @@ const en: TranslationDict = {
   },
   simCards: {
     title: 'SIM Cards',
+    subtitle: 'Manage SIM cards and IP assignments for meters',
     search: 'Search SIM cards...',
     add: 'Add SIM Card',
     iccid: 'ICCID',
@@ -243,9 +250,11 @@ const en: TranslationDict = {
   },
   readings: {
     title: 'Readings',
+    subtitle: 'View and manage all meter readings',
     search: 'Search readings...',
     add: 'Add Reading',
     newReading: 'New Reading',
+    newReadingSubtitle: 'Submit a new manual meter reading',
     meter: 'Meter',
     value: 'Reading Value',
     date: 'Date',
@@ -270,6 +279,7 @@ const en: TranslationDict = {
   billing: {
     invoices: {
       title: 'Invoices',
+      subtitle: 'Manage billing invoices and payments',
       search: 'Search invoices...',
       generate: 'Generate Invoices',
       preview: 'Preview Invoice',
@@ -300,6 +310,7 @@ const en: TranslationDict = {
     },
     payments: {
       title: 'Payments',
+      subtitle: 'Track and manage payment collections',
       search: 'Search payments...',
       record: 'Record Payment',
       receipt: 'Print Receipt',
@@ -324,6 +335,7 @@ const en: TranslationDict = {
     },
     balances: {
       title: 'Balances',
+      subtitle: 'View outstanding balances and aging analysis',
       water: 'Water',
       electric: 'Electric',
       solar: 'Solar',
@@ -340,6 +352,7 @@ const en: TranslationDict = {
     },
     consumption: {
       title: 'Consumption',
+      subtitle: 'Monitor and analyze consumption trends',
       period: 'Period',
       previousReading: 'Previous Reading',
       currentReading: 'Current Reading',
@@ -350,6 +363,7 @@ const en: TranslationDict = {
     },
     waterBalance: {
       title: 'Water Balance',
+      subtitle: 'Track water balance between main and child meters',
       mainMeter: 'Main Meter',
       subMeters: 'Sub-Meters',
       variance: 'Variance',
@@ -358,6 +372,8 @@ const en: TranslationDict = {
     },
     tariffs: {
       title: 'Tariffs',
+      studioTitle: 'Tariff Studio',
+      studioSubtitle: 'Enterprise tariff management — 7 utilities, 5 charge modes, simulation',
       name: 'Name',
       type: 'Type',
       steps: 'Steps',
@@ -392,6 +408,7 @@ const en: TranslationDict = {
   },
   alerts: {
     title: 'Alerts',
+    subtitle: 'Monitor and manage system alerts',
     search: 'Search alerts...',
     acknowledge: 'Acknowledge',
     severity: 'Severity',
@@ -407,6 +424,7 @@ const en: TranslationDict = {
   },
   tickets: {
     title: 'Tickets',
+    subtitle: 'Manage support tickets',
     search: 'Search tickets...',
     create: 'Create Ticket',
     kanban: 'Kanban Board',
@@ -422,6 +440,7 @@ const en: TranslationDict = {
   },
   support: {
     title: 'Customer Support',
+    subtitle: 'Customer support center',
     quickLookup: 'Quick Lookup',
     customerInfo: 'Customer Info',
     balance: 'Balance',
@@ -432,6 +451,7 @@ const en: TranslationDict = {
   },
   settings: {
     title: 'Settings',
+    subtitle: 'System configuration — Users, Areas, Permissions, Unit Types',
     profile: 'Profile',
     preferences: 'Preferences',
     language: 'Language',
@@ -494,10 +514,45 @@ const en: TranslationDict = {
     upload: 'Upload',
     print: 'Print',
     refresh: 'Refresh',
+    create: 'Create',
+    unassigned: 'Unassigned',
     moreInfo: 'More Info',
     help: 'Help',
     arabic: 'العربية',
     english: 'English',
+  },
+  workspace: {
+    title: 'Workspace',
+    subtitle: 'Team collaboration hub',
+    completedToday: 'Completed Today',
+    completionRate: 'Completion Rate',
+    teamMembers: 'Team Members',
+    myTasks: 'My Tasks',
+    newTask: 'New',
+    noPendingTasks: 'No pending tasks',
+    recentActivity: 'Recent Activity',
+    noActivityYet: 'No activity yet',
+    teamProgress: 'Team Progress',
+    member: 'Member',
+    role: 'Role',
+    email: 'Email',
+    newTaskDialog: 'New Task',
+    taskTitle: 'Task title',
+    taskDescription: 'Description',
+    assignTo: 'Assign to (user ID)',
+    taskCreated: 'Task created',
+  },
+  upload: {
+    title: 'Upload Center',
+    subtitle: 'Bulk import from Excel templates',
+  },
+  settlement: {
+    title: 'Settlements',
+    subtitle: 'Manage settlement invoices and adjustments',
+  },
+  admin: {
+    title: 'Database Administration',
+    subtitle: 'Browse, add, edit, delete records with dependency checking',
   },
   locations: {
     title: 'Locations',
@@ -594,6 +649,8 @@ const ar: TranslationDict = {
     alertsSummary: 'ملخص التنبيهات',
     recentActivity: 'النشاط الأخير',
     recentActivitySubtitle: 'أحداث وإجراءات النظام الأخيرة',
+    solarTitle: 'لوحة الطاقة الشمسية',
+    solarSubtitle: 'نظرة عامة على إنتاج واستهلاك وائتمان وفوترة الطاقة الشمسية',
     vsLastMonth: 'مقارنة بالشهر الماضي',
     noData: 'لا توجد بيانات للوحة التحكم',
     consumptionTrends: 'اتجاهات الاستهلاك',
@@ -682,6 +739,7 @@ const ar: TranslationDict = {
   },
   meters: {
     title: 'العدادات',
+    subtitle: 'إدارة عدادات المياه والكهرباء',
     search: 'البحث في العدادات...',
     add: 'إضافة عداد',
     edit: 'تعديل العداد',
@@ -727,6 +785,7 @@ const ar: TranslationDict = {
     },
     assign: {
       title: 'تعيين عداد',
+      subtitle: 'اتبع الخطوات لتعيين عداد لوحدة',
       customer: 'العميل',
       location: 'الموقع',
       notes: 'ملاحظات',
@@ -735,6 +794,7 @@ const ar: TranslationDict = {
     },
     replace: {
       title: 'استبدال عداد',
+      subtitle: 'استبدال عداد موجود بآخر جديد',
       newMeter: 'العداد الجديد',
       reason: 'السبب',
       submit: 'استبدال',
@@ -742,6 +802,7 @@ const ar: TranslationDict = {
     },
     terminate: {
       title: 'إنهاء العداد',
+      subtitle: 'إلغاء تنشيط اتصال العداد بشكل دائم',
       reason: 'السبب',
       finalReading: 'القراءة النهائية',
       submit: 'إنهاء',
@@ -751,6 +812,7 @@ const ar: TranslationDict = {
   },
   simCards: {
     title: 'شرائح الاتصال',
+    subtitle: 'إدارة شرائح الاتصال وتعيينات IP للعدادات',
     search: 'البحث في شرائح الاتصال...',
     add: 'إضافة شريحة',
     iccid: 'ICCID',
@@ -761,9 +823,11 @@ const ar: TranslationDict = {
   },
   readings: {
     title: 'القراءات',
+    subtitle: 'عرض وإدارة جميع قراءات العدادات',
     search: 'البحث في القراءات...',
     add: 'إضافة قراءة',
     newReading: 'قراءة جديدة',
+    newReadingSubtitle: 'إرسال قراءة عداد يدوية جديدة',
     meter: 'العداد',
     value: 'قيمة القراءة',
     date: 'التاريخ',
@@ -788,6 +852,7 @@ const ar: TranslationDict = {
   billing: {
     invoices: {
       title: 'الفواتير',
+      subtitle: 'إدارة فواتير الفوترة والمدفوعات',
       search: 'البحث في الفواتير...',
       generate: 'إنشاء الفواتير',
       preview: 'معاينة الفاتورة',
@@ -818,6 +883,7 @@ const ar: TranslationDict = {
     },
     payments: {
       title: 'المدفوعات',
+      subtitle: 'تتبع وإدارة تحصيل المدفوعات',
       search: 'البحث في المدفوعات...',
       record: 'تسجيل دفعة',
       receipt: 'طباعة الإيصال',
@@ -842,6 +908,7 @@ const ar: TranslationDict = {
     },
     balances: {
       title: 'الأرصدة',
+      subtitle: 'عرض الأرصدة المستحقة وتحليل التقادم',
       water: 'المياه',
       electric: 'الكهرباء',
       solar: 'الطاقة الشمسية',
@@ -858,6 +925,7 @@ const ar: TranslationDict = {
     },
     consumption: {
       title: 'الاستهلاك',
+      subtitle: 'مراقبة وتحليل اتجاهات الاستهلاك',
       period: 'الفترة',
       previousReading: 'القراءة السابقة',
       currentReading: 'القراءة الحالية',
@@ -868,6 +936,7 @@ const ar: TranslationDict = {
     },
     waterBalance: {
       title: 'رصيد المياه',
+      subtitle: 'تتبع توازن المياه بين العدادات الرئيسية والفرعية',
       mainMeter: 'العداد الرئيسي',
       subMeters: 'العدادات الفرعية',
       variance: 'الفروقات',
@@ -876,6 +945,8 @@ const ar: TranslationDict = {
     },
     tariffs: {
       title: 'التعريفات',
+      studioTitle: 'استوديو التعريفات',
+      studioSubtitle: 'إدارة التعريفات المؤسسية - 7 مرافق، 5 أوضاع شحن، محاكاة',
       name: 'الاسم',
       type: 'النوع',
       steps: 'الشرائح',
@@ -910,6 +981,7 @@ const ar: TranslationDict = {
   },
   alerts: {
     title: 'التنبيهات',
+    subtitle: 'مراقبة وإدارة تنبيهات النظام',
     search: 'البحث في التنبيهات...',
     acknowledge: 'تأكيد',
     severity: 'الشدة',
@@ -925,6 +997,7 @@ const ar: TranslationDict = {
   },
   tickets: {
     title: 'التذاكر',
+    subtitle: 'إدارة تذاكر الدعم',
     search: 'البحث في التذاكر...',
     create: 'إنشاء تذكرة',
     kanban: 'لوحة كانبان',
@@ -940,6 +1013,7 @@ const ar: TranslationDict = {
   },
   support: {
     title: 'دعم العملاء',
+    subtitle: 'مركز دعم العملاء',
     quickLookup: 'بحث سريع',
     customerInfo: 'معلومات العميل',
     balance: 'الرصيد',
@@ -950,6 +1024,7 @@ const ar: TranslationDict = {
   },
   settings: {
     title: 'الإعدادات',
+    subtitle: 'تكوين النظام - المستخدمين والمناطق والأذونات وأنواع الوحدات',
     profile: 'الملف الشخصي',
     preferences: 'التفضيلات',
     language: 'اللغة',
@@ -1000,6 +1075,8 @@ const ar: TranslationDict = {
     minLength: 'الحد الأدنى {n} أحرف',
     maxLength: 'الحد الأقصى {n} أحرف',
     yes: 'نعم',
+    create: 'إنشاء',
+    unassigned: 'غير معين',
     no: 'لا',
     all: 'الكل',
     today: 'اليوم',
@@ -1016,6 +1093,39 @@ const ar: TranslationDict = {
     help: 'مساعدة',
     arabic: 'العربية',
     english: 'English',
+  },
+  workspace: {
+    title: 'مساحة العمل',
+    subtitle: 'مركز التعاون الجماعي',
+    completedToday: 'تم اليوم',
+    completionRate: 'معدل الإنجاز',
+    teamMembers: 'أعضاء الفريق',
+    myTasks: 'مهامي',
+    newTask: 'جديد',
+    noPendingTasks: 'لا توجد مهام معلقة',
+    recentActivity: 'النشاط الأخير',
+    noActivityYet: 'لا يوجد نشاط بعد',
+    teamProgress: 'تقدم الفريق',
+    member: 'عضو',
+    role: 'الدور',
+    email: 'البريد',
+    newTaskDialog: 'مهمة جديدة',
+    taskTitle: 'عنوان المهمة',
+    taskDescription: 'الوصف',
+    assignTo: 'تعيين إلى (معرف المستخدم)',
+    taskCreated: 'تم إنشاء المهمة',
+  },
+  upload: {
+    title: 'مركز الرفع',
+    subtitle: 'استيراد مجمع من قوالب Excel',
+  },
+  settlement: {
+    title: 'التسويات',
+    subtitle: 'إدارة فواتير التسوية والتعديلات',
+  },
+  admin: {
+    title: 'إدارة قاعدة البيانات',
+    subtitle: 'تصفح وإضافة وتعديل وحذف السجلات مع التحقق من التبعيات',
   },
   locations: {
     title: 'المواقع',

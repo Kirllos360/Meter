@@ -10,6 +10,8 @@ import { PermissionsGuard } from './permissions.guard';
 import { AuthController } from './auth.controller';
 import { RefreshTokenService } from './refresh-token.service';
 import { PasswordPolicyService } from './password-policy.service';
+import { UserAccessService } from './user-access.service';
+import { ProjectAccessGuard } from './project-access.guard';
 
 @Module({
   imports: [
@@ -33,6 +35,8 @@ import { PasswordPolicyService } from './password-policy.service';
     PermissionsGuard,
     RefreshTokenService,
     PasswordPolicyService,
+    UserAccessService,
+    ProjectAccessGuard,
   ],
   exports: [
     PassportModule,
@@ -41,7 +45,9 @@ import { PasswordPolicyService } from './password-policy.service';
     RolesGuard,
     PermissionsGuard,
     RefreshTokenService,
-    PasswordPolicyService
+    PasswordPolicyService,
+    UserAccessService,
+    ProjectAccessGuard,
   ]
 })
 export class AuthModule {}

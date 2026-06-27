@@ -89,14 +89,33 @@ export class TariffEngineService {
           rate = lineAmount;
           break;
 
+        case 'TOU':
+          // Time-of-Use: details contain peak/off-peak/shoulder rates
+          // stepFrom = hour start, stepTo = hour end (0-23), stepRate = rate per unit
+          if (charge.details.length > 0) {
+            const hour = effectiveDate.getHours();
+            let activeDetail = null;
+            for (const d of charge.details) {
+              const from = Number(d.stepFrom ?? 0);
+              const to = Number(d.stepTo ?? 23);
+              if (hour >= from && hour < to) { activeDetail = d; break; }
+            }
+            if (!activeDetail) activeDetail = charge.details[0]; // fallback to first
+            rate = Number(activeDetail.stepRate ?? charge.rateAmount ?? 0);
+            lineAmount = rate * consumption;
+            qty = consumption;
+          }
+          break;
+
         case 'ZERO':
-          lineAmount = 0;
-          qty = 0;
-          rate = 0;
+          lineAmount = Number(charge.rateAmount ?? charge.minCharge ?? 0);
+          if (lineAmount <= 0) lineAmount = Number(charge.rateAmount ?? 9000);
+          qty = 1;
+          rate = lineAmount;
           break;
       }
 
-      if (lineAmount > 0 || charge.chargeMode !== 'ZERO') {
+      if (lineAmount > 0 || charge.chargeMode !== 'ZERO' || consumption <= 0) {
         const chargeGroup = this.chargeModeToGroup(charge.chargeMode, charge.settlementType);
         lines.push({
           chargeCode: charge.chargeCode,

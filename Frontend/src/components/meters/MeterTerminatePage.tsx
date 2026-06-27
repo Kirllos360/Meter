@@ -66,7 +66,7 @@ export default function MeterTerminatePage() {
 
   return (
     <div>
-      <PageHeader title={t('meters.terminate.title')} subtitle="Permanently deactivate a meter connection" />
+      <PageHeader title={t('meters.terminate.title')} subtitle={t('meters.terminate.subtitle')} />
 
       <div className="max-w-2xl space-y-6">
         {/* Meter Selector */}

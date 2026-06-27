@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Patch, Delete, Param, Body, ParseUUIDPipe, UseGuards, Query, HttpCode, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Delete, Param, Body, ParseUUIDPipe, UseGuards, Query, HttpCode, HttpStatus, Req, ForbiddenException } from '@nestjs/common';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from '../auth/roles.guard';
@@ -23,8 +23,20 @@ export class PaymentsController {
   @ApiOperation({ summary: 'List payments' })
   async findAll(
     @Query('projectId') projectId?: string,
-    @Query('customerId') customerId?: string
+    @Query('customerId') customerId?: string,
+    @Req() req?: any
   ) {
+    if (req?.areaId && req?.userAccess?.projectIds?.length) {
+      if (projectId && !req.userAccess.projectIds.includes(projectId)) {
+        throw new ForbiddenException('Access denied for this project in the current area');
+      }
+      if (!projectId) {
+        const results = await Promise.all(
+          (req.userAccess.projectIds as string[]).map((p: string) => this.paymentsService.findAll(p, customerId))
+        );
+        return results.flat();
+      }
+    }
     return this.paymentsService.findAll(projectId, customerId);
   }
 

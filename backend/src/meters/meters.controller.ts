@@ -11,13 +11,16 @@ import {
   UseGuards,
   HttpCode,
   HttpStatus,
-  Req
+  Req,
+  ForbiddenException
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from '../auth/roles.guard';
 import { Roles } from '../auth/roles.decorator';
 import { Role } from '../auth/types/role.enum';
 import { Audit } from '../audit/audit.decorator';
+import { UserAccessService } from '../auth/user-access.service';
+import { PrismaService } from '../common/database/prisma.service';
 import { MetersService } from './meters.service';
 import { NotificationsService } from '../notifications/notifications.service';
 import { AssignMeterDto } from './dto/assign-meter.dto';
@@ -32,7 +35,16 @@ export class MetersController {
   constructor(
     private readonly metersService: MetersService,
     private readonly notificationsService: NotificationsService,
+    private readonly userAccess: UserAccessService,
+    private readonly prisma: PrismaService,
   ) {}
+
+  private async validateProject(projectId: string, req: any): Promise<void> {
+    if (req.user?.role !== 'super_admin') {
+      try { await this.userAccess.requireProjectAccess(req.user?.userId, req.user?.role, projectId); }
+      catch { throw new ForbiddenException('Access denied for this project'); }
+    }
+  }
 
   @Post()
   @Roles(Role.OPERATOR, Role.ADMIN, Role.SUPER_ADMIN)
@@ -51,7 +63,39 @@ export class MetersController {
     Role.FINANCE,
     Role.SUPPORT
   )
-  async findAll(@Query() query: QueryMeterDto) {
+  async findAll(@Query() query: QueryMeterDto, @Req() req: any) {
+    if (!query.projectId) {
+      const headerProjectId = req.headers['x-project-id'] as string | undefined;
+      if (headerProjectId) query.projectId = headerProjectId;
+    }
+    if (query.projectId) {
+      await this.validateProject(query.projectId, req);
+      if (req.areaId && req.userAccess?.projectIds?.length && !req.userAccess.projectIds.includes(query.projectId)) {
+        throw new ForbiddenException('Access denied for this project in the current area');
+      }
+      return this.metersService.findAll(query);
+    }
+    if (req.user?.role !== 'super_admin') {
+      const access = await this.userAccess.resolveAccess(req.user?.userId, req.user?.role);
+      const projects: string[] = req.areaId && req.userAccess?.projectIds?.length ? req.userAccess.projectIds : access.projects;
+      if (projects.length === 0) return [];
+      const results = await Promise.all(
+        projects.map((p: string) => this.metersService.findAll({ ...query, projectId: p }))
+      );
+      return results.flat();
+    }
+    if (req.areaId) {
+      const areaProjects = await this.prisma.coreProject.findMany({
+        where: { areaId: req.areaId, isActive: true },
+        select: { id: true }
+      });
+      const projectIds = areaProjects.map(p => p.id);
+      if (projectIds.length === 0) return [];
+      const results = await Promise.all(
+        projectIds.map((p: string) => this.metersService.findAll({ ...query, projectId: p }))
+      );
+      return results.flat();
+    }
     return this.metersService.findAll(query);
   }
 
@@ -77,6 +121,17 @@ export class MetersController {
     @Req() req: { user: { userId: string } }
   ) {
     return this.metersService.update(id, dto, req.user.userId);
+  }
+
+  @Post(':id/transition')
+  @Roles(Role.OPERATOR, Role.ADMIN, Role.SUPER_ADMIN)
+  @Audit('meter', 'state_transition')
+  async transitionState(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: { newStatus: string },
+    @Req() req: { user: { userId: string } }
+  ) {
+    return this.metersService.transitionState(id, dto.newStatus, req.user.userId);
   }
 
   @Delete(':id')

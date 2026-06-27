@@ -1,12 +1,11 @@
 import { Module } from '@nestjs/common';
 import { DatabaseModule } from '../common/database/database.module';
+import { AuthModule } from '../auth/auth.module';
 import { CollectionsController } from './collections.controller';
-import { PaymentReceiptService } from '../payments/payment-receipt.service';
+import { PaymentsModule } from '../payments/payments.module';
 
 @Module({
-  imports: [DatabaseModule],
+  imports: [DatabaseModule, PaymentsModule, AuthModule],
   controllers: [CollectionsController],
-  providers: [PaymentReceiptService],
-  exports: [PaymentReceiptService],
 })
 export class CollectionsModule {}
