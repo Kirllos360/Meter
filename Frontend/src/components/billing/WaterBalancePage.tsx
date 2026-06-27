@@ -27,16 +27,17 @@ const childMeters = [
 
 export default function WaterBalancePage() {
   const t = useT();
-  const [selectedProject, setSelectedProject] = useState('PRJ-001');
+  const { data: projects = [] } = useProjectsList();
+  const [selectedProject, setSelectedProject] = useState('');
   const from = '2026-01-01';
   const to = '2026-01-31';
   const { data: apiData } = useWaterBalance(selectedProject, from, to);
-  const latest = apiData ?? null as any;
-  const exceedsThreshold = latest.coveragePercentage !== undefined ? latest.coveragePercentage < 80 : latest.differencePercent > latest.threshold;
+  const latest = apiData ?? { mainMeterConsumption: 0, childMetersTotal: 0, difference: 0, differencePercent: 0, threshold: 10, coveragePercentage: 100 } as any;
+  const exceedsThreshold = latest.coveragePercentage !== undefined ? latest.coveragePercentage < 80 : (latest.differencePercent > latest.threshold);
 
   return (
     <div>
-      <PageHeader title={t('billing.waterBalance.title')} subtitle="Track water balance between main and child meters" />
+      <PageHeader title={t('billing.waterBalance.title')} subtitle={t('billing.waterBalance.subtitle')} />
 
       {/* Selector */}
       <div className="mb-6 flex items-center gap-4">

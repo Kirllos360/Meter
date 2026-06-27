@@ -1,18 +1,49 @@
-import { Controller, Get, Post, Param, Query, Res, Req, ParseUUIDPipe } from '@nestjs/common';
+import { Controller, Get, Post, Param, Query, Res, Req, ParseUUIDPipe, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { Response } from 'express';
+import { GlobalAuthGuard } from '../auth/global-auth.guard';
+import { RolesGuard } from '../auth/roles.guard';
 import { Roles } from '../auth/roles.decorator';
 import { Role } from '../auth/types/role.enum';
 import { PrismaService } from '../common/database/prisma.service';
 import { PaymentReceiptService } from '../payments/payment-receipt.service';
+import { UserAccessService } from '../auth/user-access.service';
 
 @ApiTags('Collections')
 @Controller('collections')
+@UseGuards(GlobalAuthGuard, RolesGuard)
 export class CollectionsController {
   constructor(
     private readonly prisma: PrismaService,
     private readonly receiptService: PaymentReceiptService,
+    private readonly userAccess: UserAccessService,
   ) {}
+
+  private async resolveProjectFilter(user?: any): Promise<any> {
+    if (!user || user.role === 'super_admin') return {};
+    const access = await this.userAccess.resolveAccess(user.userId, user.role);
+    if (access.projects.length === 0) return { id: '__none' }; // impossible filter
+    return { projectId: { in: access.projects } };
+  }
+
+  @Get('aging-breakdown')
+  @Roles(Role.OPERATOR, Role.ADMIN, Role.SUPER_ADMIN, Role.FINANCE)
+  @ApiOperation({ summary: 'Aging breakdown by bucket' })
+  async getAgingBreakdown(@Req() req?: any) {
+    const pf = await this.resolveProjectFilter(req?.user);
+    const invoices = await this.prisma.invoice.findMany({ where: { ...pf, status: { not: 'cancelled' } }, take: 500 }).catch(() => []);
+    const buckets = { '0-30': 0, '31-60': 0, '61-90': 0, '90+': 0 };
+    for (const inv of invoices) {
+      const open = Number(inv.remainingAmount);
+      if (open <= 0) continue;
+      const age = inv.issuedAt ? Math.floor((Date.now() - inv.issuedAt.getTime()) / 86400000) : 0;
+      if (age <= 30) buckets['0-30'] += open;
+      else if (age <= 60) buckets['31-60'] += open;
+      else if (age <= 90) buckets['61-90'] += open;
+      else buckets['90+'] += open;
+    }
+    return { buckets, total: Object.values(buckets).reduce((s, v) => s + v, 0) };
+  }
 
   @Get('payments/:id/receipt')
   @Roles(Role.OPERATOR, Role.ADMIN, Role.SUPER_ADMIN, Role.FINANCE)
@@ -58,8 +89,9 @@ export class CollectionsController {
   @Get('aging')
   @Roles(Role.OPERATOR, Role.ADMIN, Role.SUPER_ADMIN)
   @ApiOperation({ summary: 'Aging summary' })
-  async getAging() {
-    const invoices = await this.prisma.invoice.findMany({ where: { status: { notIn: ['draft', 'cancelled'] } } });
+  async getAging(@Req() req?: any) {
+    const pf = await this.resolveProjectFilter(req?.user);
+    const invoices = await this.prisma.invoice.findMany({ where: { ...pf, status: { notIn: ['draft', 'cancelled'] } } });
     const now = new Date();
     const aging: Record<string, any> = { current: 0, days1to30: 0, days31to60: 0, days61to90: 0, days120plus: 0, total: 0 };
     for (const inv of invoices) {
@@ -80,18 +112,19 @@ export class CollectionsController {
   @Get('dashboard')
   @Roles(Role.OPERATOR, Role.ADMIN, Role.SUPER_ADMIN)
   @ApiOperation({ summary: 'Collection dashboard KPIs' })
-  async getDashboard() {
+  async getCollectionsDashboard(@Req() req?: any) {
+    const pf = await this.resolveProjectFilter(req?.user);
     const now = new Date();
     const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
     const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
     const [totalInvoiced, totalPaid, todayPayments, monthPayments, overdueInvoices, pendingInvoices] = await Promise.all([
-      this.prisma.invoice.aggregate({ _sum: { totalAmount: true }, where: { status: { notIn: ['draft', 'cancelled'] } } }),
-      this.prisma.payment.aggregate({ _sum: { amount: true }, where: { status: 'confirmed' } }),
-      this.prisma.payment.aggregate({ _sum: { amount: true }, where: { status: 'confirmed', paymentDate: { gte: todayStart } } }),
-      this.prisma.payment.aggregate({ _sum: { amount: true }, where: { status: 'confirmed', paymentDate: { gte: monthStart } } }),
-      this.prisma.invoice.count({ where: { status: 'overdue' } }),
-      this.prisma.invoice.count({ where: { status: 'issued' } }),
+      this.prisma.invoice.aggregate({ _sum: { totalAmount: true }, where: { ...pf, status: { notIn: ['draft', 'cancelled'] } } }),
+      this.prisma.payment.aggregate({ _sum: { amount: true }, where: { ...pf, status: 'confirmed' } }),
+      this.prisma.payment.aggregate({ _sum: { amount: true }, where: { ...pf, status: 'confirmed', paymentDate: { gte: todayStart } } }),
+      this.prisma.payment.aggregate({ _sum: { amount: true }, where: { ...pf, status: 'confirmed', paymentDate: { gte: monthStart } } }),
+      this.prisma.invoice.count({ where: { ...pf, status: 'overdue' } }),
+      this.prisma.invoice.count({ where: { ...pf, status: 'issued' } }),
     ]);
 
     const totalInv = Number(totalInvoiced._sum.totalAmount ?? 0);

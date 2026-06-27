@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { usePageStore } from '@/lib/router-store';
 import { PageHeader, StatCard } from '@/components/shared/PageHelpers';
 import { QueryBoundary } from '@/components/shared/QueryBoundary';
@@ -37,7 +37,7 @@ const INITIAL_FORM: CreateLocationPayload = {
 
 export default function LocationsPage() {
   const t = useT();
-  const [selectedProject, setSelectedProject] = useState<string>('PRJ-001');
+  const [selectedProject, setSelectedProject] = useState<string>('');
   const [expandedBuilding, setExpandedBuilding] = useState<string | null>(null);
   const [dialogMode, setDialogMode] = useState<DialogMode>(null);
   const [form, setForm] = useState<CreateLocationPayload>(INITIAL_FORM);
@@ -45,6 +45,13 @@ export default function LocationsPage() {
   const [deleteTarget, setDeleteTarget] = useState<Location | null>(null);
 
   const { data: apiProjects, isLoading, isError, error } = useProjectsList();
+
+  useEffect(() => {
+    if (!selectedProject) {
+      const stored = localStorage.getItem('selected-project');
+      if (stored) setSelectedProject(stored);
+    }
+  }, []);
   const projects = apiProjects ?? [];
   const { data: apiLocations, isLoading: locLoading } = useLocationsList(selectedProject);
   const createMutation = useCreateLocation(selectedProject);

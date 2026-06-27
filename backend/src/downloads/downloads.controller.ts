@@ -1,6 +1,8 @@
-import { Controller, Get, Post, Param, Body, Query, ParseUUIDPipe, Res, HttpException } from '@nestjs/common';
+import { Controller, Get, Post, Param, Body, Query, ParseUUIDPipe, Res, HttpException, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
 import { Response } from 'express';
+import { GlobalAuthGuard } from '../auth/global-auth.guard';
+import { RolesGuard } from '../auth/roles.guard';
 import { Roles } from '../auth/roles.decorator';
 import { Role } from '../auth/types/role.enum';
 import { PrismaService } from '../common/database/prisma.service';
@@ -8,6 +10,7 @@ import { DownloadsService } from './downloads.service';
 
 @ApiTags('Downloads')
 @Controller('downloads')
+@UseGuards(GlobalAuthGuard, RolesGuard)
 export class DownloadsController {
   constructor(
     private readonly downloadsService: DownloadsService,

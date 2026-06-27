@@ -9,12 +9,16 @@ export class UploadService {
     return this.prisma.uploadHistory.findMany({ where: { entityType }, orderBy: { createdAt: 'desc' }, take: 50 }).catch(() => []);
   }
 
+  async logHistory(type: string, success: number, failed: number, userId: string) {
+    return this.prisma.uploadHistory.create({ data: { entityType: type, success, failed, totalRows: success + failed, fileName: type + '-import', createdBy: userId } }).catch(() => null);
+  }
+
   async importCustomers(rows: any[], userId: string) {
     let success = 0; let failed = 0; const errors: string[] = [];
     for (const row of rows) {
       try {
         if (!row.customerCode || !row.name) { failed++; errors.push(`Row ${success + failed + 1}: Missing required fields`); continue; }
-        await this.prisma.customer.create({ data: { customerCode: row.customerCode, name: row.name, phone: row.phone ?? '', email: row.email ?? '', customerType: row.customerType ?? 'individual', nationalOrCommercialId: row.nationalOrCommercialId ?? row.customerCode, projectId: row.projectId, createdBy: userId, updatedBy: userId } });
+        await (this.prisma.customer.create as any)({ data: { customerCode: row.customerCode, name: row.name, phone: row.phone ?? '', email: row.email ?? '', customerType: row.customerType ?? 'individual', projectId: row.projectId, createdBy: userId, updatedBy: userId } });
         success++;
       } catch (e: any) { failed++; errors.push(`Row ${success + failed}: ${e.message}`); }
     }

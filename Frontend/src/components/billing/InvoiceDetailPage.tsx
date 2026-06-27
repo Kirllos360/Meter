@@ -2,21 +2,31 @@
 
 import { usePageStore } from '@/lib/router-store';
 import { useInvoiceDetail, useIssueInvoice } from '@/hooks/use-invoices';
+import { useState } from 'react';
 import { BackButton, formatCurrency, formatDate } from '@/components/shared/PageHelpers';
 import { StatusBadge } from '@/components/shared/StatusBadge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 import { Download, Pencil, CreditCard, XCircle } from 'lucide-react';
 import { useT } from '@/lib/i18n/context';
 import { downloadFile } from '@/lib/download';
+import { apiPatch, apiPost, apiDelete } from '@/lib/api';
 
 export default function InvoiceDetailPage() {
   const t = useT();
   const { pageParams } = usePageStore();
-  const { data: apiInvoice } = useInvoiceDetail(pageParams.id ?? '');
+  const { data: apiInvoice, refetch } = useInvoiceDetail(pageParams.id ?? '');
   const invoice = apiInvoice ?? undefined;
   const issueMutation = useIssueInvoice();
+  const [editOpen, setEditOpen] = useState(false);
+  const [cancelOpen, setCancelOpen] = useState(false);
+  const [paymentOpen, setPaymentOpen] = useState(false);
+  const [editNote, setEditNote] = useState('');
+  const [paymentAmount, setPaymentAmount] = useState('');
 
   if (!invoice) {
     return (
@@ -53,15 +63,15 @@ export default function InvoiceDetailPage() {
           </div>
           <div className="flex gap-2 flex-wrap">
             {invoice.status === 'draft' && (
-              <Button variant="outline" size="sm" className="gap-1" onClick={() => toast.info('Edit invoice')}><Pencil className="h-3.5 w-3.5" /> Edit</Button>
+              <Button variant="outline" size="sm" className="gap-1" onClick={() => setEditOpen(true)}><Pencil className="h-3.5 w-3.5" /> Edit</Button>
             )}
             {invoice.status === 'draft' && (
-              <Button size="sm" className="gap-1" onClick={() => issueMutation.mutate(invoice.id, { onSuccess: () => toast.success('Invoice issued'), onError: () => toast.error('Failed to issue invoice') })}><CreditCard className="h-3.5 w-3.5" /> Issue</Button>
+              <Button size="sm" className="gap-1" onClick={() => issueMutation.mutate(invoice.id, { onSuccess: () => { toast.success('Invoice issued'); refetch(); }, onError: () => toast.error('Failed to issue invoice') })}><CreditCard className="h-3.5 w-3.5" /> Issue</Button>
             )}
-            <Button variant="outline" size="sm" className="gap-1" onClick={() => toast.info('Record payment')}><CreditCard className="h-3.5 w-3.5" /> Record Payment</Button>
+            <Button variant="outline" size="sm" className="gap-1" onClick={() => setPaymentOpen(true)}><CreditCard className="h-3.5 w-3.5" /> Record Payment</Button>
             <Button variant="outline" size="sm" className="gap-1" onClick={() => downloadFile(`http://localhost:3001/api/v1/downloads/invoices/${invoice.id}/pdf`, `invoice-${invoice.invoiceNumber}.pdf`)}><Download className="h-3.5 w-3.5" /> {t('billing.invoices.download')}</Button>
             {invoice.status === 'draft' && (
-              <Button variant="outline" size="sm" className="gap-1 text-red-500" onClick={() => toast.info('Cancel invoice')}><XCircle className="h-3.5 w-3.5" /> Cancel</Button>
+              <Button variant="outline" size="sm" className="gap-1 text-red-500" onClick={() => setCancelOpen(true)}><XCircle className="h-3.5 w-3.5" /> Cancel</Button>
             )}
           </div>
         </div>
@@ -169,6 +179,46 @@ export default function InvoiceDetailPage() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Edit Dialog */}
+      <Dialog open={editOpen} onOpenChange={setEditOpen}>
+        <DialogContent>
+          <DialogHeader><DialogTitle>Edit Invoice</DialogTitle></DialogHeader>
+          <div className="space-y-4 py-4">
+            <div><Label>Notes</Label><Input value={editNote} onChange={e => setEditNote(e.target.value)} placeholder="Add a note" /></div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setEditOpen(false)}>Cancel</Button>
+            <Button onClick={async () => { try { await apiPatch('/invoices/' + invoice.id, { notes: editNote }); toast.success('Invoice updated'); setEditOpen(false); refetch(); } catch { toast.error('Failed to update'); } }}>Save</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Cancel Dialog */}
+      <Dialog open={cancelOpen} onOpenChange={setCancelOpen}>
+        <DialogContent>
+          <DialogHeader><DialogTitle>Cancel Invoice</DialogTitle></DialogHeader>
+          <p className="text-sm text-muted-foreground py-4">Are you sure you want to cancel invoice {invoice.invoiceNumber}? This action cannot be undone.</p>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setCancelOpen(false)}>No, keep it</Button>
+            <Button variant="destructive" onClick={async () => { try { await apiPost('/invoices/' + invoice.id + '/cancel'); toast.success('Invoice cancelled'); setCancelOpen(false); refetch(); } catch { toast.error('Failed to cancel'); } }}>Yes, Cancel Invoice</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Record Payment Dialog */}
+      <Dialog open={paymentOpen} onOpenChange={setPaymentOpen}>
+        <DialogContent>
+          <DialogHeader><DialogTitle>Record Payment</DialogTitle></DialogHeader>
+          <div className="space-y-4 py-4">
+            <div><Label>Amount ({formatCurrency(invoice.totalAmount)})</Label><Input type="number" value={paymentAmount} onChange={e => setPaymentAmount(e.target.value)} placeholder="Enter amount" /></div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setPaymentOpen(false)}>Cancel</Button>
+            <Button onClick={async () => { try { await apiPost('/payments', { invoiceId: invoice.id, amount: parseFloat(paymentAmount), projectId: invoice.projectId, customerId: invoice.customerId, method: 'cash' }); toast.success('Payment recorded'); setPaymentOpen(false); refetch(); } catch { toast.error('Failed to record payment'); } }}>Record Payment</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

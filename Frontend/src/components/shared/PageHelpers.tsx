@@ -63,8 +63,9 @@ export function EmptyState({ message }: { message?: string }) {
   );
 }
 
-export function formatCurrency(amount: number) {
-  return `EGP ${amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+export function formatCurrency(amount: number | null | undefined) {
+  if (amount == null || isNaN(Number(amount))) return 'EGP 0.00';
+  return `EGP ${Number(amount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 }
 
 export function formatDate(dateStr?: string) {

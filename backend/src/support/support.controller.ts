@@ -1,11 +1,14 @@
-import { Controller, Get, Post, Patch, Delete, Param, Body, ParseUUIDPipe, Req, HttpCode, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Patch, Delete, Param, Body, ParseUUIDPipe, Req, HttpCode, HttpStatus, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiOperation } from '@nestjs/swagger';
+import { GlobalAuthGuard } from '../auth/global-auth.guard';
+import { RolesGuard } from '../auth/roles.guard';
 import { Roles } from '../auth/roles.decorator';
 import { Role } from '../auth/types/role.enum';
 import { SupportService } from './support.service';
 
 @ApiTags('Support')
 @Controller('support')
+@UseGuards(GlobalAuthGuard, RolesGuard)
 export class SupportController {
   constructor(private readonly service: SupportService) {}
 

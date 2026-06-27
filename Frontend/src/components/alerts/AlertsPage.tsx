@@ -53,7 +53,7 @@ export default function AlertsPage() {
 
   return (
     <div>
-      <PageHeader title={t('alerts.title')} subtitle="Monitor and manage system alerts" />
+      <PageHeader title={t('alerts.title')} subtitle={t('alerts.subtitle')} />
 
       {/* Summary Cards */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">

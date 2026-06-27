@@ -13,9 +13,9 @@ export const FeatureFlags: Record<string, FeatureFlag> = {
   'billing.list': 'api',
   'invoices.list': 'api',
   'payments.list': 'api',
-  'reports.list': 'mock',
-  'alerts.list': 'mock',
-  'tickets.list': 'mock',
+  'reports.list': 'api',
+  'alerts.list': 'api',
+  'tickets.list': 'api',
 };
 
 const STORAGE_KEY = 'meter-feature-flags';

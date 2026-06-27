@@ -74,7 +74,7 @@ export default function MeterReplacePage() {
 
   return (
     <div>
-      <PageHeader title={t('meters.replace.title')} subtitle="Replace an existing meter with a new one" />
+      <PageHeader title={t('meters.replace.title')} subtitle={t('meters.replace.subtitle')} />
 
       <div className="grid md:grid-cols-2 gap-6">
         {/* Current Meter */}

@@ -22,7 +22,7 @@ export type UserRole =
   | "accountant"
   | "viewer";
 
-export type MeterType = "electricity" | "main_water" | "child_water";
+export type MeterType = "electricity" | "water_main" | "water_child" | "solar" | "gas" | "chilled_water" | "outdoor_unit";
 
 export type MeterStatus =
   | "available"
@@ -71,7 +71,7 @@ export type PaymentMethod =
 
 export type ProjectStatus = "active" | "inactive" | "completed" | "archived";
 
-export type CustomerType = "residential" | "commercial" | "government" | "industrial";
+export type CustomerType = "individual" | "company" | "tenant" | "owner";
 
 export type TicketStatus = "open" | "in_progress" | "waiting" | "resolved" | "closed";
 
@@ -166,8 +166,10 @@ export interface Customer {
   id: string;
   code: string;
   name: string;
+  nameAr?: string;
   phone: string;
   email: string;
+  nationalOrCommercialId?: string;
   customerType: CustomerType;
   projectId: string;
   projectName?: string;
@@ -186,6 +188,10 @@ export interface Meter {
   meterType: MeterType;
   brand: string;
   model: string;
+  phaseType?: string;
+  ampRating?: string;
+  diameter?: string;
+  solarEnabled?: boolean;
   projectId?: string;
   projectName?: string;
   buildingId?: string;

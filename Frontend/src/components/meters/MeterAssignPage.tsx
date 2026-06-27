@@ -83,7 +83,7 @@ export default function MeterAssignPage() {
 
   return (
     <div>
-      <PageHeader title={t('meters.assign.title')} subtitle="Follow the steps to assign a meter to a unit" />
+      <PageHeader title={t('meters.assign.title')} subtitle={t('meters.assign.subtitle')} />
       <BackButton />
 
       <div className="flex items-center gap-1 mb-8 overflow-x-auto pb-2">

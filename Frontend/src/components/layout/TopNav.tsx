@@ -18,7 +18,7 @@ import { useAuthStore, getRoleLabel, getRoleColor } from '@/lib/mock-auth';
 import { useTheme } from '@/components/layout/ThemeProvider';
 import { useT, useLocale } from '@/lib/i18n/context';
 import { useUnreadCount, useNotifications, useMarkRead, useMarkAllRead, useDeleteNotification } from '@/hooks/use-notifications';
-import { RoleSwitcher } from './RoleSwitcher';
+import { AreaProjectSwitcher } from './AreaProjectSwitcher';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -113,6 +113,10 @@ export function TopNav({ onMenuClick, onSearchClick }: TopNavProps) {
               Meter <span className="text-primary">Verse</span>
             </span>
           </div>
+          {/* Area + Project Context */}
+          <div className="hidden lg:flex items-center gap-1 ml-2 text-xs text-muted-foreground border-s border-border ps-3">
+            <AreaProjectSwitcher />
+          </div>
         </div>
 
         {/* Center: Search */}
@@ -140,11 +144,6 @@ export function TopNav({ onMenuClick, onSearchClick }: TopNavProps) {
               <TooltipContent>Search (Ctrl+K)</TooltipContent>
             </Tooltip>
           </TooltipProvider>
-
-          {/* Role Switcher - hidden on smallest screens */}
-          <div className="hidden lg:block">
-            <RoleSwitcher />
-          </div>
 
           {/* Notifications */}
           <DropdownMenu>

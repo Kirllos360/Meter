@@ -2,11 +2,8 @@
 
 import { create } from 'zustand';
 import type { User, UserRole } from '@/lib/types';
-import { mockUsers } from '@/lib/mock-data';
 import { rolePermissions } from '@/lib/navigation';
-import { setToken, clearToken } from '@/lib/api';
-
-// ---- ROLES constant ----
+import { setToken, clearToken, getToken, getCsrfToken } from '@/lib/api';
 
 export const ROLES: { value: UserRole; label: string }[] = [
   { value: 'super_admin', label: 'Super Admin' },
@@ -27,78 +24,96 @@ export const ROLES: { value: UserRole; label: string }[] = [
   { value: 'viewer', label: 'Viewer' },
 ];
 
-// ---- Auth Store ----
-
-interface AuthState {
+export interface AuthState {
   user: User | null;
   isAuthenticated: boolean;
-  login: (role: UserRole) => void;
+  restore: () => Promise<void>;
+  login: (role: UserRole) => Promise<any>;
   logout: () => void;
-  switchRole: (role: UserRole) => void;
+  switchRole: (role: UserRole) => Promise<void>;
 }
 
 export const useAuthStore = create<AuthState>((set) => ({
   user: null,
   isAuthenticated: false,
 
-  login: async (role: UserRole) => {
-    const user = mockUsers.find((u) => u.role === role) ?? mockUsers[0];
+  restore: async () => {
+    const token = getToken();
+    if (!token) {
+      set({ user: null, isAuthenticated: false });
+      return;
+    }
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001/api/v1'}/auth/dev-login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: user.id, role: user.role, name: user.name }),
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api/v1';
+      const res = await fetch(`${apiUrl}/auth/me`, {
+        headers: { Authorization: `Bearer ${token}` },
       });
-      if (res.ok) {
-        const data = await res.json();
-        setToken(data.accessToken);
-      } else {
-        setToken(`mock-token-${user.id}`);
+      if (!res.ok) {
+        clearToken();
+        set({ user: null, isAuthenticated: false });
+        return;
+      }
+      const data = await res.json();
+      if (data.valid && data.user) {
+        const savedUsername = localStorage.getItem('mp-username') || data.user.username || 'User';
+        set({
+          user: { id: data.user.id, name: savedUsername, email: '', role: data.user.role || 'viewer', phone: '', avatar: '', createdAt: '' },
+          isAuthenticated: true,
+        });
       }
     } catch {
-      setToken(`mock-token-${user.id}`);
+      // Offline — keep current state
     }
-    set({ user, isAuthenticated: true });
+  },
+
+  login: async (role: UserRole) => {
+    const savedUsername = typeof window !== 'undefined' ? localStorage.getItem('mp-username') : null;
+    const displayName = savedUsername || 'User';
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001/api/v1'}/auth/dev-login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId: displayName, role, name: displayName }),
+    });
+    if (!res.ok) throw new Error('Login failed');
+    const data = await res.json();
+    setToken(data.accessToken);
+    getCsrfToken().catch(() => {});
+    set({
+      user: { id: data.user?.id || displayName, name: displayName, email: '', role: data.user?.role || role, phone: '', avatar: '', createdAt: '' },
+      isAuthenticated: true,
+    });
+    return data;
   },
 
   logout: () => {
     clearToken();
+    localStorage.removeItem('mp-username');
+    localStorage.removeItem('user-role');
     set({ user: null, isAuthenticated: false });
   },
 
   switchRole: async (role: UserRole) => {
-    const user = mockUsers.find((u) => u.role === role) ?? mockUsers[0];
-    try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001/api/v1'}/auth/dev-login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: user.id, role: user.role, name: user.name }),
-      });
-      if (res.ok) {
-        const data = await res.json();
-        setToken(data.accessToken);
-      } else {
-        setToken(`mock-token-${user.id}`);
-      }
-    } catch {
-      setToken(`mock-token-${user.id}`);
-    }
-    set({ user, isAuthenticated: true });
+    const savedUsername = typeof window !== 'undefined' ? localStorage.getItem('mp-username') : null;
+    const displayName = savedUsername || 'User';
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001/api/v1'}/auth/dev-login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId: displayName, role, name: displayName }),
+    });
+    if (!res.ok) throw new Error('Login failed');
+    const data = await res.json();
+    setToken(data.accessToken);
+    set({
+      user: { id: data.user?.id || displayName, name: displayName, email: '', role: data.user?.role || role, phone: '', avatar: '', createdAt: '' },
+      isAuthenticated: true,
+    });
   },
 }));
 
-// ---- Helper Functions ----
-
-/**
- * Returns a human-readable label for a given role.
- */
 export function getRoleLabel(role: UserRole): string {
   return ROLES.find((r) => r.value === role)?.label ?? role;
 }
 
-/**
- * Returns Tailwind color classes for role badges.
- */
 export function getRoleColor(role: UserRole): string {
   const colors: Record<UserRole, string> = {
     super_admin: 'bg-red-500/10 text-red-700 dark:text-red-400',
@@ -121,18 +136,12 @@ export function getRoleColor(role: UserRole): string {
   return colors[role] ?? 'bg-gray-500/10 text-gray-700 dark:text-gray-400';
 }
 
-/**
- * Checks whether a role has permission to access a given navigation href.
- * Supports wildcard patterns like "meters/*" which match the parent
- * path and any child path (e.g. "meters/assign").
- */
 export function hasPermission(role: UserRole, href: string): boolean {
   const permissions = rolePermissions[role] ?? [];
   const normalizedHref = href.replace(/^\//, '');
-
   return permissions.some((perm) => {
     if (perm.endsWith('/*')) {
-      const prefix = perm.slice(0, -2); // strip "/*"
+      const prefix = perm.slice(0, -2);
       return normalizedHref === prefix || normalizedHref.startsWith(prefix + '/');
     }
     return normalizedHref === perm;

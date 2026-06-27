@@ -111,7 +111,7 @@ export default function SimCardsPage() {
 
   return (
     <div>
-      <PageHeader title={t('simCards.title')} subtitle="Manage SIM cards and IP assignments for meters" />
+      <PageHeader title={t('simCards.title')} subtitle={t('simCards.subtitle')} />
       <QueryBoundary query={simCardsQuery}>
       <SmartTable
         data={simCards}

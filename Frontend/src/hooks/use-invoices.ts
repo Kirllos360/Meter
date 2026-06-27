@@ -39,13 +39,14 @@ function mapInvoice(api: ApiInvoice): Invoice {
   const customer = mockCustomers.find((c) => c.id === api.customerId);
   const project = mockProjects.find((p) => p.id === api.projectId);
   const meter = mockMeters.find((m) => m.id === api.meterId);
+  const shortId = (id: string) => id.length > 20 ? id.substring(0, 8) + '...' : id;
   return {
     id: api.id,
     invoiceNumber: api.invoiceNumber,
     customerId: api.customerId,
-    customerName: customer?.name ?? api.customerId,
+    customerName: customer?.name ?? 'Customer ' + shortId(api.customerId),
     projectId: api.projectId,
-    projectName: project?.name ?? api.projectId,
+    projectName: project?.name ?? 'Project ' + shortId(api.projectId),
     unitId: api.unitId === 'system' ? undefined : api.unitId,
     unitNumber: undefined,
     meterSerial: meter?.serialNumber ?? api.meterId,
@@ -75,7 +76,7 @@ export function useInvoicesList(projectId?: string, customerId?: string, status?
       if (customerId) params.set('customerId', customerId);
       if (status) params.set('status', status);
       const qs = params.toString();
-      const data = await apiGet<ApiInvoice[]>(`/invoices${qs ? '?' + qs : ''}`);
+      const data = await apiGet<ApiInvoice[]>(`/billing/invoices${qs ? '?' + qs : ''}`);
       return data.map(mapInvoice);
     },
     staleTime: 30_000,
@@ -85,7 +86,7 @@ export function useInvoicesList(projectId?: string, customerId?: string, status?
 export function useIssueInvoice() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (id: string) => apiPost<{ status: string }>(`/invoices/${id}/issue`),
+    mutationFn: (id: string) => apiPost<{ status: string }>(`/billing/invoices/${id}/issue`),
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['invoices'] });
     },
@@ -96,7 +97,7 @@ export function useInvoiceDetail(id: string) {
   return useQuery({
     queryKey: ['invoice', id],
     queryFn: async () => {
-      const data = await apiGet<ApiInvoice>(`/invoices/${id}`);
+      const data = await apiGet<ApiInvoice>(`/billing/invoices/${id}`);
       return mapInvoice(data);
     },
     enabled: !!id,
