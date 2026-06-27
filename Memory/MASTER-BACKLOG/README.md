@@ -21,7 +21,7 @@ TODO → IN PROGRESS → CODE REVIEW → TESTING → READY FOR COMMIT → DONE
 ### P0 — Must Fix Before Production
 | # | Task | Status | Est. Days |
 |---|------|--------|-----------|
-| P0-001 | Wire TOU Pricing to Billing Engine | PENDING | 5 |
+| P0-001 | Wire TOU Pricing to Billing Engine | ✅ DONE | 5 |
 | P0-002 | Implement Demand Charge Calculation | PENDING | 3 |
 | P0-003 | Implement Penalty Engine | PENDING | 3 |
 | P0-004 | Add Credit/Debit Note Workflows | PENDING | 2 |

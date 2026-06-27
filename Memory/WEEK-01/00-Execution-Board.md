@@ -9,7 +9,7 @@
 
 | ID | Task | Status | Est. | Owner |
 |----|------|--------|------|-------|
-| P0-001 | Wire TOU Pricing to Billing Engine | IN PROGRESS | 5d | — |
+| P0-001 | Wire TOU Pricing to Billing Engine | ✅ DONE | 5d | — |
 | P0-002 | Implement Demand Charge Calculation | PENDING | 3d | — |
 | P0-003 | Implement Penalty Engine | PENDING | 3d | — |
 | P0-004 | Add Credit/Debit Note Workflows | PENDING | 2d | — |
