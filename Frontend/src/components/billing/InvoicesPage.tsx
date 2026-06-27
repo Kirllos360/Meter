@@ -16,6 +16,7 @@ import { StatusBadge } from '@/components/shared/StatusBadge';
 import { PageHeader, formatCurrency, formatDate } from '@/components/shared/PageHelpers';
 import { cn } from '@/lib/utils';
 import { useT } from '@/lib/i18n/context';
+import { QueryBoundary } from '@/components/shared/QueryBoundary';
 import { ProtectedAction } from '@/components/shared/ProtectedAction';
 import { downloadFile } from '@/lib/download';
 import { apiPatch, apiPost } from '@/lib/api';
@@ -23,7 +24,7 @@ import { apiPatch, apiPost } from '@/lib/api';
 export default function InvoicesPage() {
   const t = useT();
   const { navigate } = usePageStore();
-  const { data: apiInvoices, refetch } = useInvoicesList();
+  const { data: apiInvoices, isLoading, isError, error, refetch } = useInvoicesList();
   const invoices = apiInvoices ?? [];
   const { data: apiProjects } = useProjectsList();
   const issueMutation = useIssueInvoice();
@@ -127,6 +128,7 @@ export default function InvoicesPage() {
   ];
 
   return (
+    <QueryBoundary isLoading={isLoading} isError={isError} error={error}>
     <div>
       <PageHeader
         title={t('billing.invoices.title')}
@@ -205,5 +207,6 @@ export default function InvoicesPage() {
         </DialogContent>
       </Dialog>
     </div>
+    </QueryBoundary>
   );
 }
