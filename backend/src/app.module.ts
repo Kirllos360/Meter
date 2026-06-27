@@ -47,6 +47,7 @@ import { BillCycleModule } from './bill-cycle/bill-cycle.module';
 import { WalletModule } from './wallet/wallet.module';
 import { KpiModule } from './kpi/kpi.module';
 import { SyncModule } from './sync/sync.module';
+import { PortalModule } from './portal/portal.module';
 import { CorrelationMiddleware } from './common/http/correlation.middleware';
 
 
@@ -92,6 +93,7 @@ import { CorrelationMiddleware } from './common/http/correlation.middleware';
     KpiModule,
     SyncModule,
     WorkersModule,
+    PortalModule,
   ],
   controllers: [AppController],
   providers: [
