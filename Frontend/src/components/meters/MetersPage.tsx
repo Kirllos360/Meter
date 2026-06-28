@@ -44,16 +44,20 @@ export default function MetersPage() {
     setConnectionOk(null);
 
     try {
-      // Resolve area code from localStorage
-      let areaCode = localStorage.getItem('selected-area') || '';
-      const areasRes = await fetch(`${API}/areas`, { headers: { Authorization: `Bearer ${getToken()}` } });
-      if (areasRes.ok) {
-        const areasList = await areasRes.json();
-        const stored = localStorage.getItem('selected-area') || '';
-        const found = (Array.isArray(areasList) ? areasList : []).find((a: any) => a.id === stored || a.areaCode === stored || a.areaName === stored);
-        if (found?.areaCode) areaCode = found.areaCode;
+      // Resolve area code from localStorage — always use the stored value as-is
+      const storedArea = localStorage.getItem('selected-area') || '';
+      let areaCode = storedArea;
+      // Only try to resolve via API if stored value looks like a UUID (not a code)
+      if (storedArea && storedArea.length > 10 && storedArea.includes('-')) {
+        try {
+          const areasRes = await fetch(`${API}/areas`, { headers: { Authorization: `Bearer ${getToken()}` } });
+          if (areasRes.ok) {
+            const areasList = await areasRes.json();
+            const found = (Array.isArray(areasList) ? areasList : []).find((a: any) => a.id === storedArea);
+            if (found?.areaCode) areaCode = found.areaCode;
+          }
+        } catch { /* use stored value as-is */ }
       }
-      if (!areaCode) areaCode = 'AREA-1';
 
       // 1. Check connection
       const csrfToken = await getCsrfToken();
@@ -194,7 +198,7 @@ export default function MetersPage() {
             ],
           },
         ]}
-        searchKeys={['serialNumber', 'brand', 'model', 'customerName', 'projectName']}
+        searchable
         searchPlaceholder={t('meters.search')}
         onRowClick={(row) => navigate('meter-detail', { id: row.id })}
       />
@@ -307,3 +311,4 @@ export default function MetersPage() {
     </div>
   );
 }
+

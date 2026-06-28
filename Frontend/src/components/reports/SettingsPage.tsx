@@ -150,7 +150,7 @@ export default function SettingsPage() {
                     <Button variant="ghost" size="icon" className="h-7 w-7 text-red-500" onClick={() => { if (confirm('Deactivate this user?')) deleteUser.mutate(v); }}><Trash2 className="h-3.5 w-3.5" /></Button>
                   </div>
                 )},
-              ]} searchKeys={['name', 'email']} />
+              ]} searchable />
             </CardContent>
           </Card>
         </TabsContent>
@@ -315,7 +315,7 @@ export default function SettingsPage() {
                 { key: 'id', label: 'Actions', render: (v: string) => (
                   <Button variant="ghost" size="icon" className="h-7 w-7 text-red-500" onClick={() => { if (confirm('Deactivate this area?')) deleteArea.mutate(v); }}><Trash2 className="h-3.5 w-3.5" /></Button>
                 )},
-              ]} searchKeys={['areaCode', 'areaName']} />
+              ]} searchable />
             </CardContent>
           </Card>
         </TabsContent>
@@ -338,7 +338,7 @@ export default function SettingsPage() {
                 { key: 'id', label: 'Actions', render: (v: string) => (
                   <Button variant="ghost" size="icon" className="h-7 w-7 text-red-500" onClick={() => { if (confirm('Deactivate this project?')) deleteProject.mutate(v); }}><Trash2 className="h-3.5 w-3.5" /></Button>
                 )},
-              ]} searchKeys={['projectCode', 'projectName']} />
+              ]} searchable />
             </CardContent>
           </Card>
         </TabsContent>
@@ -360,7 +360,7 @@ export default function SettingsPage() {
                 { key: 'id', label: 'Actions', render: (v: string) => (
                   <Button variant="ghost" size="icon" className="h-7 w-7 text-red-500" onClick={() => { if (confirm('Delete this unit type?')) deleteType.mutate(v); }}><Trash2 className="h-3.5 w-3.5" /></Button>
                 )},
-              ]} searchKeys={['typeCode', 'typeName']} />
+              ]} searchable />
             </CardContent>
           </Card>
         </TabsContent>
@@ -483,3 +483,4 @@ export default function SettingsPage() {
     </div>
   );
 }
+

@@ -173,7 +173,7 @@ export default function InvoicesPage() {
             ],
           },
         ]}
-        searchKeys={['invoiceNumber', 'customerName', 'projectName', 'meterSerial']}
+        searchable
         searchPlaceholder={t('billing.invoices.search')}
         onRowClick={(row) => navigate('invoice-detail', { id: row.id })}
       />
@@ -210,3 +210,4 @@ export default function InvoicesPage() {
     </QueryBoundary>
   );
 }
+

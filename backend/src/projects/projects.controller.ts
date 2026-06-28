@@ -49,8 +49,10 @@ export class ProjectsController {
     Role.FINANCE,
     Role.SUPPORT
   )
-  async findAll() {
-    return this.projectsService.findAll();
+  async findAll(@Req() req: any) {
+    // Filter by areaId from header (set by AreaGuard) if available
+    const areaId = req.areaId as string | undefined;
+    return this.projectsService.findAll(areaId);
   }
 
   @Get(':id')

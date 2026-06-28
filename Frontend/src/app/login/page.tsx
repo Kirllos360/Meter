@@ -22,7 +22,12 @@ export default function LoginPage() {
   const isRtl = locale === 'ar';
 
   useEffect(() => {
-    fetch('http://localhost:3001/api/v1/areas').then(r => r.json()).then(d => setAreas(Array.isArray(d) ? d : [])).catch(() => {});
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api/v1';
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 5000);
+    fetch(`${apiUrl}/areas`, { signal: controller.signal })
+      .then(r => r.json()).then(d => setAreas(Array.isArray(d) ? d : [])).catch(() => {});
+    clearTimeout(timeout);
     document.documentElement.dir = isRtl ? 'rtl' : 'ltr';
     document.documentElement.lang = locale;
   }, [locale]);
@@ -43,11 +48,15 @@ export default function LoginPage() {
 
     try {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api/v1';
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 10000);
       const res = await fetch(`${apiUrl}/auth/dev-login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: username, role: 'super_admin', name: username }),
+        body: JSON.stringify({ userId: username, role: 'super_admin', name: username, areaId: selectedArea || undefined }),
+        signal: controller.signal,
       });
+      clearTimeout(timeout);
 
       const data = await res.json().catch(() => ({}));
 

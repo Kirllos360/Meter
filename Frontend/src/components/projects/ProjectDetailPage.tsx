@@ -141,7 +141,7 @@ export default function ProjectDetailPage() {
               { key: 'createdAt', label: t('projects.created'), sortable: true, width: '110px', render: (v: string) => formatDate(v) },
             ]}
             searchPlaceholder={t('locations.search')}
-            searchKeys={['name']}
+            searchable
           />
         </TabsContent>
 
@@ -157,7 +157,7 @@ export default function ProjectDetailPage() {
               { key: 'status', label: t('customers.status'), width: '90px', render: (v: string) => <StatusBadge status={v} /> },
             ]}
             searchPlaceholder={t('customers.search')}
-            searchKeys={['name', 'code']}
+            searchable
           />
         </TabsContent>
 
@@ -174,7 +174,7 @@ export default function ProjectDetailPage() {
               { key: 'status', label: t('meters.status'), width: '100px', render: (v: string) => <StatusBadge status={v} /> },
             ]}
             searchPlaceholder={t('meters.search')}
-            searchKeys={['serialNumber', 'brand', 'customerName']}
+            searchable
             filters={[
               { key: 'status', label: t('meters.status'), type: 'select', options: [
                 { label: t('meters.lifecycle.active'), value: 'active' }, { label: t('meters.lifecycle.offline'), value: 'offline' }, { label: t('meters.lifecycle.available'), value: 'available' }, { label: t('meters.lifecycle.faulty'), value: 'faulty' },
@@ -204,3 +204,4 @@ export default function ProjectDetailPage() {
     </div>
   );
 }
+

@@ -63,7 +63,7 @@ export default function TicketsPage() {
         <Button variant={view === 'kanban' ? 'default' : 'outline'} size="sm" onClick={() => setView('kanban')}>Kanban</Button>
       </div>
       {view === 'table' ? (
-        <SmartTable data={tickets} columns={columns} searchKeys={['title', 'description']} />
+        <SmartTable data={tickets} columns={columns} searchable />
       ) : (
         <div className="grid grid-cols-4 gap-4">
           {['open', 'in_progress', 'resolved', 'closed'].map((col) => (
@@ -84,3 +84,4 @@ export default function TicketsPage() {
     </div>
   );
 }
+

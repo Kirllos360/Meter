@@ -177,7 +177,7 @@ export default function SmartTable<T extends Record<string, any>>({
 
   // ---- Filtering ----
   const filteredData = useMemo(() => {
-    let result = [...data];
+    let result = Array.isArray(data) ? [...data] : [];
 
     // Global search
     if (searchQuery.trim()) {

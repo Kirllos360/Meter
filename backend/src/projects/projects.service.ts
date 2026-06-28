@@ -22,8 +22,11 @@ export class ProjectsService {
     return this.toResponse(project);
   }
 
-  async findAll(): Promise<ProjectResponseDto[]> {
+  async findAll(areaId?: string): Promise<ProjectResponseDto[]> {
+    const where: any = {};
+    if (areaId) where.areaId = areaId;
     const projects = await this.prisma.coreProject.findMany({
+      where,
       orderBy: { createdAt: 'desc' },
     });
     return projects.map(this.toResponse);

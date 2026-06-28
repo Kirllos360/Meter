@@ -77,7 +77,7 @@ export default function SettlementPage() {
                 { key: 'status', label: 'Status', render: (v: string) => <StatusBadge status={v} /> },
                 { key: 'createdAt', label: 'Date', render: (v: string) => v ? new Date(v).toLocaleDateString() : '-' },
                 { key: 'id', label: 'PDF', render: (v: string) => <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => window.open(`/api/v1/invoices/${v}/pdf`, '_blank')}><Download className="h-3.5 w-3.5" /></Button> },
-              ]} searchKeys={['invoiceNumber']} />
+              ]} searchable />
             </CardContent>
           </Card>
         </TabsContent>
@@ -92,7 +92,7 @@ export default function SettlementPage() {
                 { key: 'reason', label: 'Reason' },
                 { key: 'adjustmentType', label: 'Type', render: (v: string) => <StatusBadge status={v} /> },
                 { key: 'createdBy', label: 'By' },
-              ]} searchKeys={['reason']} />
+              ]} searchable />
             </CardContent>
           </Card>
         </TabsContent>
@@ -155,3 +155,4 @@ export default function SettlementPage() {
     </div>
   );
 }
+

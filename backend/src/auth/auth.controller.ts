@@ -134,11 +134,16 @@ export class AuthController {
   @Public()
   @Post('dev-login')
   @HttpCode(HttpStatus.OK)
-  async devLogin(@Body() dto: { userId: string; role?: string; name?: string }) {
+  async devLogin(@Body() dto: { userId: string; role?: string; name?: string; areaId?: string }) {
     if (process.env.NODE_ENV === 'production' && process.env.DEV_LOGIN_ENABLED !== 'true') {
       throw new ForbiddenException('Dev login disabled');
     }
-    const payload = { sub: dto.userId, userId: dto.userId, role: dto.role || 'super_admin' };
+    // If areaId is provided, resolve it to include in JWT for area middleware
+    let areas: string[] | undefined;
+    if (dto.areaId) {
+      areas = [dto.areaId];
+    }
+    const payload = { sub: dto.userId, userId: dto.userId, role: dto.role || 'super_admin', areas };
     const accessToken = this.jwtService.sign(payload, { expiresIn: '1h' });
     return { accessToken, user: { id: dto.userId, name: dto.name || dto.userId, role: dto.role || 'super_admin' } };
   }

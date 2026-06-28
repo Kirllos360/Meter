@@ -139,10 +139,11 @@ export default function SimCardsPage() {
             ],
           },
         ]}
-        searchKeys={['iccid', 'msisdn', 'ipAddress', 'provider', 'assignedMeterSerial']}
+        searchable
         searchPlaceholder={t('simCards.search')}
       />
       </QueryBoundary>
     </div>
   );
 }
+

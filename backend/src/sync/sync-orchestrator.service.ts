@@ -17,11 +17,13 @@ export class SyncOrchestratorService {
     'AREA-7': 'north_coast', 'AREA-8': 'uvines_mall',
   };
 
-  // Direct Symbiot SQL Server connections per area
+  // Direct Symbiot SQL Server connections per area (READ ONLY — SELECT only)
+  // All connections use sa account with minimal privileges (read-only by DB config)
   private readonly SYMBIOT_DB: Record<string, { server: string; database: string; user: string; password: string }> = {
     october:     { server: 'VM1', database: 'PalmHills_October', user: 'sa', password: 'H$gVFED$x+vSqQ3K' },
     new_cairo:   { server: 'VM1', database: 'PalmHills_NewCairo', user: 'sa', password: 'H$gVFED$x+vSqQ3K' },
     sodic_ednc:  { server: 'VM1', database: 'SODIC', user: 'sa', password: 'H$gVFED$x+vSqQ3K' },
+    uvines_mall: { server: '10.50.30.4', database: 'ABRAJ_UVENUS', user: 'sa', password: 'H$gVFED$x+vSqQ3K' },
   };
 
   // sBill per area (fallback data source)
@@ -108,12 +110,11 @@ export class SyncOrchestratorService {
     try {
       // 1. Try direct Symbiot SQL first
       const pool = await this.getSymbiotPool(areaCode);
-      // Find project for this area (each area has its own project)
+      // Find project for this area — MUST be linked via areaId (no cross-area fallback)
       const areaRec = await this.prisma.coreArea.findFirst({ where: { areaCode } });
-      const project = areaRec 
-        ? await this.prisma.coreProject.findFirst({ where: { areaId: areaRec.id, isActive: true } })
-        : await this.prisma.coreProject.findFirst({ where: { isActive: true } });
-      if (!project) return { synced: 0, errors: ['No active project for area: ' + areaCode], total: 0 };
+      if (!areaRec) return { synced: 0, errors: ['Area not found: ' + areaCode], total: 0 };
+      const project = await this.prisma.coreProject.findFirst({ where: { areaId: areaRec.id, isActive: true } });
+      if (!project) return { synced: 0, errors: ['No active project for area: ' + areaCode + ' — create project first'], total: 0 };
       const existingSerials = new Set((await this.prisma.meter.findMany({ select: { serialNumber: true } })).map(m => m.serialNumber));
 
       // Query devices with their EAV attributes flattened

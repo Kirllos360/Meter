@@ -90,7 +90,7 @@ export default function TariffStudioPage() {
                   <Button variant="ghost" size="icon" className="h-7 w-7 text-red-500" onClick={() => { if (confirm('Delete?')) deleteMutation.mutate(v); }}><Trash2 className="h-3.5 w-3.5" /></Button>
                 </div>
               )},
-            ]} searchKeys={['tariffCode', 'tariffName']} />
+            ]} searchable />
           </CardContent>
         </Card>
       </Tabs>
@@ -199,3 +199,4 @@ export default function TariffStudioPage() {
     </div>
   );
 }
+

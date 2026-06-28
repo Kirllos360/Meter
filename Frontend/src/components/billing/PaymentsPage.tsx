@@ -147,7 +147,7 @@ export default function PaymentsPage() {
                 ],
               },
             ]}
-            searchKeys={['paymentNumber', 'customerName', 'invoiceNumber', 'collectedBy']}
+            searchable
             searchPlaceholder={t('billing.payments.search')}
           />
         </TabsContent>
@@ -207,3 +207,4 @@ export default function PaymentsPage() {
     </div>
   );
 }
+

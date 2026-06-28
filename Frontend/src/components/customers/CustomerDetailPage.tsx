@@ -273,7 +273,7 @@ export default function CustomerDetailPage() {
               { key: 'status', label: t('meters.status'), width: '100px', render: (v: string) => <StatusBadge status={v} /> },
             ]}
             searchPlaceholder={t('meters.search')}
-            searchKeys={['serialNumber', 'brand']}
+            searchable
           />
         </TabsContent>
 
@@ -348,3 +348,4 @@ export default function CustomerDetailPage() {
     </div>
   );
 }
+

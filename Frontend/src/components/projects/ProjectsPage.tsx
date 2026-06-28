@@ -104,7 +104,7 @@ export default function ProjectsPage() {
           },
         ]}
         onRowClick={(row) => navigate('project-detail', { id: row.id })}
-        searchKeys={['name', 'code', 'location', 'area']}
+        searchable
         searchPlaceholder={t('projects.search')}
       />
       </QueryBoundary>
@@ -138,3 +138,4 @@ export default function ProjectsPage() {
     </div>
   );
 }
+

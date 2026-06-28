@@ -81,9 +81,10 @@ export default function BillingDashboard() {
             { key: 'status', label: 'Status', render: (v: string) => <StatusBadge status={v} /> },
             { key: 'totalAmount', label: 'Total', render: (v: number) => formatCurrency(v ?? 0) },
             { key: 'issueDate', label: 'Date', render: (v: string) => v ? new Date(v).toLocaleDateString() : '-' },
-          ]} searchKeys={['invoiceNumber']} />
+          ]} searchable />
         </CardContent>
       </Card>
     </div>
   );
 }
+
