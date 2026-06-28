@@ -265,6 +265,19 @@ export const TEMPLATE_REGISTRY: Record<string, TemplateConfig> = {
 };
 
 export function getTemplateConfig(utilityType: string): TemplateConfig {
-  const key = utilityType?.toLowerCase().replace(/\s+/g, '_') || 'electricity';
+  const raw = utilityType?.toLowerCase().replace(/\s+/g, '_') || 'electricity';
+  // Map meter subtypes to their parent template config
+  const subtypeMap: Record<string, string> = {
+    'water_main': 'water',
+    'water_child': 'water',
+    'water_01': 'water',
+    'water_04': 'water',
+    'water_new': 'water_new',
+    'chilled_water_a': 'chilled_water',
+    'chilled_water_b': 'chilled_water',
+    'outdoor_unit': 'chilled_water',
+    'solar_pv': 'solar',
+  };
+  const key = subtypeMap[raw] || raw;
   return TEMPLATE_REGISTRY[key] || TEMPLATE_REGISTRY.electricity;
 }

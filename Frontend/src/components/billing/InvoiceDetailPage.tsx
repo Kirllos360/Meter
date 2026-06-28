@@ -211,7 +211,7 @@ export default function InvoiceDetailPage() {
         <DialogContent>
           <DialogHeader><DialogTitle>Record Payment</DialogTitle></DialogHeader>
           <div className="space-y-4 py-4">
-            <div><Label>Amount ({formatCurrency(invoice.totalAmount)})</Label><Input type="number" value={paymentAmount} onChange={e => setPaymentAmount(e.target.value)} placeholder="Enter amount" /></div>
+            <div><Label>Amount ({formatCurrency(invoice.total)})</Label><Input type="number" value={paymentAmount} onChange={e => setPaymentAmount(e.target.value)} placeholder="Enter amount" /></div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setPaymentOpen(false)}>Cancel</Button>

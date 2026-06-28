@@ -68,7 +68,7 @@ export default function BillCyclePage() {
       <PageHeader title="Bill Cycles" subtitle="Create, schedule, and execute billing runs" action={
         <Button size="sm" className="gap-1" onClick={() => setCreateOpen(true)}><Plus className="h-4 w-4" />New Bill Cycle</Button>
       } />
-      <SmartTable data={cycles} columns={columns} searchKeys={['id', 'utilityType']} searchPlaceholder="Search cycles..." />
+      <SmartTable data={cycles as any} columns={columns} searchable searchPlaceholder="Search cycles..." />
 
       <Dialog open={createOpen} onOpenChange={setCreateOpen}>
         <DialogContent>

@@ -71,4 +71,5 @@ export interface InvoiceDocument {
 
   // Metadata
   generatedAt: string;
+  language?: string; // 'ar' | 'en' — default 'ar'
 }

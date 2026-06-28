@@ -108,11 +108,11 @@ router.post('/apply', async (req, res) => {
 router.post('/query', async (req, res) => {
   try {
     const { sql } = req.body;
-    if (!sql) return res.status(400).json({ error: 'SQL required' });
+    if (!sql || typeof sql !== 'string') return res.status(400).json({ error: 'SQL required' });
     const upper = sql.trim().toUpperCase();
     if (!upper.startsWith('SELECT') && !upper.startsWith('EXPLAIN') && !upper.startsWith('WITH')) 
       return res.status(403).json({ error: 'Only SELECT queries allowed' });
-    const r = await db.query(sql);
+    const r = await db.pool.query(sql, []);
     res.json({ data: r.rows, total: r.rows.length, fields: r.fields ? r.fields.map(f => ({ name: f.name, dataTypeID: f.dataTypeID })) : [] });
   } catch (e) { res.status(400).json({ error: e.message }); }
 });

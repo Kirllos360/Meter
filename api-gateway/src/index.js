@@ -1,5 +1,6 @@
 const express = require('express');
 const path = require('path');
+const rateLimit = require('express-rate-limit');
 const { createProxyMiddleware } = require('http-proxy-middleware');
 const store = require('./services/store');
 const adminRoutes = require('./routes/admin');
@@ -11,6 +12,9 @@ const CORE_API_URL = store.getConfig().core_api_url || 'http://localhost:3001/ap
 
 app.use(express.json());
 app.use(express.static(path.join(__dirname, '..', 'public')));
+
+// Global rate limiting for all routes
+app.use(rateLimit({ windowMs: 60 * 1000, max: 300, standardHeaders: true, legacyHeaders: false }));
 
 // Admin API (internal, no gateway auth)
 app.use('/admin', adminRoutes);

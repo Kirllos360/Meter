@@ -65,11 +65,11 @@ export default function AlertsPage() {
       </div>
 
       <SmartTable
-        data={mapped}
+        data={mapped as any}
         columns={columns}
         filters={[
           {
-            key: 'severity', label: t('alerts.severity'), type: 'select',
+            key: 'severity', label: t('alerts.severity'),
             options: [
               { label: t('alerts.critical'), value: 'critical' },
               { label: t('alerts.high'), value: 'high' },
@@ -78,14 +78,14 @@ export default function AlertsPage() {
             ],
           },
           {
-            key: 'acknowledged', label: t('alerts.status'), type: 'select',
+            key: 'acknowledged', label: t('alerts.status'),
             options: [
               { label: t('common.no'), value: 'false' },
               { label: t('common.yes'), value: 'true' },
             ],
           },
           {
-            key: 'type', label: t('alerts.source'), type: 'select',
+            key: 'type', label: t('alerts.source'),
             options: [
               { label: 'Offline Meter', value: 'offline_meter' },
               { label: 'High Consumption', value: 'high_consumption' },
@@ -98,7 +98,7 @@ export default function AlertsPage() {
             ],
           },
         ]}
-        searchKeys={['title', 'description', 'entityLabel']}
+        searchable
         searchPlaceholder={t('alerts.search')}
       />
     </div>

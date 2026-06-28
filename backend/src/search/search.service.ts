@@ -5,13 +5,14 @@ import { PrismaService } from '../common/database/prisma.service';
 export class SearchService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async search(query: string, limit = 20, allowedProjectIds?: string[]) {
-    if (!query || query.length < 2) return { results: [], groups: {} };
+  async search(query: string | string[], limit = 20, allowedProjectIds?: string[]) {
+    const q = Array.isArray(query) ? query[0] : query;
+    if (!q || q.length < 2) return { results: [], groups: {} };
 
     try {
       const rows: any[] = await this.prisma.$queryRawUnsafe(
         `SELECT * FROM sim_system.search_enterprise($1, $2)`,
-        query,
+        q,
         limit
       );
       let results = rows.map((r: any) => ({
@@ -38,7 +39,7 @@ export class SearchService {
 
       return { results, groups };
     } catch (e: any) {
-      return this.basicSearch(query, limit, allowedProjectIds);
+      return this.basicSearch(q, limit, allowedProjectIds);
     }
   }
 

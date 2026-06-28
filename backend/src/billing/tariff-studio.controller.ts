@@ -87,6 +87,98 @@ export class TariffStudioController {
     return this.prisma.tariff.update({ where: { id }, data });
   }
 
+  @Post(':id/version')
+  @Roles(Role.OPERATOR, Role.ADMIN, Role.SUPER_ADMIN)
+  @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({ summary: 'Create a version snapshot of the current tariff' })
+  async createVersion(@Param('id', ParseUUIDPipe) id: string, @Body() dto: { changeLog: string }, @Req() req: { user: { userId: string } }) {
+    const tariff = await this.prisma.tariff.findUnique({ where: { id } });
+    if (!tariff) throw new NotFoundException();
+    const currentVersion = await this.prisma.tariffVersion.findFirst({
+      where: { tariffId: id }, orderBy: { versionNo: 'desc' },
+    });
+    const versionNo = (currentVersion?.versionNo ?? 0) + 1;
+    return this.prisma.tariffVersion.create({
+      data: {
+        tariffId: id,
+        versionNo,
+        changeLog: dto.changeLog,
+        approvedBy: req.user.userId,
+        approvedAt: new Date(),
+      },
+    });
+  }
+
+  @Post(':id/clone')
+  @Roles(Role.OPERATOR, Role.ADMIN, Role.SUPER_ADMIN)
+  @HttpCode(HttpStatus.CREATED)
+  @ApiOperation({ summary: 'Clone a tariff with all charges and details' })
+  async clone(@Param('id', ParseUUIDPipe) id: string, @Body() dto: { tariffCode: string; tariffName: string }, @Req() req: { user: { userId: string } }) {
+    const source = await this.prisma.tariff.findUnique({
+      where: { id },
+      include: { charges: { include: { details: true }, orderBy: { sortOrder: 'asc' } } },
+    });
+    if (!source) throw new NotFoundException();
+
+    return this.prisma.$transaction(async (tx) => {
+      const clone = await tx.tariff.create({
+        data: {
+          tariffCode: dto.tariffCode,
+          tariffName: dto.tariffName,
+          description: source.description,
+          utilityType: source.utilityType,
+          isActive: true,
+          effectiveFrom: new Date(),
+          createdBy: req.user.userId,
+          updatedBy: req.user.userId,
+        },
+      });
+      for (const c of source.charges) {
+          const charge = c as any;
+          const newCharge = await tx.tariffCharge.create({
+            data: {
+              tariffId: clone.id,
+              chargeCode: charge.chargeCode,
+              chargeName: charge.chargeName,
+              // chargeNameAr omitted — use chargeName for both locales
+              chargeMode: charge.chargeMode,
+              settlementType: charge.settlementType,
+              rateAmount: charge.rateAmount,
+              unitOfMeasure: charge.unitOfMeasure,
+              minCharge: charge.minCharge,
+              maxCharge: charge.maxCharge,
+              sortOrder: charge.sortOrder,
+              isActive: true,
+              createdBy: req.user.userId,
+              updatedBy: req.user.userId,
+            },
+          });
+        for (const detail of charge.details) {
+          await tx.tariffChargeDetail.create({
+            data: {
+              chargeId: newCharge.id,
+              stepFrom: detail.stepFrom,
+              stepTo: detail.stepTo,
+              stepRate: detail.stepRate,
+              stepAmount: detail.stepAmount,
+              isPercentage: detail.isPercentage,
+            },
+          });
+        }
+      }
+      await tx.tariffVersion.create({
+        data: {
+          tariffId: clone.id,
+          versionNo: 1,
+          changeLog: `Cloned from ${source.tariffCode}`,
+          approvedBy: req.user.userId,
+          approvedAt: new Date(),
+        },
+      });
+      return { status: 'cloned', tariffId: clone.id };
+    });
+  }
+
   @Delete(':id')
   @Roles(Role.ADMIN, Role.SUPER_ADMIN)
   @HttpCode(HttpStatus.OK)

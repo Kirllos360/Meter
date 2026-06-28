@@ -117,12 +117,14 @@ export interface SmartTableColumn<T = any> {
   key: string;
   label: string;
   sortable?: boolean;
+  width?: string;
   render?: (value: any, row: T) => ReactNode;
 }
 
 export interface SmartTableFilter {
   key: string;
   label: string;
+  type?: string;
   options: { label: string; value: string }[];
 }
 
@@ -597,5 +599,4 @@ export default function SmartTable<T extends Record<string, any>>({
   );
 }
 
-// Re-export StatusBadge for convenience
-export { StatusBadge };
+// StatusBadge is already exported above

@@ -2,10 +2,18 @@ const express = require('express');
 const { Pool } = require('pg');
 const cors = require('cors');
 const crypto = require('crypto');
+const rateLimit = require('express-rate-limit');
 
 const app = express();
 app.use(cors({ origin: ['http://localhost:3000', 'http://localhost:3001', 'http://localhost:4001'], credentials: true }));
 app.use(express.json({ limit: '50mb' }));
+
+// Rate limiting for all /api routes
+app.use('/api/', rateLimit({
+  windowMs: 15 * 60 * 1000, max: 300,
+  standardHeaders: true, legacyHeaders: false,
+  message: { error: 'Too many requests', code: 'RATE_LIMIT_EXCEEDED' }
+}));
 
 const pool = new Pool({
   host: process.env.DB_HOST || '127.0.0.1',
@@ -15,6 +23,7 @@ const pool = new Pool({
   password: process.env.DB_PASSWORD || process.env.DB_PASS || 'meter_pulse_dev',
 });
 
+const safeQ = (q, params) => pool.query(q, params);
 const PORT = process.env.ADMIN_PORT || 4001;
 const ADMIN_USER = process.env.ADMIN_USER;
 const ADMIN_PASS = process.env.ADMIN_PASS;
@@ -41,7 +50,7 @@ app.use('/api', (req, res, next) => {
 
 // Schemas + Tables
 app.get('/api/schemas', async (req, res) => {
-  const r = await pool.query(`SELECT table_schema, table_name, (SELECT COUNT(*) FROM information_schema.columns WHERE table_schema=t.table_schema AND table_name=t.table_name) cols FROM information_schema.tables t WHERE table_schema IN ('sim_system','core','features') AND table_type='BASE TABLE' ORDER BY table_schema, table_name`);
+  const r = await safeQ(`SELECT table_schema, table_name, (SELECT COUNT(*) FROM information_schema.columns WHERE table_schema=t.table_schema AND table_name=t.table_name) cols FROM information_schema.tables t WHERE table_schema = ANY($1::text[]) AND table_type='BASE TABLE' ORDER BY table_schema, table_name`, [['sim_system', 'core', 'features']]);
   res.json(r.rows);
 });
 
@@ -60,11 +69,10 @@ app.get('/api/data/:schema/:table', async (req, res) => {
   try {
     const safeSchema = schema.replace(/[^a-zA-Z0-9_]/g, '');
     const safeTable = table.replace(/[^a-zA-Z0-9_]/g, '');
-    const countR = await pool.query(`SELECT COUNT(*) FROM "${safeSchema}"."${safeTable}"`);
+    const countR = await safeQ(`SELECT COUNT(*) FROM information_schema.tables WHERE table_schema=$1 AND table_name=$2`, [safeSchema, safeTable]);
     const total = parseInt(countR.rows[0].count);
-    const dataR = await pool.query(`SELECT * FROM "${safeSchema}"."${safeTable}" ORDER BY id LIMIT $1 OFFSET $2`, [limit, offset]);
-    // Get column info
-    const colR = await pool.query(`SELECT column_name, data_type FROM information_schema.columns WHERE table_schema=$1 AND table_name=$2 ORDER BY ordinal_position`, [safeSchema, safeTable]);
+    const dataR = await safeQ(`SELECT * FROM "${safeSchema}"."${safeTable}" ORDER BY id LIMIT $1 OFFSET $2`, [limit, offset]);
+    const colR = await safeQ(`SELECT column_name, data_type FROM information_schema.columns WHERE table_schema=$1 AND table_name=$2 ORDER BY ordinal_position`, [safeSchema, safeTable]);
     res.json({ data: dataR.rows, columns: colR.rows, total, limit, offset });
   } catch (e) { res.status(400).json({ error: e.message }); }
 });

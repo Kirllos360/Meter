@@ -39,7 +39,9 @@ docker compose -f "D:\meter\Meter\backend\docker-compose.yml" start db >nul 2>&1
 echo  DB: OK
 
 cd /d "D:\meter\Meter\backend"
-start "MV-Backend" cmd /c "node dist\src\main.js"
+echo  Building backend...
+call npm run build >nul 2>&1
+start "MV-Backend" cmd /c "node --max-old-space-size=2048 dist\src\main.js"
 timeout /t 8 /nobreak >nul
 echo  Backend: port 3001
 

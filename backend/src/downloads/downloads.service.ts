@@ -24,11 +24,17 @@ export class DownloadsService {
     doc.end();
   }
 
+  private escCsv(v: any): string {
+    const s = String(v ?? '');
+    return s.includes('"') || s.includes(',') || s.includes('\n') ? '"' + s.replace(/"/g, '""') + '"' : s;
+  }
+
   async generateCsv(columns: string[], rows: any[][], filename: string, res: Response) {
+    const safeFilename = filename.replace(/[^a-zA-Z0-9\-_.]/g, '_');
     res.setHeader('Content-Type', 'text/csv; charset=utf-8');
-    res.setHeader('Content-Disposition', `attachment; filename=${filename}.csv`);
-    const head = columns.map((c) => `"${c}"`).join(',') + '\n';
-    const data = rows.map((r) => r.map((v) => `"${String(v ?? '')}"`).join(',')).join('\n');
+    res.setHeader('Content-Disposition', `attachment; filename=${safeFilename}.csv`);
+    const head = columns.map((c) => this.escCsv(c)).join(',') + '\n';
+    const data = rows.map((r) => r.map((v) => this.escCsv(v)).join(',')).join('\n');
     res.send('\uFEFF' + head + data);
   }
 

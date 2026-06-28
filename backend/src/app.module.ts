@@ -13,6 +13,7 @@ import { ProjectAccessInterceptor } from './common/interceptors/project-access.i
 import { AuditModule } from './audit/audit.module';
 import { AuditInterceptor } from './audit/audit.interceptor';
 import { IdempotencyModule } from './idempotency/idempotency.module';
+import { WorkersModule } from './common/workers/workers.module';
 import { MetersModule } from './meters/meters.module';
 import { SimCardsModule } from './sim-cards/sim-cards.module';
 import { ProjectsModule } from './projects/projects.module';
@@ -37,6 +38,7 @@ import { UsersModule } from './users/users.module';
 import { SolarModule } from './solar/solar.module';
 import { SettlementModule } from './settlement/settlement.module';
 import { ChilledWaterModule } from './chilled-water/chilled-water.module';
+import { GasModule } from './gas/gas.module';
 import { AreasModule } from './areas/areas.module';
 import { UnitTypesModule } from './unit-types/unit-types.module';
 import { RegistrationModule } from './registration/registration.module';
@@ -45,6 +47,7 @@ import { BillCycleModule } from './bill-cycle/bill-cycle.module';
 import { WalletModule } from './wallet/wallet.module';
 import { KpiModule } from './kpi/kpi.module';
 import { SyncModule } from './sync/sync.module';
+import { PortalModule } from './portal/portal.module';
 import { CorrelationMiddleware } from './common/http/correlation.middleware';
 
 
@@ -80,6 +83,7 @@ import { CorrelationMiddleware } from './common/http/correlation.middleware';
     SolarModule,
     SettlementModule,
     ChilledWaterModule,
+    GasModule,
     AreasModule,
     UnitTypesModule,
     RegistrationModule,
@@ -88,6 +92,8 @@ import { CorrelationMiddleware } from './common/http/correlation.middleware';
     WalletModule,
     KpiModule,
     SyncModule,
+    WorkersModule,
+    PortalModule,
   ],
   controllers: [AppController],
   providers: [

@@ -52,17 +52,17 @@ export function AreaProjectSwitcher() {
     window.location.reload();
   };
 
-  // Auto-select project when only one exists for the area
+  // Auto-select first project for the area as default
   useEffect(() => {
     if (selectedArea && !selectedProject) {
       const areaObj = areas.find((a: any) => a.id === selectedArea || a.areaCode === selectedArea);
       const areaProjects = selectedArea
         ? projects.filter((p: any) => p.areaId === (areaObj?.id || selectedArea))
         : [];
-      if (areaProjects.length === 1) {
-        const projId = areaProjects[0].id;
-        setSelectedProject(projId);
-        localStorage.setItem('selected-project', projId);
+      if (areaProjects.length > 0) {
+        const firstProj = areaProjects[0].id;
+        setSelectedProject(firstProj);
+        localStorage.setItem('selected-project', firstProj);
       }
     }
   }, [selectedArea, projects]);
@@ -93,9 +93,9 @@ export function AreaProjectSwitcher() {
         </Badge>
       ) : null}
 
-      {/* Project selector - no "All Projects" option */}
+      {/* Project selector — defaults to first project for the area */}
       {filteredProjects.length > 0 ? (
-        <Select value={selectedProject || (filteredProjects.length === 1 ? filteredProjects[0].id : '')} onValueChange={handleProject}>
+        <Select value={selectedProject || filteredProjects[0]?.id || ''} onValueChange={handleProject}>
           <SelectTrigger className="h-7 w-[130px] text-[11px] border-border/40">
             <SelectValue placeholder="Select Project" />
           </SelectTrigger>

@@ -50,7 +50,7 @@ function mapInvoice(api: ApiInvoice): Invoice {
     unitId: api.unitId === 'system' ? undefined : api.unitId,
     unitNumber: undefined,
     meterSerial: meter?.serialNumber ?? api.meterId,
-    meterType: api.utilityType === 'electricity' ? 'electricity' : api.utilityType === 'water' ? 'main_water' : 'child_water',
+    meterType: api.utilityType === 'electricity' ? 'electricity' : api.utilityType === 'water' ? 'water_main' : 'water_child',
     billingPeriodStart: api.createdAt,
     billingPeriodEnd: api.issuedAt ?? api.createdAt,
     consumption: api.lines.reduce((s, l) => s + l.quantity, 0),

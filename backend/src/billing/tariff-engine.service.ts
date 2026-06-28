@@ -90,22 +90,53 @@ export class TariffEngineService {
           break;
 
         case 'TOU':
-          // Time-of-Use: details contain peak/off-peak/shoulder rates
-          // stepFrom = hour start, stepTo = hour end (0-23), stepRate = rate per unit
+          // Time-of-Use: details contain peak/off-peak/shoulder periods
+          // stepFrom = hour start (0-23), stepTo = hour end (0-23), stepRate = rate per unit
+          // Consumption is distributed across periods based on hour proportion
           if (charge.details.length > 0) {
-            const hour = effectiveDate.getHours();
-            let activeDetail = null;
+            // Count hours per period in a full day (24h cycle)
+            const periods: { from: number; to: number; rate: number; hours: number }[] = [];
             for (const d of charge.details) {
               const from = Number(d.stepFrom ?? 0);
               const to = Number(d.stepTo ?? 23);
-              if (hour >= from && hour < to) { activeDetail = d; break; }
+              const hoursInPeriod = from <= to ? to - from : (24 - from) + to;
+              periods.push({
+                from,
+                to,
+                rate: Number(d.stepRate ?? charge.rateAmount ?? 0),
+                hours: Math.max(0, hoursInPeriod),
+              });
             }
-            if (!activeDetail) activeDetail = charge.details[0]; // fallback to first
-            rate = Number(activeDetail.stepRate ?? charge.rateAmount ?? 0);
-            lineAmount = rate * consumption;
-            qty = consumption;
+            // Distribute consumption by period hour proportion
+            const totalHours = periods.reduce((s, p) => s + p.hours, 0) || 24;
+            let periodLines = 0;
+            for (const period of periods) {
+              if (period.hours <= 0) continue;
+              const periodCons = Math.round((consumption * period.hours) / totalHours);
+              if (periodCons <= 0) continue;
+              const periodAmt = Math.round(periodCons * period.rate);
+              qty += periodCons;
+              periodLines++;
+              // Push individual period line
+              const hourLabel = `${String(period.from).padStart(2, '0')}:00-${String(period.to).padStart(2, '0')}:00`;
+              const chargeGroup = this.chargeModeToGroup(charge.chargeMode, charge.settlementType, charge.chargeCode);
+              lines.push({
+                chargeCode: `${charge.chargeCode}_${period.from}`,
+                chargeName: `${charge.chargeName} (${hourLabel})`,
+                chargeGroup,
+                quantity: periodCons,
+                rateAmount: period.rate,
+                lineAmount: periodAmt,
+                description: `${charge.chargeName} ${hourLabel} ${periodCons} @ ${period.rate}`,
+              });
+            }
+            // Don't add main line — individual period lines handle it
+            continue; // Skip the main line addition below
           }
           break;
+
+        // Demand charge detection (via charge code convention DEMAND_*)
+        // Applied after switch to override normal calculation for any charge mode
 
         case 'ZERO':
           lineAmount = Number(charge.rateAmount ?? charge.minCharge ?? 0);
@@ -115,8 +146,16 @@ export class TariffEngineService {
           break;
       }
 
+      // Demand charge override: if charge code starts with DEMAND_, recalculate as demand
+      const isDemand = charge.chargeCode?.startsWith('DEMAND_') ?? false;
+      if (isDemand && consumption > 0) {
+        rate = Number(charge.rateAmount ?? 0);
+        lineAmount = Math.round(consumption * rate);
+        qty = consumption;
+      }
+
       if (lineAmount > 0 || charge.chargeMode !== 'ZERO' || consumption <= 0) {
-        const chargeGroup = this.chargeModeToGroup(charge.chargeMode, charge.settlementType);
+        const chargeGroup = this.chargeModeToGroup(charge.chargeMode, charge.settlementType, charge.chargeCode);
         lines.push({
           chargeCode: charge.chargeCode,
           chargeName: charge.chargeName,
@@ -131,7 +170,7 @@ export class TariffEngineService {
       // Apply min/max
       if (charge.minCharge && lineAmount < Number(charge.minCharge)) {
         const diff = Number(charge.minCharge) - lineAmount;
-        lines.push({ chargeCode: `${charge.chargeCode}_MIN`, chargeName: `${charge.chargeName} (min)`, chargeGroup: this.chargeModeToGroup(charge.chargeMode, charge.settlementType), quantity: 1, rateAmount: diff, lineAmount: diff, description: `Minimum charge adjustment` });
+        lines.push({ chargeCode: `${charge.chargeCode}_MIN`, chargeName: `${charge.chargeName} (min)`, chargeGroup: this.chargeModeToGroup(charge.chargeMode, charge.settlementType, charge.chargeCode), quantity: 1, rateAmount: diff, lineAmount: diff, description: `Minimum charge adjustment` });
         lineAmount = Number(charge.minCharge);
       }
     }
@@ -140,8 +179,9 @@ export class TariffEngineService {
     return { lines, total };
   }
 
-  private chargeModeToGroup(mode: string, settlementType: string): number {
-    if (mode === 'PER_UNIT' || mode === 'STEPS') return 0;
+  private chargeModeToGroup(mode: string, settlementType: string, chargeCode?: string): number {
+    if (chargeCode?.startsWith('DEMAND_')) return 8; // Demand charges = group 8
+    if (mode === 'PER_UNIT' || mode === 'STEPS' || mode === 'TOU') return 0;
     if (settlementType === 'PERCENTAGE') return 5;
     if (mode === 'FLAT' && settlementType === 'FIXED') return 4;
     if (mode === 'FLAT') return 1;

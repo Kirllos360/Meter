@@ -50,7 +50,7 @@ export default function ConsumptionPage() {
         <Card className="glass-card border-border/50">
           <CardHeader className="pb-2"><CardTitle className="text-sm">Electricity Consumption</CardTitle></CardHeader>
           <CardContent>
-            <QueryBoundary loading={<div className="h-[250px] flex items-center justify-center text-muted-foreground">Loading...</div>}>
+            <QueryBoundary isLoading={false} isError={false} error={null} loadingFallback={<div className="h-[250px] flex items-center justify-center text-muted-foreground">Loading...</div>}>
               <ResponsiveContainer width="100%" height={250}>
                 <LineChart data={chartData}>
                   <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />

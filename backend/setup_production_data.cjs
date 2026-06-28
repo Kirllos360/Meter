@@ -1,4 +1,5 @@
 const { PrismaClient } = require('@prisma/client');
+const crypto = require('crypto');
 const bcrypt = require('bcryptjs');
 const prisma = new PrismaClient({ datasources: { db: { url: 'postgresql://meter_pulse:meter_pulse_dev@127.0.0.1:5432/meter_pulse' } } });
 
@@ -123,12 +124,12 @@ const prisma = new PrismaClient({ datasources: { db: { url: 'postgresql://meter_
             invoiceNumber: 'INV-' + project.code + '-' + String(totalInvoices + 1).padStart(4, '0'),
             status: Math.random() > 0.3 ? 'issued' : 'paid',
             subtotalAmount: charge, taxAmount: vat, totalAmount: total,
-            paidAmount: Math.random() > 0.5 ? Math.round(total * 0.5 * 100) / 100 : 0,
+            paidAmount: crypto.randomInt(0, 2) ? Math.round(total * 0.5 * 100) / 100 : 0,
             remainingAmount: total,
-            billingPeriodId: '2025-' + String(Math.floor(Math.random() * 12) + 1).padStart(2, '0'),
-            billingPeriodCode: '2025-' + String(Math.floor(Math.random() * 12) + 1).padStart(2, '0'),
-            issuedAt: new Date(2025, Math.floor(Math.random() * 12), 1),
-            dueAt: new Date(2025, Math.floor(Math.random() * 12) + 1, 1),
+            billingPeriodId: '2025-' + String(crypto.randomInt(1, 13)).padStart(2, '0'),
+            billingPeriodCode: '2025-' + String(crypto.randomInt(1, 13)).padStart(2, '0'),
+            issuedAt: new Date(2025, crypto.randomInt(0, 12), 1),
+            dueAt: new Date(2025, crypto.randomInt(0, 12) + 1, 1),
           }
         });
         totalInvoices++;

@@ -13,13 +13,20 @@ const GATEWAYS = {
   chillout:     'http://localhost:4009',
 };
 
+function sanitizePath(p) {
+  return p.replace(/[^a-zA-Z0-9\/\-_.~%]/g, '').replace(/\.\./g, '');
+}
+function sanitizeQs(q) {
+  return q.replace(/[^a-zA-Z0-9\/\-_.~%&=?]/g, '');
+}
+
 // Route by area name in URL
 app.get('/api/v1/sync/:area/*', async (req, res) => {
   const gw = GATEWAYS[req.params.area];
   if (!gw) return res.status(404).json({ error: 'Unknown area', areas: Object.keys(GATEWAYS) });
   
-  const path = req.path.replace(`/api/v1/sync/${req.params.area}`, '');
-  const qs = req.url.includes('?') ? req.url.substring(req.url.indexOf('?')) : '';
+  const path = sanitizePath(req.path.replace(`/api/v1/sync/${req.params.area}`, ''));
+  const qs = req.url.includes('?') ? sanitizeQs(req.url.substring(req.url.indexOf('?'))) : '';
   
   try {
     const r = await fetch(gw + '/api/v1/sync/symbiot' + path + qs, { method: 'GET' });
@@ -43,13 +50,14 @@ app.get('/api/v1/sync/billing/*', async (req, res) => {
 
 // Remapped meters endpoint
 app.get('/api/v1/sync/:area/meters', async (req, res) => {
-  const gw = GATEWAYS[req.params.area];
+  const area = req.params.area.replace(/[^a-zA-Z0-9_-]/g, '');
+  const gw = GATEWAYS[area];
   if (!gw) return res.status(404).json({ error: 'Unknown area' });
   try {
-    const r = await fetch(gw + '/api/v1/sync/' + req.params.area + '/meters', { method: 'GET' });
+    const r = await fetch(gw + '/api/v1/sync/' + area + '/meters', { method: 'GET' });
     res.json(await r.json());
   } catch (e) {
-    res.status(502).json({ error: `Gateway ${req.params.area} unreachable` });
+    res.status(502).json({ error: `Gateway ${area} unreachable` });
   }
 });
 

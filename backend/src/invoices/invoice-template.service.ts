@@ -156,17 +156,18 @@ export class InvoiceTemplateService {
     const v = (key: string, val: string) => { vr[key] = val; };
 
     // Bilingual labels
-    const lang = (d as any).lang || 'ar';
+    const lang = d.language || 'ar';
     const isAr = lang === 'ar';
 
     const L = (ar: string, en: string) => isAr ? ar : en;
 
     v('CSS_CONTENT', cssContent);
+    v('LANG', lang);
     v('DELETED_WATERMARK', isDeleted ? `<div class="dl">${L('ملغيــــة','DELETED')}</div>` : '');
     v('CHARGE_ROWS', chargeRows);
     v('COMPANY_BANK_DETAILS', d.companyBankDetails || '');
     v('AREA_NAME', d.areaName || '-');
-    v('LBL_PROJECT', L('المنطقة:','Project:'));
+    v('LBL_AREA', L('المنطقة:','Area:'));
     v('LBL_UNIT', L('وحدة رقم:','Unit No:'));
     v('LBL_INV_NUM', L('رقم','No.'));
     v('LBL_CUSTOMER', L('السيد/','Mr.'));

@@ -14,7 +14,8 @@ import { useT } from '@/lib/i18n/context';
 export default function BalancesPage() {
   const t = useT();
   const useApi = isFeatureEnabled('billing.list');
-  const balances = [];
+  interface BalanceRow { totalInvoiced: number; totalPaid: number; outstandingBalance: number; aging0_30: number; aging31_60: number; aging61_90: number; aging90plus: number; customerName: string; customerCode?: string; projectName?: string; }
+  const balances: BalanceRow[] = [];
   const totalInvoiced = balances.reduce((s, b) => s + b.totalInvoiced, 0);
   const totalPaid = balances.reduce((s, b) => s + b.totalPaid, 0);
   const outstanding = balances.reduce((s, b) => s + b.outstandingBalance, 0);
@@ -96,7 +97,7 @@ export default function BalancesPage() {
       <SmartTable
         data={balances}
         columns={columns}
-        searchKeys={['customerName', 'customerCode', 'projectName']}
+        searchable
         searchPlaceholder="Search balances..."
       />
     </div>

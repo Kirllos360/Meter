@@ -16,4 +16,4 @@ COPY --from=builder /app/prisma ./prisma
 USER nestjs
 EXPOSE 3001
 ENV NODE_ENV=production
-CMD ["node", "dist/src/main.js"]
+CMD ["node", "--max-old-space-size=2048", "dist/src/main.js"]

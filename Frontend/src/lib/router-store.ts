@@ -46,7 +46,9 @@ export type PageKey =
   | 'sync-gateway'
   | 'admin-portal'
   | 'bill-cycle'
-  | 'payment-new';
+  | 'payment-new'
+  | 'collections'
+  | 'project-360';
 
 interface RouterState {
   currentPage: PageKey;

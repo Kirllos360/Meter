@@ -11,6 +11,7 @@ import { InvoiceDocument } from './invoice-document.model';
 import { getUtilityConfig } from '../utilities/utility-config';
 import { getChargeGroupName } from './charge-groups';
 import { UserAccessService } from '../auth/user-access.service';
+import { ReportEngineClient } from './report-engine-client.service';
 
 @ApiTags('Invoices')
 @Controller('invoices')
@@ -20,6 +21,7 @@ export class InvoicesController {
     private readonly prisma: PrismaService,
     private readonly template: InvoiceTemplateService,
     private readonly userAccess: UserAccessService,
+    private readonly jasper: ReportEngineClient,
   ) {}
 
   @Get()
@@ -138,7 +140,14 @@ export class InvoicesController {
       generatedAt: new Date().toISOString().slice(0, 16).replace('T', ' '),
     };
 
-    const pdfBuffer = await this.template.generatePdf(doc);
+    // Try JasperReports engine first (if configured), fall back to legacy Puppeteer
+    let pdfBuffer: Buffer | null = null;
+    if (this.jasper.isEnabled) {
+      pdfBuffer = await this.jasper.generateInvoicePdf(doc);
+    }
+    if (!pdfBuffer) {
+      pdfBuffer = await this.template.generatePdf(doc);
+    }
     return new StreamableFile(pdfBuffer, {
       type: 'application/pdf',
       disposition: `attachment; filename="invoice-${inv.invoiceNumber}.pdf"`,
