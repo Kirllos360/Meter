@@ -40,7 +40,7 @@ export function BackButton({ fallback }: { fallback?: string }) {
   );
 }
 
-export function StatCard({ label, value, icon, color }: { label: string; value: string | number; icon?: React.ReactNode; color?: string }) {
+export function StatCard({ label, value, icon, color, onClick }: { label: string; value: string | number; icon?: React.ReactNode; color?: string; onClick?: () => void }) {
   return (
     <div className="glass-card rounded-xl p-4">
       <div className="flex items-center justify-between">
