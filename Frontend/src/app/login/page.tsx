@@ -46,7 +46,7 @@ export default function LoginPage() {
       const res = await fetch(`${apiUrl}/auth/dev-login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: username, role: 'super_admin', name: username }),
+        body: JSON.stringify({ userId: username, role: 'super_admin', name: username, areaId: selectedArea || undefined }),
       });
 
       const data = await res.json().catch(() => ({}));
